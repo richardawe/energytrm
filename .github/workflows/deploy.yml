@@ -8,7 +8,7 @@ jobs:
   deploy:
     name: Build & Deploy to energytrm.com
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 60
 
     steps:
       - name: Checkout code
@@ -46,6 +46,8 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          protocol: ftp
+          dangerous-clean-slate: false
           exclude: |
             **/.git*
             **/.git*/**
