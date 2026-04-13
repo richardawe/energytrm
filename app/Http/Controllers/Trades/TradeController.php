@@ -46,7 +46,9 @@ class TradeController extends Controller
 
         $trades        = $query->paginate(25)->withQueryString();
         $products      = Product::orderBy('name')->get();
-        $counterparties = Party::scopeExternal(Party::query())->scopeAuthorized(Party::query())->orderBy('short_name')->get();
+        $counterparties = Party::where('internal_external', 'External')
+                                ->where('status', 'Authorized')
+                                ->orderBy('short_name')->get();
 
         return view('trades.index', compact('trades', 'products', 'counterparties'));
     }
