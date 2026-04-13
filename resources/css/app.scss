@@ -1,0 +1,131 @@
+// Bootstrap
+@import "bootstrap/scss/bootstrap";
+
+// EnergyTRM custom overrides
+:root {
+    --etrm-primary: #1a3c5e;
+    --etrm-secondary: #2e6da4;
+    --etrm-accent: #e8a020;
+    --etrm-sidebar-bg: #1e2a3a;
+    --etrm-sidebar-text: #c8d3e0;
+}
+
+// Navbar
+.navbar-etrm {
+    background-color: var(--etrm-primary);
+    border-bottom: 2px solid var(--etrm-accent);
+}
+.navbar-etrm .navbar-brand {
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+.navbar-etrm .nav-link {
+    color: var(--etrm-sidebar-text) !important;
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem !important;
+}
+.navbar-etrm .nav-link:hover,
+.navbar-etrm .nav-link.active {
+    color: #fff !important;
+    background-color: var(--etrm-secondary);
+    border-radius: 0.25rem;
+}
+
+// Main content area
+.etrm-content {
+    padding: 1.5rem;
+    min-height: calc(100vh - 56px);
+    background: #f4f6f9;
+}
+
+// Dense data tables (ETRM style)
+.table-etrm {
+    font-size: 0.8125rem;
+}
+.table-etrm th {
+    background-color: var(--etrm-primary);
+    color: #fff;
+    font-weight: 500;
+    white-space: nowrap;
+    padding: 0.5rem 0.75rem;
+}
+.table-etrm td {
+    padding: 0.4rem 0.75rem;
+    vertical-align: middle;
+}
+.table-etrm tbody tr:hover {
+    background-color: #e8f0fb;
+}
+
+// Status badges
+.badge-pending      { background-color: #6c757d !important; }
+.badge-validated    { background-color: #0d6efd !important; }
+.badge-settled      { background-color: #198754 !important; }
+.badge-cancelled    { background-color: #dc3545 !important; }
+.badge-authorized   { background-color: #198754 !important; }
+.badge-auth-pending { background-color: #ffc107 !important; color: #212529 !important; }
+.badge-do-not-use   { background-color: #dc3545 !important; }
+
+// Cards
+.card-etrm {
+    border: 1px solid #dde3ec;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    border-radius: 0.375rem;
+}
+.card-etrm .card-header {
+    background-color: #edf1f7;
+    border-bottom: 1px solid #dde3ec;
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 0.625rem 1rem;
+}
+
+// Form sections
+.form-section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--etrm-secondary);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #dde3ec;
+    margin-bottom: 1rem;
+}
+
+// Field tooltip icon
+.field-tooltip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--etrm-secondary);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-left: 4px;
+    vertical-align: middle;
+}
+
+// Filter bar
+.filter-bar {
+    background: #fff;
+    border: 1px solid #dde3ec;
+    border-radius: 0.375rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+}
+
+// Version history
+.version-history {
+    font-size: 0.8rem;
+    border-left: 3px solid var(--etrm-secondary);
+    padding-left: 1rem;
+}
+.version-history .version-entry {
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #eee;
+}

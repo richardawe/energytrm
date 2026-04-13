@@ -1,0 +1,444 @@
+﻿S/N,Tab,Subtab,Field,Source Type,Derived From / Calculation,Short Description
+,Risk and Analytics,Risk Management,VaR Lookback Period (Days),User Input,Input by the user; industry standard is 250 business days,The number of historical trading days used to construct the return distribution for historical-simulation VaR. A longer lookback captures more market regimes; a shorter lookback is more responsive to recent volatility.
+,Risk and Analytics,Risk Management,VaR Holding Period (Days),User Input,Pick list: 1 day / 10 days; defaults to 1 day for trading book,The period over which the potential loss is measured. Regulatory VaR under Basel typically uses a 10-day holding period; internal trading VaR typically uses 1 day.
+,Risk and Analytics,Risk Management,VaR Method,User Input,Pick list: Historical Simulation / Parametric (Variance-Covariance) / Monte Carlo,The calculation methodology used for VaR. Historical simulation replays actual P&L scenarios; parametric assumes normal return distribution; Monte Carlo generates synthetic price paths using modelled volatility and correlation.
+,Risk and Analytics,Risk Management,Stress Scenario Name,User Input,"Input by the user; eg. Crude -30%, Gas +50%, 2008 Financial Crisis replay",A user-defined label for a stress test scenario. Each scenario specifies price shocks applied to one or more commodity indices to test portfolio resilience under extreme but plausible conditions.
+,Risk and Analytics,Risk Management,Stress Scenario Price Shock (%),User Input,Input by the user; expressed as a percentage change to the current index price,The magnitude of the price shock applied to each commodity index under a given stress scenario. Eg. -30% shock to Brent crude. Applied to current MTM positions to calculate stressed P&L and exposure.
+,Risk and Analytics,Risk Management,Stressed P&L,Calculated,Net Position × (Index Price × (1 + Shock%) − Trade Price),The hypothetical portfolio P&L resulting from applying the stress scenario price shocks to all open positions. Compared against available capital and credit limits to assess tail risk.
+,Risk and Analytics,Risk Management,Credit Limit Currency,User Input,Pick list of all currencies defined in Master Data → Currency,The currency in which the counterparty credit limit is expressed. Exposure in other currencies is converted to this currency using the FX rates defined in Master Data → Currency before comparing against the limit.
+,Risk and Analytics,Risk Management,Credit Limit Utilisation (%),Calculated,Current Exposure by Counterparty ÷ Credit Limit × 100,The percentage of a counterparty's credit limit currently consumed by open trades. Displayed on the risk dashboard and used to trigger warning alerts (eg. at 80%) and hard breach flags (at 100%).
+,Risk and Analytics,Risk Management,Warning Threshold (%),User Input,Input by the user; defaults to 80%,The credit utilisation percentage at which a soft warning is surfaced to traders and risk managers. Reaching this threshold does not block trade capture but triggers a notification requiring acknowledgement.
+,Master Data,Legal Entities,LEI (Legal Entity Identifier),User Input,Input by the user; 20-character ISO 17442 code,The globally unique 20-character Legal Entity Identifier assigned to the entity under the ISO 17442 standard. Mandatory for EMIR and MiFID II trade reporting where the entity is a reportable counterparty. Eg. 2138004WTZTCBQH8JV73.
+,Master Data,Legal Entities,BIC / SWIFT Code,User Input,Input by the user; 8 or 11-character ISO 9362 code,The Bank Identifier Code (BIC) assigned to the entity for interbank payment routing and SWIFT messaging. Required for settlement instruction matching and payment initiation. Eg. BARCGB22.
+,Master Data,Legal Entities,Credit Limit,User Input,Input by the user; expressed in Credit Limit Currency,The maximum aggregate exposure the firm is willing to carry against this counterparty at any one time. Compared against Exposure by Counterparty in Risk and Analytics to determine utilisation and breach status.
+,Master Data,Legal Entities,Credit Limit Currency,User Input,Pick list of all currencies defined in Master Data → Currency,The currency in which the counterparty credit limit is expressed. All exposures in other currencies are converted to this currency using current FX rates before the breach check is performed.
+,Master Data,Legal Entities,KYC Status,User Input,Pick list: Pending / Approved / Expired / Suspended,Indicates the current Know Your Customer (KYC) and AML due diligence status for this counterparty. Trades may only be booked against counterparties with Approved KYC status. Expired status triggers a renewal workflow.
+,Master Data,Legal Entities,KYC Review Date,User Input,Input by the user or selection from calendar,The date on which the counterparty's KYC documentation is next due for periodic review. A system alert is generated a defined number of days before this date to prompt the compliance team to initiate renewal.
+,Master Data,Legal Entities,Regulatory Classification,User Input,Pick list: Financial Counterparty (FC) / Non-Financial Counterparty (NFC) / NFC+ / Third-Country Entity,The counterparty's regulatory classification under EMIR (EU) or equivalent regime. Classification as FC or NFC+ triggers mandatory clearing and margin obligations for OTC derivatives.
+,Operations,Nominations,Nomination ID,System-generated,Auto increment,"Unique, system-generated identifier assigned to a nomination record when it is first saved."
+,Operations,Nominations,Trade ID,Derived,From linked Physical Trade,The deal number of the physical trade to which this nomination relates. One trade may have multiple nominations across different gas days or scheduling windows.
+,Operations,Nominations,Gas Day / Delivery Date,User Input,Input by the user or selection from calendar,The specific calendar date for which the nominated volume is to be delivered or received. For gas markets this corresponds to the gas day (eg. 06:00–06:00).
+,Operations,Nominations,Scheduling Window,User Input,Pick list: Day-Ahead / Intraday / Real-Time / Within-Day,Indicates the market window in which the nomination is submitted. Different windows have different cut-off times and tolerance bands set by the pipeline or grid operator.
+,Operations,Nominations,Pipeline / Grid Operator,User Input,Pick list of all TSOs / DSOs / pipeline operators defined in Master Data,"The transmission system operator, distribution system operator, or pipeline operator to whom the nomination is submitted. Eg. National Grid, Gasunie, Colonial Pipeline."
+,Operations,Nominations,Nominated Volume,User Input,Input by the user,The volume the trader nominates to deliver or receive on the specified gas day and at the specified point. May differ from the contracted quantity within tolerance bands permitted by the operator.
+,Operations,Nominations,Counterpart Nominated Volume,User Input / Derived,Received from counterparty or pipeline operator confirmation,The volume nominated by the counterparty for the same delivery point and day. A nomination is matched when both sides agree; a mismatch generates an imbalance.
+,Operations,Nominations,Nomination Status,Derived,Submitted → Confirmed / Rejected / Matched / Unmatched,The current status of the nomination as returned by the pipeline or grid operator. A Confirmed status means the operator has accepted the volume; Matched means both counterparty nominations agree.
+,Operations,Nominations,Imbalance Quantity,Calculated,Nominated Volume − Actual Delivered Quantity,The difference between the volume nominated and the volume actually delivered or received. Imbalances may attract operator-imposed charges or cashout prices and are tracked for settlement purposes.
+,Operations,Nominations,Nomination Submission Timestamp,System-generated,Auto-populated when nomination is submitted to operator,The date and time at which the nomination was submitted to the pipeline or grid operator. Used to confirm compliance with the operator's cut-off deadline for the scheduling window.
+,Operations,Invoices,Invoice Type,User Input,Pick list: Commodity Invoice / Demurrage Invoice / Freight Invoice / Commission Invoice / Tax Invoice,Classifies the invoice by its commercial purpose. Commodity invoices settle the physical delivery; demurrage invoices settle vessel delay charges; freight invoices settle transportation; commission invoices settle broker fees.
+,Operations,Invoices,Tax / VAT Amount,Calculated,Invoice Amount × applicable Tax Rate defined in Master Data,"The tax or VAT amount applicable to the invoice, calculated by applying the relevant tax rate to the taxable base amount. The tax code and rate are derived from the counterparty's tax jurisdiction and the commodity type."
+,Operations,Invoices,Tax Code,Derived,From counterparty jurisdiction and commodity type in Master Data,"The tax classification code applied to the invoice line, indicating the applicable VAT / GST / withholding tax rate and reporting category. Eg. S20 (Standard Rate 20%), Z0 (Zero-rated), EX (Exempt)."
+,Operations,Invoices,Invoice Reference (External),User Input,Input by the user,"The reference number assigned to this invoice by the counterparty or external party, used for matching incoming payment advices and reconciling against counterparty records."
+,Operations,Invoices,Dispute Flag,User Input,Checkbox / Pick list: Undisputed / Disputed / Under Review,Indicates whether the invoice is subject to a commercial dispute raised by the counterparty. Disputed invoices are excluded from overdue calculations until resolved and trigger a workflow notification to the back office.
+,Operations,Invoices,Dispute Reason,User Input,Free text; applicable only when Dispute Flag = Disputed or Under Review,"A free-text description of the reason the invoice is disputed by the counterparty. Eg. quantity discrepancy, pricing formula disagreement, or documentation deficiency."
+,Operations,Logistics,Bill of Lading (BL) Date,User Input,Input by the user; entered once the BL is issued at load port,"The date on which the bill of lading is issued at the load port, representing the moment title and/or risk transfers depending on the Incoterm. Used to determine the pricing period for floating-price cargoes and to trigger invoice generation."
+,Operations,Logistics,Bill of Lading Quantity,User Input,Surveyor's figure entered by user once BL is issued,The gross and net quantity of commodity certified on the bill of lading by an independent surveyor at load port. This is the contractual delivered quantity for invoice purposes and may differ from the nominated quantity.
+,Operations,Logistics,Draft Survey Quantity,User Input,Entered by user from independent surveyor's report at discharge port,"The quantity of commodity determined by draft survey at the discharge port. Where the contract specifies discharge-port quantity as the invoice basis, this figure overrides the BL quantity for settlement."
+,Operations,Logistics,NOR (Notice of Readiness) Date / Time,User Input,Input by the user when vessel tenders NOR at load or discharge port,"The date and time at which the vessel tenders Notice of Readiness to the terminal, signalling the vessel is in position and ready to load or discharge. NOR tendering triggers the commencement of laytime."
+,Operations,Logistics,Laytime Commencement,Derived,Calculated from NOR date/time adjusted for any free time or notice period per charter party terms,"The date and time at which laytime starts counting, after applying any contractual notice period or free time allowance to the NOR tendering time. This is the start point for demurrage calculations."
+,Operations,Logistics,Allowed Laytime (Hours),User Input,Input by the user from charter party / contract terms,The total number of hours permitted under the contract or charter party for loading or discharging operations. Time used beyond this allowance incurs demurrage; time saved may attract despatch.
+,Operations,Logistics,Time Used (Hours),Calculated,Derived from actual completion time minus laytime commencement,"The actual number of hours elapsed from laytime commencement to completion of loading or discharging operations, as recorded in the Statement of Facts. Compared against Allowed Laytime to determine demurrage or despatch."
+,Operations,Logistics,Demurrage Rate,User Input,Input by the user from charter party; expressed as currency per day (eg. USD/day),"The contractual daily rate payable to the shipowner when loading or discharging exceeds the allowed laytime. Expressed in the charter party currency per day, pro-rated for part-days."
+,Operations,Logistics,Demurrage / Despatch Amount,Calculated,If Time Used > Allowed: (Time Used − Allowed) × Demurrage Rate. If Time Used < Allowed: (Allowed − Time Used) × Despatch Rate,The calculated demurrage payable to the vessel owner (time used exceeds allowed laytime) or despatch receivable from the vessel owner (time saved). This amount is invoiced separately from the commodity invoice.
+,Operations,Logistics,Freight Cost,User Input,Input by the user from freight contract or spot fixture,"The total freight charge payable for transporting the cargo, either as a lump sum (eg. USD 500,000) or on a per-unit basis (eg. USD 8.50/MT). Captured separately from the commodity price for P&L attribution."
+,Operations,Logistics,Freight Basis,User Input,Pick list: Lump Sum / Per MT / Per BBL / Per MMBTU,Indicates whether the freight charge is expressed as a total lump sum for the voyage or as a per-unit rate applied to the BL quantity. Determines how the freight cost is calculated and allocated.
+,Operations,Logistics,Vessel ETA,User Input,Input by the user or updated from vessel-tracking feed,"The estimated time of arrival of the vessel at the load or discharge port. Used for operational planning, terminal scheduling, and tracking whether the vessel is on laycan."
+,Operations,Logistics,Laycan Start,User Input,Input by the user from contract terms; selection from calendar,"The first date of the laytime cancelling window — the earliest date on which the vessel may arrive and tender NOR without being rejected. If the vessel arrives before laycan start, the charterer may reject it."
+,Operations,Logistics,Laycan End,User Input,Input by the user from contract terms; selection from calendar,"The last date of the laytime cancelling window. If the vessel fails to tender NOR by this date, the charterer has the right to cancel the voyage without liability."
+S/N,Tab,Subtab,Field,Source Type,Derived From / Calculation,Short Description
+,Master Data,Brokers,Broker ID,System-generated,Auto increment,"Unique, system-generated identifier assigned to a broker record when it is first saved in the system."
+,Master Data,Brokers,Broker Name,User Input,Input by the user,"The full legal or trading name of the brokerage firm. Eg. ICAP, Marex, Tradition. This is the entity that intermediated the trade and to whom commission is payable."
+,Master Data,Brokers,Broker Short Name,User Input,Input by the user,"An abbreviated identifier for the broker used in blotter views and reports. Up to 10 characters. Eg. ICAP, MRX, TRAD."
+,Master Data,Brokers,Broker Type,User Input,Pick list: Voice Broker / Electronic Broker / Hybrid,"Indicates whether trades are brokered via telephone (voice), via an electronic trading platform (eg. ICE, Tradition Trayport), or a combination of both."
+,Master Data,Brokers,Broker Status,User Input,Pick list: Active / Suspended / Do Not Use,The current operational status of the broker. Only brokers with Active status may be selected on new trade capture screens.
+,Master Data,Brokers,Default Commission Agreement,User Input,Pick list of all Broker Fee definitions in Master Data → Broker Commissions,"The default commission schedule applied when this broker is selected on a trade. Can be overridden at trade level. Links to the Broker Commission definition which holds rate, unit, and currency."
+,Master Data,Brokers,Regulated Entity Flag,User Input,Checkbox,"Indicates whether the broker is a regulated entity under the applicable jurisdiction (eg. FCA-authorised in the UK, CFTC-registered in the US). Relevant for EMIR / Dodd-Frank transaction reporting obligations."
+,Master Data,Brokers,LEI (Legal Entity Identifier),User Input,Input by the user; 20-character ISO 17442 code,"The globally unique 20-character Legal Entity Identifier assigned to the broker under ISO 17442. Required for regulatory trade reporting under EMIR, MiFID II, and Dodd-Frank where the broker is a reportable counterparty."
+1,Physical Trades,,,,,
+,,,Trade ID or Deal Number,System-generated,Auto populated when Trade is captured in the system,Unique identifier for a trade that doesn't change throughout the life of the trade. Eg. 205637
+,,,Transaction Number,System-generated,,"Identifies the version of the trade, the transaction number and deal number are same unless the trade has been modified. Modified trades are assigned a new transaction number but keep the original deal number."
+,,,Instrument Number,System-generated,,"Shared number for trades using common Instrument, and always unique in case of over the counter (OTC) trades"
+,,,Input Date,System-generated,Auto populated when Trade is captured in the system,The trade input timestamp in the system
+,,,Trade Date / Execution Timestamp,User Input / API Capture,Input by the user,The date the trade was made on. A date may be entered manually or by selecting the date from the calendar
+,,,Trade Direction (Buy/Sell),User Input,Based on selection from the user on Trade input screen,Indicates whether the trader's role in the trade is as a buyer or seller. Pay/Receive is derived based on Buy/Sell selection
+,,,Pay/Rec,Derived,,Identifies whether the physical/financial side will be delivered/received or received/paid. This is derived from Buy/Sell
+,,,Trade Status,Derived,Derived from user's selection in the drop-down menu while processing a trade,"It is the current status of the trade, which is initially set to Pending, when a trade is processed the status moves to which the trade was processed to. Eg. Validated, New"
+,,,Start Date,User Input,Manually input by the user or selection from the calendar,Start date of the physical/financial side of the deal
+,,,End Date,User Input,Manually input by the user or selection from the calendar,End date of the physical/financial side of the deal
+,,,Start Time,User Input,Input by the user,The time the day starts. Eg. Gas day starts at 6:00am
+,,,Internal Party / Business Unit,User Input,Pick list items are derived from all the internal parties defined in the system,"This is the internal party / business unit involved in a trade, can be selected from the pick list which shows all the parties defined in the system"
+,,,Internal Legal Entity,User Input,Pick list items are derived from all the internal legal entities defined in the system,The legal entity associated with the selected business unit
+,,,Internal Portfolio,User Input,Pick list items are derived from all the personnels / users defined in the system,The portfolio associated with the selected business unit
+,,,Trader,Auto-populated but can be modified,Pick list items are derived from all the internal portfolios defined in the system,The name of the user who entered the transaction
+,,,Counterparty / External Business Unit,User Input,Pick list items are derived from all the external business units / counterparty units defined in the system,The name of the business unit of the counterparty involved in the trade
+,,,Agreement,User Input,Pick list items are derived from all the agreement conditions defined in the system,The party agreement for the internal and external business units involved in a trade
+,,,Product,User Input,Pick list items are derived from all the products/commodities defined in the system,The product/commodity being traded
+,,,Quantity / Volume,User Input,Input by the user,The amount of product/commodity that is to delivered
+,,,Deal Volume Type,User Input,Pick list items are derived from all volume types defined in the system,"Indicates if the volume is on a contract, daily, hourly, period or yearly basis. For eg. If the deal notional is 1000, and the deal volume type is hourly, then the volume would be calculated as 1000*24 hours"
+,,,Unit of Measure (UOM),User Input,"Pick list of all the units defined in the system, usually it is unit conversion table","The unit in which the volume is quoted. Eg. MT for refined products, MMBTU for Natural Gas, BBL for Oil"
+,,,Fixed / Float,User Input,Input by the user,"To identify whether the price is fixed or Index/Formula, etc."
+,,,Projection Index,User Input,Pick list of all the index / curves defined in the system,The index or curve used to determine the projected value of future flows of a product/commodity & payments. This applies if valuation is based upon a market index
+,,,Fixed Price / Float Spread,User Input,Input by the user,The fixed price or the spread off a projected index price
+,,,Currency,User Input,,"The currency in which payments are made, defaults from the currency entered in the index/curve"
+,,,Incoterm (FOB/CIF/DES),User Input,,"The transportation terms which indicates the buyer and sellers responsibility in the business transaction. Eg. CIF, CFR"
+,,,Load Port,User Input,,The location where the commodity will be loaded at
+,,,Discharge Port,User Input,,The location where the commodity will be discharged at
+,,,Broker,User Input,,Query in the comments
+,,,Trade Value,Calculated,,"This is a calculated field and I believe shouldn't be part of this category, we can add it in a new category for calculated fields such as in PnL reports"
+,,,Trade PnL (Unrealized),Calculated,,"This is a calculated field and I believe shouldn't be part of this category, we can add it in a new category for calculated fields such as in PnL reports"
+,,,Market Price,Derived,,"This field is not at trade level but at index level, we can add it there"
+,,,Pricing Formula,Derived,,"Formula pricing can be applied on a trade with the use of built in functions or free form formula method. Eg. Of the built in functions are AVG, MIN, MAX, etc."
+,,,Reset Period,User Input,,"The period of time or frequency between rate resets, can be daily, every n day, monthly, or yearly. This can be defined if the Fixed/Float (price type) is set to Index"
+,,,Payment Period,User Input,,The period of time or frequency between payments
+,,,Payment Date Offset,User Input,,Shifts the payment period a specified number of good business days from each payment date defined by the settlement period
+,,,Transport Class / Transfer Method,User Input,Pick list of all the transport classes defined in the system,"The mode of transportation that is used to move the commodity. Eg. Barge, Pipeline, Rail, Truck, TBD, etc."
+2,Operations,,,,,
+,,Logistics,Shipment ID,System-generated,Auto increment,
+,,,Trade ID,Derived,From Trading → Physical Trades,
+,,,Vessel / Carrier,User Input,From Master Data → Carriers,
+,,,Load Port,Derived,From linked trade,
+,,,Discharge Port,Derived,From linked trade,
+,,,Incoterm,Derived,From linked trade,
+,,,Delivery Start / End Date,User Input,User-entered,
+,,,Quantity Delivered,User Input,Actual delivered quantity,
+,,,Delivery Status,Derived,From operational progress,
+,,Invoices,Invoice ID,System-generated,Auto increment,
+,,,Trade ID,Derived,From linked Physical / Financial Trade,
+,,,Counterparty,Derived,From linked Trade,
+,,,Invoice Date,User Input,Generated date,
+,,,Invoice Amount,Calculated,Quantity × Price (converted to invoice currency),
+,,,Payment Terms,Derived,From Trade / Master Data,
+,,,Currency,Derived,From Trade,
+,,,Invoice Status,Derived,Pending / Paid / Overdue,
+,,Settlements,Settlement ID,System-generated,Auto increment,
+,,,Invoice ID,Derived,From Invoice,
+,,,Payment Amount,User Input / Derived,Derived from bank confirmation or entry,
+,,,Payment Date,User Input,Date paid,
+,,,FX Conversion Rate,Derived,From FX Trade or FX Market,
+,,,Settlement Status,Derived,Completed when full payment received,
+,,,Trade Status,Derived,Updated → “Settled” when final,
+,,EoB / CoB Checklist,Checklist ID,System-generated,Auto increment,
+,,,Business Unit,User Input,From Master Data,
+,,,Date,System-generated,Current business date,
+,,,All trades approved,Derived,From Trading → Trade Status,
+,,,All invoices matched,Derived,From Invoices,
+,,,All settlements complete,Derived,From Settlements,
+,,,Market data loaded,Derived,From Market Prices feed,
+,,,Signoff by User,User Input,From User Management,
+,,,Checklist Status,Derived,Pass/Fail depending on conditions,
+3,User Management,,,,,
+,,Personnel,Personnel Id,System generated,System generated,Unique no. generated by the sytsem after a personnel record is added
+,,,Version,System generated,System generated,A pick list of no. that denotes the version of the current personnel record. A new record starts at 0. User cannot change the previous version of the record but can only be viewes
+,,,Status,User Input,Pick list,"Pick list of status - Authorized, Authorized Pending, Do Not Use"
+,,,Type,User Input,Pick list,"Pick list that shows whether the user is internal, external or licensed user"
+,,,License Type,User Input,Pick List,"Pick list enabled in case of Licensed user which indicates what license to which the user is entitled. Eg. Full Access, Server, Read Only, etc."
+,,,Short Ref Name,User Input,Input by the user,Var Charater field of up to 32 characters that uniquely identifies the person
+,,,Short Alias Name,User Input,Input by the user,Provides the ability to use single sign on connectivity.
+,,,Employee Id,User Input,Input by the user,Var Charater field of up to 32 characters that uniquely identifies the person
+,,,Title,User Input,Input by the user,Var Charater field of up to 32 characters that provides the business title assigned to an individual at the firm
+,,,Last Name,User Input,Input by the user,Text fied used to enter a user's full name
+,,,Forename,User Input,Input by the user,Text fied used to enter a user's full first name
+,,,Phone,User Input,Input by the user,Text fied used to enter a user's phone number
+,,,Email,User Input,Input by the user,Text fied used to enter a user's email
+,,,Address,User Input,Input by the user,Text fied used to enter a user's address
+,,,City,User Input,Input by the user,Enter the city where user is locatied
+,,,State,User Input,Input by the user,Enter the state where user is located
+,,,Country,User Input,Input by the user,Enter the country where user is located
+,,,Password Never Expires,User Input,Checkbox,"A flag if it is checked, the user's password will never expire, even though the pass expiration (90 days) has been set for all users in the system"
+,,Business Units,Available Business Units,User Input,List of all the business units defined in the system,List of all the business units defined in the system
+,,,Selected Business Units,User Input,List of all the business units selected for the personnel,List of all the business units selected for the personnel
+,,Legal Entities,Available Legal Entities,User Input,List of all the legal entities defined in the system,List of all the legal entities defined in the system
+,,,Selected Legal Entities,User Input,List of all the legal entities selected for the personnel,List of all the legal entities selected for the personnel
+,,Portfolios,Available Portfolio,User Input,List of all the Portfolios defined in the system,List of all the Portfolios defined in the system
+,,,Selected Portfolio,User Input,List of all the Portfolios selected for the Personnel,List of all the Portfolios selected for the Personnel
+,,Security Groups,Available Security Groups,User Input,List of all the Security Groups defined in the system,List of all the Security Groups defined in the system
+,,,Selected Security Groups,User Input,List of all the Security Groups selected for the Personnel,List of all the Security Groups selected for the Personnel
+,,Secured Index,Available Secured Index,User Input,List of all the Secured indexes defined in the system,List of all the Secured indexes defined in the system
+,,,Selected Secured Index,User Input,List of all the Secured Indexes selected for the Personnel,List of all the Secured Indexes selected for the Personnel
+,,Functional Groups,Available Functional Groups,User Input,List of all the functional groups defined in the sytsem,List of all the functional groups defined in the sytsem
+,,,Selected Functional Groups,User Input,List of all the Functional Groups selected for the Personnel,List of all the Functional Groups selected for the Personnel
+,,Personnel Info,Info Type,User Input,Additional information that might be useful for reporting and record keeping. Eg. Trader Shift Group,Additional information that might be useful for reporting and record keeping. Eg. Trader Shift Group
+,,,Value,User Input,"Descriptive information about the ""Info Type""","Descriptive information about the ""Info Type"""
+,,Trading Locations,Available Trading Locations,User Input,List of all the Trading Locations defined in the sytsem,List of all the Trading Locations defined in the sytsem
+,,,Selected Trading Locations,User Input,List of all the Trading Locations selected for the Personnel,List of all the Trading Locations selected for the Personnel
+,,,Default Location,User Input,Checkbox,Default trading location for the user
+4,Master Data,,,,,
+,,Party group,Group ID,System generated,Auto populated when a Party Group is entered in the system,"Unique, system generated identification number for the Party Group"
+,,,Group Type,User Input,Pick List,"Indicates the type of party group, either Internal or External"
+,,,Group Name,User Input,Input by the user,User defined name to identify the party group
+,,,Description,User Input,Input by the user,"Description of the party group, allow upto 80 characters in length"
+,,,Updated By,System generated,System generated,Name of the user who created or last modified the party group
+,,,Last Update,System generated,System generated,Date and time indicating when the party group was created or last modified
+,,,Version,System generated,System generated,Indicates how many times party group has been modified
+,,Address,Default,User Input,Checkbox,Check mark that indicates that this address is the default for this party
+,,,Address Id,System generated,System generated,Unique id generated by the system assigned to the address
+,,,Type,User Input,Pick List,Identifies whether it is a main address or a backup address
+,,,Address 1,User Input,Input by the user,Street address where the legal entity is located
+,,,Address 2,User Input,Input by the user,Address line 2
+,,,City,User Input,Input by the user,City where the LE is located
+,,,State,User Input,Input by the user,State where the LE is located
+,,,Country,User Input,Input by the user,Country where the LE is located
+,,,Phone,User Input,Input by the user,Phone number of the LE
+,,,Description,User Input,Input by the user,The description of the address
+,,,Contact,User Input,Pick list,LE's contact user ID
+,,,Effective Date,User Input,Input by the user,Date when the address become active
+,,Notes,Note ID,System generated,System generated,Unique id assigned to a new note
+,,,Note Type,User Input,Input by the user,Text field to enter type of the note
+,,,Title,User Input,Input by the user,Text field to enter the title of the note
+,,,Text,User Input,Input by the user,The text of the note
+,,,Date,User Input,Input by the user,The date when the note was first created
+,,,Version,System generated,System generated,The no. of modifications this note has been undergone
+,,,User,System generated,System generated,The name of the user who last modified the note
+,,,Last Update,System generated,System generated,The date when the note was created or last updated
+,,Settlement Instructions (SI),Settlement ID,System generated,Sytsem generated,"Unique, system genrated id assigned to SI once they have been saved"
+,,,Settlement Status,User Input,Input by the user,"Status of the SI - Auth Pending, Authorized, Amendment Pending, Do not use"
+,,,Settlemnet Name,User Input,Input by the user,User defined name for the SI
+,,,Settler,User Input,Input by the user,Name of the business unit designated as the settling entity for the SI
+,,,Advice,User Input,Input by the user,"Every settlement event has a cash or physical delivery, hence this tells how to send advice as defined in the SI record"
+,,,Payment Method,User Input,Input by the user,The method of payment as defined in the SI
+,,,Account,User Input,Input by the user,Name of the account designated in the SI
+,,,Description,User Input,Input by the user,Description of the SI
+,,,Start Date,User Input,Input by the user or selection from calendar,First date on which the SI may be used in booking deals
+,,,End Date,User Input,Input by the user or selection from calendar,Last date on which the SI may be used in booking deals
+,,,User,System generated,System generated,Name of the user who created or modified the SI information
+,,,Last Update,System generated,System generated,Date on which the SI was last updated
+,,,Version Number,System generated,System generated,System generated no. which indicates the no. of times the SI record has been modified
+,,,DVP,User Input,Checkbox,"Whether delivery vs payment (DVP) is being used, if selected, invoices will be generated for the cash settlements while generating invoices for the delivery"
+,,,Link Settle ID,System generated,Auto-populated,"When a user amends a portfolio, a new SI is created in 'amendment pending' status with a new settlement id number. The amendment pending SI contains the id of the original SI in this field"
+,,Portfolios,Default,User Input,Checkbox,Default portfolio for the business unit
+,,,Portfolio ID,System generated,Sytsem generated,"Unique, system generated id for the portfolio"
+,,,Index,User Input,List of all the Indexes available in the system,Index allowed to be transacted in the portfolio. The listing is disabled if the Portfolio is Unrestricted
+,,,Short Name,User Input,Input by the user,User defined short name assigned to portfolio
+,,,Long Name,User Input,Input by the user,User defined full name
+,,,Instrument,User Input,List of all the instruments defined in the system,Instruments allowed to be transacted in the portfolio
+,,,Info Type,User Input,List of all the Portfolio info fields created in the sytsem,"Additional information that might be useful for reporting and record keeping. Eg. Portfolio Owner, External System Codes"
+,,,CCY,User Input,List of all the currencies defined in the system,List of all the currencies
+,,,Type,User Input,Pick list,Whether the portfolio is trading or investment portfolio
+,,,Restricted,User Input,Yes/No,Indicates whether or not this portfolio is restricted to specific instruments or indexes
+,,,Updated By,System generated,System generated,Name of the user who created or last updated the portfolio record
+,,,Last Update,System generated,System generated,The date on which the portfolio was created or last updated in the system
+,,,Requires Strategy,User Input,Yes/No,Whether a portfolio is required to have a strategy for booking the deals
+,,,Status,User Input,Input by the user,"Status os the portfolio -Auth Pending, Authorized, Amendment Pending"
+,,,Linked Portfolio ID,User Input,Auto-populated,"When a user amends a portfolio, a new portfolio is created in 'amendment pending' status with a new portfolio id number. The amendment pending portfolio contains the id of the original portfolio in this field"
+,,Accounts,Account ID,System generated,Sytsem generated,Unique id assigned to the account
+,,,Account Type,User Input,Pick list of all the account types defined in the system,"The bank account classification - Nostro, Internal Nostro, Vostro, Internal Vostro, Vostro (multiple)"
+,,,Account Name,User Input,Input by the user,"Name of the account, can be warehouse or bank account"
+,,,Account Number,User Input,Input by the user,Number of the account
+,,,Holding Bank,User Input,Pick list,The holding bank (Internal/External Business Unit) based on account type
+,,,Description,User Input,Input by the user,Free form field to add comments and information about the account
+,,,User,System generated,Sytsem generated,The name of the user who created or last updated the account
+,,,Last Update,System generated,Sytsem generated,Date and time when the account record was created or last updated
+,,,Account Version,System generated,Sytsem generated,The version number of the account record incremented by 1 each time the data is modified
+,,,Status,User Input,Input by the user,"Status of the account. Eg. Authorized, Auth Pending, Do Not Use, Amendment Pending"
+,,,Class,User Input,Input by the user,A descriptive bank account grouping used for querying and reporting purpose
+,,,On Balance Sheet,User Input,Yes/No,Indicate whether the account is on the balance sheet or not
+,,,Allow Multiple Units,User Input,Yes/No,If the account allows settlement in more than one type of units
+,,,Account Legal Name,User Input,Input by the user,The legal name of the account
+,,,Country,User Input,Pick list of all the countries defined in the system,The country where the account operates
+,,,Treasury Manager,User Input,Pick list of all the users defined in the system,The treasury organization contact for the bank account
+,,,Business Units Owner,User Input,Pick list of all the BUs defined in the system,The business unit which is the owner of the account
+,,,Date Opened,User Input,Input by the user or selection from calendar,The date the account was opened
+,,,Date Closed,User Input,Input by the user or selection from calendar,The date the account was closed
+,,,General Ledger Account,User Input,Input by the user,A referenced general ledger account
+,,,Base Currrency,User Input,Pick list of all the currencies defined in the sytsem,The main currency of the account to/from which fees and interest are paid/received
+,,,Sweep Enabled,User Input,Checkbox,If the account is enabled for target balancing
+,,Legal Entities,Default,User Input,Checkbox,Check mark that indicates that this LE is the default for this BU
+,,,Party ID,System generated,System generated,Unique id generated by the system assigned to the LE
+,,,Version Number,System generated,System generated,Number that identifies the no. of times the record was modified
+,,,Status,User Input,Pick list items are derived from all the party statuses defined in the system,"The status of Legal Entity. Eg. Authorized, Auth Pending, Suspended. Only authorized units can process trades"
+,,,Type,User Input,Pick list items are derived from all the party types defined in the system,"Indicates the type of legal entity, either internal or external"
+,,,Class,User Input,System generated,"Displays the class, Legal Entity or Business Unit, auto populated based on entity being created"
+,,,Short Name,User Input,Input by the user,Abbreviated name of the legal entity
+,,,Long Name,User Input,Input by the user,Complete name of the legal entity
+,,,Description,User Input,Input by the user,Additional information on the legal entity
+,,,Created By,System generated,System generated,A variable charcter up to 32 characters that uniquely identifies the person who created the record
+,,,Updated By,System generated,System generated,A variable charcter up to 32 characters that uniquely identifies the person who updated the record
+,,,Last Update,System generated,System generated,Date that identifies the date and time when it was last modified
+,,,Default Portfolio,User Input,Pick list items are derived from all the portfolios defined in the system,Indicates the portfolio that has been assigned as the default for the LE
+,,,Agency Activities,User Input,Yes/No,Indicates whether the LE is enabled to behave like an internal party
+,,,Internal Reference,User Input,Input by the user,"Each client determines the specific use of this field, allows them to individually define certain fields as and how they want"
+,,Broker Commissions,Fee Def ID,System-generated,Auto populated when a fee is entered in the system,Unique identification for the broker fee once it is saved in the system
+,,,Broker Fee Name,User Input,Input by the user,Name of the fee type input by the user
+,,,Commission/Fee Type,User Input,Pick list items are derived from all the commission types defined in the system,"The type of broker commission. Eg. Clearing, Execution, OTC, OTC Clearing, Service"
+,,,Clearing House,User Input,Pick list of all the BUs having clearning enabled,"These are Bus with the clearing house function enabled, hence these Bus provide clearing & settlement services"
+,,,Rate,User Input,Input by the user,The defined rate for the broker commission
+,,,Rate Default,User Input,Yes/No,To define whether the commission is default
+,,,Exchange,User Input,Pick list items,The exchange rate defined for the broker commission
+,,,Unit,User Input,Pick list items are derived from all the brokerage units defined in the system,"Unit of broker commission. Eg. Per Avg Notional, Per Trade, etc."
+,,,Currency,User Input,Pick list items are derived from all the currencies defined in the system,The currency in which the broker commission is paid
+,,,Payment Frequency,User Input,Pick list items,"The frequency in which the broker commission is paid. Eg. Monthly, Quarterly"
+,,,Min Fee,User Input,Input by the user,The minimum fee attached to the commission
+,,,Max Fee,User Input,Input by the user,Tha maximum fee attached to the commission
+,,,Index Group,User Input,Pick list items are derived from all the index groups defined in the system in the static data,"Used to narrow down the available broker fees based on Index group. It is common for a broker to charge different rates based on the commodity, eg. $2/lot for NatGas and $3/lot for Oil"
+,,,Fee Start Date,User Input,Input by the user or selection from calendar,The date when the broker commission begins
+,,,Fee End Date,User Input,Input by the user or selection from calendar,The date when the broker commission ends
+,,Security Group,Security Group,Auto-fetched,"Indicates the security group setup for the used in static data. Eg. Admin, Back Office, Middle Office, etc.",Fetched a list of all the items from the security groups defined in the system
+,,,View Only Access to Party,Checkbox,Assigns the party to a security group and allow view only access,Checkbox
+,,,Execute Trades Using Party,Checkbox,Assigns the party to a security group and allow trade booking privilidge against the party,Checkbox
+,,Agreement,Party Agreement ID,System generated,System generated,Unique ID generated once party agreement is entered into the system
+,,,Agreement ID,System generated,System generated,Unique ID generated once agreement is entered into the system
+,,,Internal Party,User Input,Pick list of all the internal parties defined in the system,Indicates the internal party to which this agreement applies to
+,,,External Party,User Input,Pick list of all the external parties defined in the system,Indicates the external party to which this agreement applies to
+,,,Status,User Input,Pick List,"Status of the agreement. Eg. Auth Pending, Authorized, Suspended"
+,,,Coverage Start Date,User Input,Input by the user or selection from calendar,First coverage date of the agreement
+,,,Coverage End Date,User Input,Input by the user or selection from calendar,Last coverage date of the agreement
+,,,Description,User Input,Input by the user,Free text field to add additional info on the agreement and its items
+,,,Internal Reference,User Input,Input by the user,Free text field to enter any internal ref number
+,,,External Reference,User Input,Input by the user,Free text field to enter any external ref number
+,,,Netting,User Input,Yes/No,The Yes/No indicates whether netting is used for this agreeement
+,,,Invoice Terms,User Input,Input by the user,The payment offset terms defined in the agreement
+,,,Agreement Conditions,User Input,Input by the user,Free text field to enter any special conditions or terms applicable
+,,,Document Type,User Input,Input by the user,Type of document used in the agreement. Eg. Bespoke
+,,,Accounting Date Offset,User Input,Input by the user,Symbolic date that shows the default accounting date offset. Eg. 4d = 4 business days
+,,,Party Agreement Name,User Input,Input by the user,Name of the party agreement given by the user
+,,Credit Rating,Source,User Input,Pick list of all the credit sources defined in the systen,The source of the credit rating. Eg. Internal Rating
+,,,Rating,User Input,Pick list of ratings defined for each individual credit source in the system,Assign rating to the legal entity
+,,Business Unit,Default,User Input,Checkbox,Checkbox indicates if this business unit is default for this LE
+,,,Party Id,System-generated,Auto populated when a BU is entered in the system,"Unique, system generated identification number for the business unit"
+,,,Type,User Input,Pick list items are derived from all the party types defined in the system,"Indicates the type of business unit, either internal or external"
+,,,Class,User Input,Pick list,Type of party defined for this business unit. Eg. Business Unit or Legal Entity
+,,,Status,User Input,Pick list items are derived from all the party statuses defined in the system,"The status of business unit. Eg. Authorized, Auth Pending, Amendement Pending, Suspended. Only authorized units can process trades"
+,,,Short Name,User Input,Input by the user,A variable charcter up to 32 characters that uniquely identifies the party
+,,,Long Name,User Input,Input by the user,The full name of business unit
+,,,Created By,System generated,System generated,A variable charcter up to 32 characters that uniquely identifies the person who created the record
+,,,Updated By,System generated,System generated,A variable charcter up to 32 characters that uniquely identifies the person who updated the record
+,,,Last Update,System generated,System generated,Date that identifies the date and time when it was last modified
+,,,Version,System generated,System generated,Number that identifies the no. of times the record was modified
+,,,Default Portfolio,User Input,Pick list items are derived from all the portfolios defined in the system,Indicates the portfolio that has been assigned as the default for the BU
+,,,Address,User Input,Input by the user,Free text field to enter address
+,,,City,User Input,Input by the user,Free text field to enter City
+,,,State,User Input,Input by the user,Free text field to enter State
+,,,Country,User Input,Input by the user,Free text field to enter Country
+,,,Phone,User Input,Input by the user,Free text field to enter Phone
+,,,Internal Refernce,User Input,Input by the user,"Each client determines the specific use of this field, allows them to individually define certain fields as and how they want"
+,,Personnel,Personnel ID,System generated,System generated,Unique ID generated and assigned to a personell record when it was entered in the system
+,,,Short Name,User Input,Input by the user,A variable charcter up to 32 characters that uniquely identifies the person that was added to the personnel list
+,,,First Name,User Input,Input by the user,Text field to enter user's first name
+,,,Last Name,User Input,Input by the user,Text field to enter user's last name
+,,,Phone,User Input,Input by the user,Text field to enter user's phone
+,,,Email,User Input,Input by the user,Text field to enter user's email
+,,,Address,User Input,Input by the user,Text field to enter user's address
+,,,City,User Input,Input by the user,Text field to enter user's city
+,,,State,User Input,Input by the user,Text field to enter user's state
+,,,Country,User Input,Input by the user,Text field to enter user's country
+,,,Type,User Input,Pick List,"Identifies whether the personnel is Internal, External or a Licensed User"
+,,,Status,User Input,Pick List,"Status of the record. Eg. Auth Pending, Authorized, Do Not Use"
+,,,License Type,User Input,Pick List,"Indicates what license to which the user is entitiled. Eg. Full Access, Server, Read Only, etc."
+5,Financials,,,,,
+,,Broker Fee,Broker Fee ID,System-generated,Auto populated when a fee type is entered in the system,Unique identification for the fee type
+,,,Broker Fee Name,User Input,Input by the user,Name of the fee type input by the user
+,,,Commission/Fee Type,User Input,Pick list items are derived from all the commission types defined in the system,"The type of broker commission. Eg. Clearing, Execution, OTC, OTC Clearing, Service"
+,,,Rate,User Input,Input by the user,The defined rate for the broker commission
+,,,Rate Default,User Input,Yes/No,To define whether the commission is default
+,,,Exchange,User Input,Pick list items,The exchange rate defined for the broker commission
+,,,Unit,User Input,Pick list items are derived from all the brokerage units defined in the system,"Unit of broker commission. Eg. Per Avg Notional, Per Trade, etc."
+,,,Currency,User Input,Pick list items are derived from all the currencies defined in the system,The currency in which the broker commission is paid
+,,,Payment Frequency,User Input,Pick list items,"The frequency in which the broker commission is paid. Eg. Monthly, Quarterly"
+,,,Min Fee,User Input,Input by the user,The minimum fee attached to the commission
+,,,Max Fee,User Input,Input by the user,Tha maximum fee attached to the commission
+,,,Index Group,User Input,Pick list items are derived from all the index groups defined in the system in the static data,"Used to narrow down the available broker fees based on Index group. It is common for a broker to charge different rates based on the commodity, eg. $2/lot for NatGas and $3/lot for Oil"
+,,,Contact Info,User Input,,"Email, phone"
+,,,Active Flag,User Input,,Yes/No
+,,Market Prices/Indices,Index ID,System-generated,Auto-populated when a index definition is saved in the system,System generated unique identification number for the index once it is saved in the system
+,,,Version ID,System-generated,Auto-populated when a index definition is saved in the system,This number changes each time a modification is made to the index
+,,,Index Name,User Input,Input by the user,Name of the index according to the convention. Eg. Fixed income curves must be named as INDEX NAME.Currency i.e. LIBOR.USD
+,,,Version Status,User Input,Derived from user's selection in the drop-down menu while processing a Index,"Status of the index such as Validated, Pending, New, etc."
+,,,Status,User Input,Pick list,"Status of the index - Custom (used for pricing, hedging and running simulations), Official (used for end to end portfolio revaluation), Template (allow users to recall as a base for a new curve)"
+,,,Label,User Input,Input by the user,User defined text field for label identification. Eg. This could be used to defined a trading region (eg. West)
+,,,Market,User Input,Pick list containing the different market and specific curve types defined in the system,"Defines the market of which this index is a measure. Eg. Commodities, Currencies, Equities, Spot Price, Fixed Income"
+,,,Index Group,User Input,Pick list containing the different underlying product groups defined in the system,"Further defines the market, depends on market selected in the market field, choices include Swap, Govt and Repo. If the market is commodities, choices include Precious Metal, Electricity, Natural Gas, Crude Oil, etc."
+,,,Index Subgroup,User Input,,"Further defines the group. If the choice is NatGas then the available options could be Gas Physical EU, Gas Physical UK, Gas Capacity EU, etc."
+,,,Format,User Input,Pick list containing various formats of indexes available within the system,"Determines the type of output this index produces. Eg. Price, DF, Avg Rate, Ratio, etc."
+,,,Class,User Input,Pick list of all the index definition classes defined in the system,"It specifies what each grid point interval represents. Eg. Date-base Fwd, Time-base Fwd, 2-D Grid, External Model, etc."
+,,,Delivery Unit,User Input,,"It defines the delivery unit associated with the index, if the index is interest rate or currency, choose Currency. Otherwise, select the relevant commodity measure (eg. MWh for Power)"
+,,,Date Sequence,User Input,Pick list,"A sequence of dates generated by formulas as defined by system users. It usually controls rate reset and pricing periods for instruments that use this index. Eg. FOM, FOY, icebrent, etc."
+,,,Payment Convention,User Input,Pick list containing the payment conventions available in the system,Identifies how the payment dates are modified for instruments using this index
+,,,Coverage End Date,User Input,Input by the user or selection from calendar,"The end date for the index. Eg. 1y or 60y, grid points that exceed the coverage date are deactivated"
+,,,Interpolation,User Input,Pick list containing all the interpolation methods defined In the system,"The method used to calculate prices between grid points. Eg. Back-Step, Front-Step, Linear"
+,,,Inheritance,User Input,Yes/No,"Applicable to child index, to choose whether delta sensitivity should be calculated for the child and parent or only child"
+,,,Discount Index,User Input,Pick list containing all the discounting indexes in the system,Discount indexes available for use as default discounting index for instruments/trade using this index
+,,,Reference Source,User Input,Pick list containing all the ref source defined in the system,The source of the pricing data
+,,,Projection Method,User Input,Pick list of all the methods defined in the system,The logic used in calculating future payments which are unknown (floating) at the time of trade entry
+,,,Day Start Time,User Input,Input by the user,"Hour start time (0:00, 12:00, 06:00) etc."
+,,,Holiday Schedule,User Input,Pick list of all the holiday schedules defined in the system,"Defines the holiday schedule to be applied to the index. Eg. NYMEX, ICE UK, LONDON"
+,,,Base Currency,User Input,Pick list of all the currencies defined in the system,Defines the base currency for the index
+,,,Index Type,User Input,Pick list,"Defines whether the index is composite (derived from 1 or more indexes based on some formula and used in case of missing prices for a given market) or standard (single market view - prices, rates)"
+,,,Last Updated,Feed-derived,System generated,System generated based on when the index was last updated by the user
+,,Grid point,Grid Point ID,System-generated,Sytsem generated once a grid point is entered and saved,Unique ID for each grid point indicating its order in the timeline
+,,,Grid Point Label,User Input,Input by the user,Label name for the grid point
+,,,Instrument Category,User Input,Pick list of all the instruments defined in the static data,"Allows users to categorize grid points based on the instruments they represent. Eg. Swap, Forward-D, Forward-M, Futures-D, Futures-M"
+,,,Priority Level,User Input,Pick list containing 8 priority levels - one is the highest and eight is the lowest priority,Determines which grid point receives precedence when the dates of two or more grid points overlap
+,,,Start Date,User Input,"Input by the user, can be selected from the calendar","A fixed start date or relative start date such as Current date, next gbd, etc. Can be either a symbolic date or an absolute date"
+,,,End Date,User Input,"Input by the user, can be selected from the calendar",A fixed or relative end date such as 1m (one month after the start date)
+,,,Start Time,User Input,Input by the user,"Start time, only enabled if the curve class is 'Time-base Fwd"""
+,,,End Time,User Input,Input by the user,"Start time, only enabled if the curve class is 'Time-base Fwd"""
+,,,Delta Shift,User Input,Input by the user,Specifies the value used to calculate the delta result for the grid point
+,,,Sensitivity,User Input,Pick list,"Controls how delta senstivity is calculated i.e., effective, raw, no"
+,,Contract type and Incoterms,Contract Type ID,System-generated,Auto increment,
+,,,Contract Type Name,User Input,Spot / Term / Framework,
+,,,Description,User Input,Narrative,
+,,,Incoterm,User Input,FOB / CIF / DES etc.,
+,,,Active Flag,User Input,Yes/No,
+,,Commodity Name,Commodity ID,System-generated,Auto increment,
+,,,Commodity Name,User Input,"Base commodity (Crude, LNG, Gold)",
+,,,Commodity Group,User Input,Energy / Metal / Agri,
+,,Product UOM / Pricing UOM / Pricing Unit,Product UOM,User Input,"MT, bbl, mmbtu",
+,,,Pricing UOM,User Input,"$/MT, $/bbl",
+,,,Pricing Unit,User Input,Display unit,
+,,,UOM Conversion,Calculated,Conversion factor between units,
+,,Payment Terms,Payment Term ID,System-generated,Auto increment,
+,,,Description,User Input,Net 30 / Net 60,
+,,,Days to Maturity,User Input,Numeric,
+,,,Discount Rate,User Input,% discount,
+,,,Active Flag,User Input,Yes/No,
+,,Transfer Method,Transfer Method ID,System-generated,Auto increment,
+,,,Method Name,User Input,Title transfer rule,
+,,,Transfer Point,User Input,Load / Discharge,
+,,,Active Flag,User Input,Yes/No,
+,,Governing Body,Governing Body ID,System-generated,Auto increment,
+,,,Governing Body Name,User Input,Legal / regulatory authority,
+,,,Jurisdiction,User Input,Applicable law,
+,,,Country,User Input,ISO country,
+,,Exchange,Exchange ID,System-generated,Auto increment,
+,,,Exchange Name,User Input,"e.g., ICE, CME",
+,,,Timezone,User Input,Local timezone,
+,,Currency,Currency Code,User Input,"ISO 4217 (USD, EUR)",
+,,,Symbol,User Input,"$, £, €",
+,,,Base Currency Flag,User Input,True/False,
+,,,FX Rate,Feed / Derived,Market feed,
+6,Risk and Analytics,,,,,
+,,Portfolio Analysis,Portfolio ID,Derived,From Master Data,
+,,,Product,Derived,From Trades,
+,,,Net Position,Calculated,Σ(Quantity_Buy) - Σ(Quantity_Sell)',
+,,,MTM Value,Calculated,Net Position * (Market Price - Trade Price)',
+,,,Exposure by Currency,Calculated,MTM Value * FX Rate',
+,,,Unrealized PnL,Calculated,Same as MTM Value,
+,,,Realized PnL,Calculated,Settlement Amount - Trade Value',
+,,Risk Management,VaR,Calculated,Historical / Parametric model,
+,,,Stress Test Result,Calculated,Modelled under scenario shocks,
+,,,Exposure by Counterparty,Calculated,Σ(Trade Value by Counterparty)',
+,,,Credit Limit,User Input,Master Data → Counterparty,
+,,,Breach Flag,Derived,True if Exposure > Credit Limit,
+,,Reports,Report ID,System-generated,Auto increment,
+,,,Report Type,User Input,"PnL, Exposure, VaR, Trade Summary",
+,,,Reporting Date,System-generated,Date generated,
+,,,Data Source,Derived,From relevant modules,
+,,,Generated By,User Input,From User Management,
+7,Financial Trades,,,,,
+,Financial Trades,,Instrument Type,User Input,Pick list of all instrument types defined in the system,"Identifies whether the financial instrument is a Swap, Future, Forward, Option, or Swaption. Drives which additional fields are activated on the trade capture screen."
+,Financial Trades,,Settlement Method,User Input,Pick list: Cash-Settled / Physically-Delivered,Indicates whether the financial trade settles by cash payment against an index or by physical delivery of the underlying commodity.
+,Financial Trades,,Lot Size,User Input,Derived from Exchange / Instrument definition in Master Data,"The standardised contract size for exchange-traded instruments. Eg. 1,000 BBL per lot for ICE Brent futures. Trade notional = Lot Size × Number of Lots."
+,Financial Trades,,Number of Lots,User Input,Input by the user,The number of standardised contracts being traded. Used in conjunction with Lot Size to derive total notional volume for exchange-traded futures and options.
+,Financial Trades,,Notional Quantity,Calculated,Lot Size × Number of Lots (for exchange-traded); or direct user input for OTC,The total volume of the underlying commodity referenced by the financial instrument. For OTC instruments this is entered directly; for listed instruments it is derived from Lot Size × Lots.
+,Financial Trades,,Strike Price,User Input,Input by the user; applicable only when Instrument Type = Option or Swaption,The agreed price at which the option buyer may buy (call) or sell (put) the underlying commodity. Only enabled when Instrument Type is Option or Swaption.
+,Financial Trades,,Option Type (Call / Put),User Input,Pick list: Call / Put; applicable only when Instrument Type = Option or Swaption,Indicates whether the option confers the right to buy (Call) or sell (Put) the underlying commodity at the Strike Price.
+,Financial Trades,,Option Premium,User Input,Input by the user; applicable only when Instrument Type = Option or Swaption,The upfront premium paid by the option buyer to the option seller. Expressed per unit of the underlying commodity (eg. $/BBL). Generates a separate cash-flow leg on the settlement schedule.
+,Financial Trades,,Option Expiry Date,User Input,Input by the user or selection from calendar; applicable only when Instrument Type = Option or Swaption,The last date on which the option may be exercised. For European-style options this is also the only exercise date.
+,Financial Trades,,Exercise Style,User Input,Pick list: American / European / Asian,Defines when the option may be exercised. American = any time before expiry; European = on expiry date only; Asian = payoff based on average price over a period.
+,Financial Trades,,Clearing Venue,User Input,Pick list of all exchanges and CCPs defined in Master Data → Exchange,"The exchange or central counterparty clearing house (CCP) through which the trade is cleared. Eg. ICE Clear Europe, CME Clearing. Applicable to exchange-traded and cleared OTC instruments."
+,Financial Trades,,Clearing Broker,User Input,Pick list of all counterparties with clearing-house flag enabled in Master Data,The futures commission merchant (FCM) or clearing member through whom the firm's trades are cleared and margin is posted with the CCP.
+,Financial Trades,,Margin Account,User Input,Pick list of all accounts defined in Master Data → Accounts with account type = Margin,The account held at the clearing broker against which initial margin and variation margin calls are posted and collected.
+,Financial Trades,,Initial Margin,Calculated,Derived from clearing house SPAN/TIMS margin model applied to open position,The upfront collateral required by the CCP when a new futures or cleared swap position is opened. Recalculated daily based on position size and implied volatility.
+,Financial Trades,,Variation Margin,Calculated,Daily MTM gain or loss on the open position: (Settlement Price − Previous Settlement Price) × Notional,The daily cash settlement of unrealised profit or loss on an open futures or cleared swap position. Positive variation margin is received; negative is paid to the clearing house.
+,Financial Trades,,Hedge Designation,User Input,Pick list: Fair Value Hedge / Cash Flow Hedge / Economic Hedge / Speculative,"Indicates whether the financial trade is designated as a qualifying hedge under IFRS 9 / ASC 815 and, if so, the hedge type. Drives accounting treatment of MTM movements."
+,Financial Trades,,Hedged Item Reference,User Input,Free text or pick list linking to a physical Trade ID or portfolio,"Identifies the physical trade, contract, or forecast transaction being hedged by this financial instrument. Required for hedge accounting designation under IFRS 9 / ASC 815."

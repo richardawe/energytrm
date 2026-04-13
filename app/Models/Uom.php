@@ -1,0 +1,9 @@
+<?php
+namespace App\Models;
+use Illuminate\Database\Eloquent\Model;
+
+class Uom extends Model
+{
+    protected $fillable = ['code', 'description', 'conversion_factor', 'base_unit', 'is_active'];
+    protected $casts = ['is_active' => 'boolean', 'conversion_factor' => 'decimal:8'];
+}
