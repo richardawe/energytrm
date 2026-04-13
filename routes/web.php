@@ -13,6 +13,11 @@ use App\Http\Controllers\Master\AgreementController;
 use App\Http\Controllers\Master\BrokerController;
 use App\Http\Controllers\Master\PortfolioController;
 use App\Http\Controllers\Trades\TradeController;
+use App\Http\Controllers\Operations\ShipmentController;
+use App\Http\Controllers\Operations\InvoiceController;
+use App\Http\Controllers\Operations\SettlementController;
+use App\Http\Controllers\Operations\NominationController;
+use App\Http\Controllers\Operations\EobChecklistController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root to login or dashboard
@@ -57,7 +62,20 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/trades/{trade}/revert',   [TradeController::class, 'revert'])->name('trades.revert');
 
     // ── Operations (Phase 3) ──────────────────────────────────────────────────
-    Route::get('/operations', fn() => view('coming-soon', ['module' => 'Operations']))->name('operations.dashboard');
+    Route::get('/operations', fn() => view('operations.dashboard'))->name('operations.dashboard');
+    Route::prefix('operations')->name('operations.')->group(function () {
+        Route::resource('shipments',   ShipmentController::class)->except(['destroy']);
+        Route::resource('invoices',    InvoiceController::class)->except(['create', 'store', 'destroy']);
+        Route::get('/invoices/create/{trade}',  [InvoiceController::class, 'createFromTrade'])->name('invoices.createFromTrade');
+        Route::post('/invoices/create/{trade}', [InvoiceController::class, 'store'])->name('invoices.storeFromTrade');
+        Route::resource('nominations', NominationController::class)->except(['show', 'destroy']);
+        Route::get('/invoices/{invoice}/settlements/create',  [SettlementController::class, 'create'])->name('settlements.create');
+        Route::post('/invoices/{invoice}/settlements',        [SettlementController::class, 'store'])->name('settlements.store');
+        Route::patch('/settlements/{settlement}',             [SettlementController::class, 'update'])->name('settlements.update');
+        Route::get('/eob',                    [EobChecklistController::class, 'index'])->name('eob.index');
+        Route::post('/eob/{eobChecklist}/sign-off', [EobChecklistController::class, 'signOff'])->name('eob.signOff');
+        Route::post('/eob/{eobChecklist}/reset',    [EobChecklistController::class, 'reset'])->name('eob.reset');
+    });
 
     // ── Financials (Phase 4) ──────────────────────────────────────────────────
     Route::get('/financials', fn() => view('coming-soon', ['module' => 'Financials']))->name('financials.dashboard');

@@ -14,6 +14,10 @@
                             onclick="return confirm('Validate this trade?')">Validate</button>
                 </form>
             @elseif($trade->trade_status === 'Validated')
+                <a href="{{ route('operations.shipments.create', ['trade_id' => $trade->id]) }}"
+                   class="btn btn-sm btn-outline-secondary">+ Shipment</a>
+                <a href="{{ route('operations.invoices.createFromTrade', $trade) }}"
+                   class="btn btn-sm btn-outline-primary">+ Invoice</a>
                 <form method="POST" action="{{ route('trades.revert', $trade) }}" class="d-inline">
                     @csrf
                     <button type="submit" class="btn btn-sm btn-outline-warning"
