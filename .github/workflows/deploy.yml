@@ -8,30 +8,17 @@ jobs:
   deploy:
     name: Build & Deploy to energytrm.com
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.4'
-          tools: composer:v2
-          extensions: pdo, pdo_mysql, mbstring, xml, bcmath, ctype, json
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
-
-      - name: Validate composer.json
-        run: composer validate
-
-      - name: Install PHP dependencies
-        run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress
 
       - name: Install Node dependencies
         run: npm ci
@@ -52,6 +39,7 @@ jobs:
             **/.git*
             **/.git*/**
             **/node_modules/**
+            **/vendor/**
             **/storage/logs/**
             **/.env
             **/.env.*
