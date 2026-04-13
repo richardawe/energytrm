@@ -9,6 +9,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             MasterDataSeeder::class,
             UserSeeder::class,
+            TradeSeeder::class,
         ]);
     }
 }

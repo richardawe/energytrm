@@ -12,6 +12,7 @@ use App\Http\Controllers\Master\IndexDefinitionController;
 use App\Http\Controllers\Master\AgreementController;
 use App\Http\Controllers\Master\BrokerController;
 use App\Http\Controllers\Master\PortfolioController;
+use App\Http\Controllers\Trades\TradeController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root to login or dashboard
@@ -51,7 +52,9 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ── Physical Trades (Phase 2) ─────────────────────────────────────────────
-    Route::get('/trades', fn() => view('coming-soon', ['module' => 'Physical Trades']))->name('trades.index');
+    Route::resource('trades', TradeController::class);
+    Route::post('/trades/{trade}/validate', [TradeController::class, 'validate'])->name('trades.validate');
+    Route::post('/trades/{trade}/revert',   [TradeController::class, 'revert'])->name('trades.revert');
 
     // ── Operations (Phase 3) ──────────────────────────────────────────────────
     Route::get('/operations', fn() => view('coming-soon', ['module' => 'Operations']))->name('operations.dashboard');
