@@ -57,3 +57,13 @@ jobs:
             **/.env.*
             **/tests/**
             **/phpunit.xml
+            BUILD_PLAN.md
+            CLAUDE.md
+            plan.md
+            README.md
+            package.json
+            package-lock.json
+            composer.json
+            composer.lock
+            vite.config.js
+            ETRM_Data_Dictionary_Combined.csv
