@@ -8,7 +8,7 @@ jobs:
   deploy:
     name: Build & Deploy to energytrm.com
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout code
@@ -39,37 +39,19 @@ jobs:
       - name: Build frontend assets
         run: npm run build
 
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            set -e
-            cd ${{ secrets.DEPLOY_PATH }}
-
-            echo "==> Pulling latest code..."
-            git pull origin main
-
-            echo "==> Installing PHP dependencies..."
-            composer install --no-dev --optimize-autoloader --no-interaction --no-progress
-
-            echo "==> Installing Node dependencies & building assets..."
-            npm ci
-            npm run build
-
-            echo "==> Running database migrations..."
-            php artisan migrate --force
-
-            echo "==> Caching configuration..."
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-            php artisan event:cache
-
-            echo "==> Restarting queue workers (if any)..."
-            php artisan queue:restart 2>/dev/null || true
-
-            echo "==> Done. Deployed successfully."
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/storage/logs/**
+            **/.env
+            **/.env.*
+            **/tests/**
+            **/phpunit.xml
