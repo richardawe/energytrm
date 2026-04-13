@@ -18,6 +18,9 @@ use App\Http\Controllers\Operations\InvoiceController;
 use App\Http\Controllers\Operations\SettlementController;
 use App\Http\Controllers\Operations\NominationController;
 use App\Http\Controllers\Operations\EobChecklistController;
+use App\Http\Controllers\Financials\MarketPricesController;
+use App\Http\Controllers\Financials\BrokerFeesController;
+use App\Http\Controllers\Financials\PnlController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root to login or dashboard
@@ -78,7 +81,15 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ── Financials (Phase 4) ──────────────────────────────────────────────────
-    Route::get('/financials', fn() => view('coming-soon', ['module' => 'Financials']))->name('financials.dashboard');
+    Route::get('/financials', fn() => view('financials.dashboard'))->name('financials.dashboard');
+    Route::prefix('financials')->name('financials.')->group(function () {
+        Route::get('market-prices',                          [MarketPricesController::class, 'index'])->name('market-prices.index');
+        Route::get('market-prices/{index}',                  [MarketPricesController::class, 'show'])->name('market-prices.show');
+        Route::post('market-prices/{index}',                 [MarketPricesController::class, 'store'])->name('market-prices.store');
+        Route::delete('market-prices/point/{point}',         [MarketPricesController::class, 'destroy'])->name('market-prices.destroy');
+        Route::get('broker-fees',                            [BrokerFeesController::class, 'index'])->name('broker-fees.index');
+        Route::get('pnl',                                    [PnlController::class, 'index'])->name('pnl.index');
+    });
 
     // ── Risk & Analytics (Phase 6) ────────────────────────────────────────────
     Route::get('/risk', fn() => view('coming-soon', ['module' => 'Risk & Analytics']))->name('risk.dashboard');
