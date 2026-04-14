@@ -28,8 +28,9 @@ class FinancialTradePolicy
 
     public function revert(User $user, FinancialTrade $trade): bool
     {
+        // Financial trades validate directly to Active/Open (never remain at Validated)
         return in_array($user->role, ['admin', 'trader'])
-            && $trade->trade_status === 'Validated';
+            && in_array($trade->trade_status, ['Validated', 'Active', 'Open']);
     }
 
     public function delete(User $user, FinancialTrade $trade): bool
