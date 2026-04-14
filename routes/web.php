@@ -53,38 +53,37 @@ Route::middleware(['auth'])->group(function () {
     })->name('master.dashboard');
 
     Route::prefix('master')->name('master.')->group(function () {
-        // Read-only routes — all authenticated users
-        Route::resource('currencies',       CurrencyController::class)->only(['index', 'show']);
-        Route::resource('payment-terms',    PaymentTermController::class)->only(['index', 'show']);
-        Route::resource('incoterms',        IncotermController::class)->only(['index', 'show']);
-        Route::resource('transport-classes',TransportClassController::class)->only(['index', 'show']);
-        Route::resource('parties',          PartyController::class)->only(['index', 'show']);
-        Route::resource('products',         ProductController::class)->only(['index', 'show']);
-        Route::resource('uoms',             UomController::class)->only(['index', 'show']);
-        Route::resource('indices',          IndexDefinitionController::class)->only(['index', 'show']);
-        Route::resource('agreements',       AgreementController::class)->only(['index', 'show']);
-        Route::resource('brokers',          BrokerController::class)->only(['index', 'show']);
-        Route::resource('portfolios',       PortfolioController::class)->only(['index', 'show']);
-
-        // Write routes — admin only
+        // Write routes registered FIRST so /create and /edit are matched before the {id} wildcard
         Route::middleware('role:admin')->group(function () {
-            Route::resource('currencies',       CurrencyController::class)->except(['index', 'show']);
-            Route::resource('payment-terms',    PaymentTermController::class)->except(['index', 'show']);
-            Route::resource('incoterms',        IncotermController::class)->except(['index', 'show']);
-            Route::resource('transport-classes',TransportClassController::class)->except(['index', 'show']);
-            Route::resource('parties',          PartyController::class)->except(['index', 'show']);
-            Route::resource('products',         ProductController::class)->except(['index', 'show']);
-            Route::resource('uoms',             UomController::class)->except(['index', 'show']);
-            Route::resource('indices',          IndexDefinitionController::class)->except(['index', 'show']);
-            Route::resource('agreements',       AgreementController::class)->except(['index', 'show']);
-            Route::resource('brokers',          BrokerController::class)->except(['index', 'show']);
-            Route::resource('portfolios',       PortfolioController::class)->except(['index', 'show']);
+            Route::resource('currencies',        CurrencyController::class)->except(['index', 'show']);
+            Route::resource('payment-terms',     PaymentTermController::class)->except(['index', 'show']);
+            Route::resource('incoterms',         IncotermController::class)->except(['index', 'show']);
+            Route::resource('transport-classes', TransportClassController::class)->except(['index', 'show']);
+            Route::resource('parties',           PartyController::class)->except(['index', 'show']);
+            Route::resource('products',          ProductController::class)->except(['index', 'show']);
+            Route::resource('uoms',              UomController::class)->except(['index', 'show']);
+            Route::resource('indices',           IndexDefinitionController::class)->except(['index', 'show']);
+            Route::resource('agreements',        AgreementController::class)->except(['index', 'show']);
+            Route::resource('brokers',           BrokerController::class)->except(['index', 'show']);
+            Route::resource('portfolios',        PortfolioController::class)->except(['index', 'show']);
         });
+
+        // Read-only routes — all authenticated users (registered after write routes)
+        Route::resource('currencies',        CurrencyController::class)->only(['index', 'show']);
+        Route::resource('payment-terms',     PaymentTermController::class)->only(['index', 'show']);
+        Route::resource('incoterms',         IncotermController::class)->only(['index', 'show']);
+        Route::resource('transport-classes', TransportClassController::class)->only(['index', 'show']);
+        Route::resource('parties',           PartyController::class)->only(['index', 'show']);
+        Route::resource('products',          ProductController::class)->only(['index', 'show']);
+        Route::resource('uoms',              UomController::class)->only(['index', 'show']);
+        Route::resource('indices',           IndexDefinitionController::class)->only(['index', 'show']);
+        Route::resource('agreements',        AgreementController::class)->only(['index', 'show']);
+        Route::resource('brokers',           BrokerController::class)->only(['index', 'show']);
+        Route::resource('portfolios',        PortfolioController::class)->only(['index', 'show']);
     });
 
     // ── Physical Trades (Phase 2) ─────────────────────────────────────────────
-    // Read — all authenticated users; write — admin + trader only
-    Route::resource('trades', TradeController::class)->only(['index', 'show']);
+    // Write routes first so /trades/create is matched before the {trade} wildcard
     Route::middleware('role:admin,trader')->group(function () {
         Route::resource('trades', TradeController::class)->except(['index', 'show', 'destroy']);
         Route::post('/trades/{trade}/validate', [TradeController::class, 'validate'])->name('trades.validate');
@@ -93,6 +92,8 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::delete('/trades/{trade}', [TradeController::class, 'destroy'])->name('trades.destroy');
     });
+    // Read-only after write routes
+    Route::resource('trades', TradeController::class)->only(['index', 'show']);
 
     // ── Operations (Phase 3) ──────────────────────────────────────────────────
     Route::get('/operations', fn() => view('operations.dashboard'))->name('operations.dashboard');
