@@ -22,6 +22,10 @@ use App\Http\Controllers\Financials\MarketPricesController;
 use App\Http\Controllers\Financials\BrokerFeesController;
 use App\Http\Controllers\Financials\PnlController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Risk\PortfolioAnalysisController;
+use App\Http\Controllers\Risk\CounterpartyExposureController;
+use App\Http\Controllers\Risk\VarController;
+use App\Http\Controllers\Risk\ReportsController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root to login or dashboard
@@ -116,7 +120,14 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ── Risk & Analytics (Phase 6) ────────────────────────────────────────────
-    Route::get('/risk', fn() => view('coming-soon', ['module' => 'Risk & Analytics']))->name('risk.dashboard');
+    Route::get('/risk', fn() => view('risk.dashboard'))->name('risk.dashboard');
+    Route::prefix('risk')->name('risk.')->group(function () {
+        Route::get('portfolio-analysis',   [PortfolioAnalysisController::class,   'index'])->name('portfolio-analysis');
+        Route::get('counterparty-exposure',[CounterpartyExposureController::class, 'index'])->name('counterparty-exposure');
+        Route::get('var',                  [VarController::class,                 'index'])->name('var');
+        Route::get('reports',              [ReportsController::class,             'index'])->name('reports');
+        Route::post('reports/generate',    [ReportsController::class,             'generate'])->name('reports.generate');
+    });
 
     // ── User Management (Phase 5) ─────────────────────────────────────────────
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {

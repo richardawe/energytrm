@@ -74,7 +74,12 @@ class TradeController extends Controller
             Trade::create($data);
         });
 
-        return redirect()->route('trades.index')->with('success', 'Trade captured successfully.');
+        // Credit limit breach check — warn but do not block
+        $warning = $this->creditLimitWarning($data['counterparty_id']);
+
+        return redirect()->route('trades.index')
+            ->with('success', 'Trade captured successfully.')
+            ->with('warning', $warning);
     }
 
     public function show(Trade $trade)
@@ -157,6 +162,32 @@ class TradeController extends Controller
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private function creditLimitWarning(int $counterpartyId): ?string
+    {
+        $party = Party::find($counterpartyId);
+        if (!$party || !$party->credit_limit) return null;
+
+        $exposure = Trade::where('counterparty_id', $counterpartyId)
+            ->whereIn('trade_status', ['Pending', 'Validated'])
+            ->get()
+            ->sum(function (Trade $t) {
+                $price = $t->fixed_float === 'Fixed'
+                    ? (float) $t->fixed_price
+                    : (float) ($t->index?->latestPrice?->price ?? 0) + (float) $t->spread;
+                return (float) $t->quantity * $price;
+            });
+
+        if ($exposure > (float) $party->credit_limit) {
+            return "Credit limit breach: {$party->short_name} exposure "
+                . number_format($exposure, 2)
+                . ' exceeds limit of '
+                . number_format((float) $party->credit_limit, 2)
+                . ". See <a href=\"" . route('risk.counterparty-exposure') . "\">Counterparty Exposure</a>.";
+        }
+
+        return null;
+    }
 
     private function formData(): array
     {
