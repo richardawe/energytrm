@@ -5,6 +5,10 @@
 
     RewriteEngine On
 
+    # Strip index.php from URL if someone hits it directly
+    RewriteCond %{THE_REQUEST} \s/+index\.php[/?] [NC]
+    RewriteRule ^index\.php(/?)(.*)$ /$2 [R=301,L,NE]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
