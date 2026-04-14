@@ -4,30 +4,31 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A browser-based Energy Trading & Risk Management (ETRM) training portal simulating a system like Endur. It covers the full physical commodity trading lifecycle — deal capture → validation → logistics → invoicing → settlement → risk monitoring — designed for training traders and back-office staff.
+A browser-based Energy Trading & Risk Management (ETRM) training portal simulating a system like Endur. Covers the full commodity trading lifecycle — deal capture → validation → logistics → invoicing → settlement → risk monitoring — for training traders and back-office staff.
 
-This project is currently in the **planning/pre-code phase**. The data dictionary (`ETRM_Data_Dictionary_Combined.csv`) and build plan (`plan.md`) are complete; no Laravel application has been scaffolded yet.
+**Current status:** Fully scaffolded Laravel application. All 6 phases are built. Financial instruments (swaps, futures, options) are being added as a Phase 7 extension — `financial_trades` and `financial_settlements` tables and the `FinancialTrade` model exist; controllers/views/routes are pending.
 
 ## Tech Stack
 
 - **Backend:** PHP 8.x + Laravel (Blade templates, Eloquent ORM, Artisan CLI)
 - **Frontend:** Alpine.js + Bootstrap 5 (no separate build step — no React/Vue)
-- **Database:** MySQL (via cPanel MySQL Wizard)
+- **Database:** MySQL
 - **Auth:** Laravel Breeze (email/password sessions)
-- **Hosting:** cPanel (shared hosting) — document root must point to `public/`
+- **Hosting:** cPanel (shared hosting) — document root points to `public/`
 
-## Initial Setup Commands
+## Common Commands
 
 ```bash
-laravel new energytrm
-cd energytrm
-composer require laravel/breeze
-php artisan breeze:install
-php artisan migrate --seed
-php artisan serve
+php artisan serve                        # start dev server
+php artisan migrate                      # run pending migrations
+php artisan migrate:fresh --seed         # wipe and reseed (uses DatabaseSeeder)
+php artisan db:seed --class=SomeSeeder   # run a specific seeder
+php artisan test                         # run all tests
+php artisan test --filter SomeTest       # run a single test
+php artisan route:list                   # inspect registered routes
 ```
 
-For cPanel deployment: pull via Git Version Control, set document root to `public/`, run migrations via cPanel Terminal or SSH.
+For cPanel deployment: pull via Git Version Control, set document root to `public/`, run migrations via SSH.
 
 ## Scheduled Tasks (cPanel Cron)
 
@@ -35,86 +36,81 @@ For cPanel deployment: pull via Git Version Control, set document root to `publi
 * * * * * php artisan schedule:run   # daily EoB/CoB checklist reset
 ```
 
-## Architecture: 6 Modules
+## Architecture
 
-Build order matters — each module depends on the previous ones.
+Controllers are namespaced by module under `app/Http/Controllers/`:
 
-### Phase 1 — Master Data (reference entities everything else depends on)
-- Party groups → Legal entities → Business units → Portfolios
-- Personnel (linked to auth `users` table)
-- Products, commodities, UOMs, pricing units
-- Indices/curves with grid points (static for training)
-- Currencies, payment terms, incoterms, agreements, settlement instructions
-- Brokers (commission schedules, LEI, regulated entity flag)
-- All master data records have: status workflow (Auth Pending → Authorized → Do Not Use), auto-incremented version tracking
+| Namespace | Module |
+|---|---|
+| `Master\*` | Master data (currencies, parties, products, indices, etc.) |
+| `Trades\TradeController` | Physical trade capture & lifecycle |
+| `Operations\*` | Shipments, invoices, settlements, nominations, EoB checklist |
+| `Financials\*` | Market prices, broker fees, P&L |
+| `Admin\*` | User management, audit log |
+| `Risk\*` | Portfolio analysis, counterparty exposure, VaR, reports |
+| `Training\ScenarioController` | Guided training scenarios |
 
-### Phase 2 — Physical Trades (core deal capture)
-- Three distinct IDs: **Deal Number** (permanent), **Transaction Number** (changes on amendment), **Instrument Number** (shared across OTC duplicates)
-- Pay/Receive auto-derives from Buy/Sell direction
-- Trade Status starts at Pending, progresses through workflow to Settled
-- Fixed/Float pricing toggle; float pricing references an Index from Master Data
-- Trade blotter grid as landing page (sortable/filterable)
+Routes are in `routes/web.php` under a single `auth` middleware group. Write routes are registered **before** read routes within each prefix block so `/create` and `/edit` are matched before the `{model}` wildcard. Admin-only routes use `middleware('role:admin')`; trader routes use `middleware('role:admin,trader')`.
 
-### Phase 3 — Operations (post-trade lifecycle)
-- **Logistics:** Shipments linked to trades; auto-populate load/discharge port and incoterm from trade
-- **Invoices:** Auto-generated from validated trades; Invoice Amount = Qty × Price; status: Pending → Paid → Overdue
-- **Settlements:** Link to invoice; when full payment received, Trade Status → Settled
-- **Nominations:** Gas/power scheduling (nomination IDs, gas days, pipeline operators, volume matching)
-- **EoB/CoB Checklist:** Daily per-business-unit checklist; items derived from module states (all trades approved, invoices matched, settlements complete); resets via cron
+### ID Generation Pattern (Physical + Financial Trades)
 
-### Phase 4 — Financials
-- Market prices/indices with manual grid point entry (simulates market data feed)
-- Broker fees (commission structures linked to trades via broker field)
-- P&L view: Trade Value (Qty × Price) and Unrealized PnL (Market Price − Trade Price × Qty) — read-only calculated views
+Three IDs per trade:
+- **Deal Number** (`FIN-YYYY-NNNN` / `DEAL-YYYY-NNNN`) — permanent, per instrument
+- **Transaction Number** (`TXN-YYYY-NNNN`) — shared sequence across both `trades` and `financial_trades`; changes on amendment
+- **Instrument Number** (`INST-YYYY-NNNN`) — shared sequence; shared across linked OTC duplicates
 
-### Phase 5 — User Management & Security
-- Three roles: **Admin** (full), **Trader** (capture/amend trades, view operations), **Back Office** (operations + settlements, no trade capture)
-- Security Groups: view-only vs execute-trades per counterparty/portfolio
-- Implemented via Laravel Gate/Policy
+The `nextTransactionNumber()` and `nextInstrumentNumber()` static methods on `FinancialTrade` union both tables for sequence continuity. The same logic must be kept in sync in `Trade` model.
 
-### Phase 6 — Risk & Analytics
-- **Portfolio Analysis:** Net Position, MTM Value, Exposure by Currency, Unrealized/Realized PnL — all aggregated from trades + market prices + settlements (SQL views, no user input)
-- **Risk Management:** VaR (historical/parametric), stress test scenarios, Exposure by Counterparty, Credit Limit (stored on counterparty in Master Data), Breach Flag (calculated: exposure > credit_limit → warning at trade capture)
-- **Reports:** Audit log of report runs (PDF/CSV exports stored in `/storage`)
+### Trade Status Workflows
 
-## Key Database Tables
+**Physical trades:** Pending → Validated → Active → Settled / Closed  
+**Financial swaps:** Pending → Validated → Active → Settled / Closed  
+**Financial futures/options:** Pending → Validated → Open → Expired / Exercised / Closed
 
-```
-trades            (deal_number, transaction_number, instrument_number, trade_status, buy_sell, pay_rec,
-                   start_date, end_date, internal_bu_id, counterparty_id, portfolio_id, product_id,
-                   quantity, volume_type, uom_id, fixed_float, index_id, fixed_price, spread,
-                   currency_id, incoterm, load_port, discharge_port, broker_id)
+`FinancialTrade::VALIDATED_STATUS` maps instrument type → post-validation status. `FinancialTrade::TERMINAL_STATUSES` lists statuses that block further edits.
 
-shipments         (shipment_id, trade_id, carrier_id, delivery_start, delivery_end, qty_delivered, delivery_status)
-invoices          (invoice_id, trade_id, counterparty_id, invoice_date, invoice_amount, payment_terms_id, currency_id, invoice_status)
-settlements       (settlement_id, invoice_id, payment_amount, payment_date, fx_rate, settlement_status)
-indices           (index_id, version_id, index_name, market, index_group, format, class, base_currency_id, status)
-index_grid_points (linked to indices)
-parties           (party_id, party_type [LE/BU], internal_external, short_name, long_name, status, version,
-                   credit_limit, credit_limit_currency, lei, bic_swift, kyc_status, kyc_review_date)
-reports           (report_id, report_type, reporting_date, data_source, generated_by)
-```
+### Financial Instruments (FinancialTrade model)
+
+`financial_trades` is a single table covering three instrument types via `instrument_type` enum (`swap`, `futures`, `options`). Instrument-specific columns are nullable — only the relevant subset is populated per type:
+
+- **Swap:** `swap_type`, `fixed_rate`, `float_index_id`, `second_index_id` (basis), `notional_quantity`, `spread`, `payment_frequency`, `start_date`, `end_date`
+- **Futures:** `exchange`, `contract_code`, `expiry_date`, `num_contracts`, `contract_size`, `futures_price`, `margin_requirement`, `futures_index_id`
+- **Options:** `option_type`, `exercise_style`, `strike_price`, `option_expiry_date`, `premium`, `underlying_index_id`, `volatility`
+
+Analytics methods are on the model: `swapMtm()`, `futuresUnrealisedPnl()`, `blackScholesDelta/Gamma/Vega/Theta()`. Black-Scholes uses a hardcoded 5% risk-free rate (training constant).
+
+### Roles
+
+Three roles on `users.role`: `admin` (full access), `trader` (trade capture + view ops), `back_office` (ops + settlements, no trade capture). Enforced via `role:` middleware and `FinancialTradePolicy`.
+
+### Key Models and Relationships
+
+- `Party` — both internal BUs and external counterparties (`party_type`: `LE`/`BU`, `internal_external`)
+- `IndexDefinition` → `IndexGridPoint` — price curves; `latestPrice` accessor used by analytics
+- `Trade` and `FinancialTrade` are independent models (separate tables) but share transaction/instrument number sequences
+- `FinancialTrade` → `FinancialSettlement` (hasMany); `FinancialSettlement` model still to be created (migration exists at `2026_04_14_200001`)
+- All auditable models morph to `AuditLog` via `MorphMany`
+
+### Seeder Stack
+
+`DatabaseSeeder` calls: `MasterDataSeeder` → `UserSeeder` → `TradeSeeder` → `FieldDescriptionSeeder` → `GuidedScenarioSeeder`
+
+### Training UX
+
+- `field_descriptions` table seeded from `ETRM_Data_Dictionary_Combined.csv` — powers "?" tooltip icons
+- `guided_scenarios` table — pre-loaded walkthroughs overlaid on the real UI
 
 ## Data Dictionary
 
-`ETRM_Data_Dictionary_Combined.csv` is authoritative for all field names, source types (System/User/Derived/Calculated), and short descriptions. It has 352+ fields across 6 modules. When generating migrations, models, or form templates, reference this file directly — it is clean enough to paste field lists into prompts for scaffolding.
+`ETRM_Data_Dictionary_Combined.csv` is authoritative for field names, source types (System/User/Derived/Calculated), and descriptions. Reference it when adding new migrations or form fields.
 
-Field classification from the dictionary:
-- **System-generated:** Trade ID, Transaction Number, Instrument Number, Nomination ID — never user-editable
-- **User Input:** Trade date, quantity, pricing details
-- **Derived:** Pay/Receive (from Buy/Sell), Trade Status, Nomination Status — auto-calculated server-side
-- **Calculated:** Trade Value, MTM, PnL, Demurrage, VaR — read-only views only
+Field source types:
+- **System-generated:** IDs, transaction/instrument numbers, nomination IDs — never user-editable
+- **Derived:** Pay/Receive (from Buy/Sell), statuses — server-side only
+- **Calculated:** Trade Value, MTM, PnL, VaR — read-only, computed in model methods or SQL views
 
-## Training UX Layer (Phase 6 addition)
+## Out of Scope
 
-- Field tooltips: seed "Short Description" from the data dictionary CSV into a `field_descriptions` table; render as "?" hover icons
-- Guided scenarios: pre-loaded trade walkthroughs overlaid on the real UI
-- Audit trail view: version history for all records (especially trades where amendment creates new Transaction Number)
-
-## Known Intentional Scope Gaps
-
-Per `plan.md`, these are explicitly out of scope for this training tool:
-- Financial trades (swaps, futures, options) — physical trades only
-- Live market data feeds — manual price entry only
+- Live market data feeds (manual price entry only)
 - Accounting/GL integration
-- Real demurrage/laytime calculation engine (partial coverage in Logistics subtab)
+- Real demurrage/laytime calculation engine

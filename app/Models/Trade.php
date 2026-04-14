@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\DB;
 
 class Trade extends Model
 {
@@ -49,20 +50,28 @@ class Trade extends Model
         return sprintf('DL-%d-%04d', $year, $seq);
     }
 
+    /** Shared sequence across both trades tables */
     public static function nextTransactionNumber(): string
     {
         $year = now()->year;
-        $last = static::where('transaction_number', 'like', "TXN-{$year}-%")
-            ->lockForUpdate()->max('transaction_number');
+        $last = DB::table('trades')->select('transaction_number')
+            ->union(DB::table('financial_trades')->select('transaction_number'))
+            ->where('transaction_number', 'like', "TXN-{$year}-%")
+            ->orderByDesc('transaction_number')
+            ->value('transaction_number');
         $seq = $last ? (int) substr($last, -4) + 1 : 1;
         return sprintf('TXN-%d-%04d', $year, $seq);
     }
 
+    /** Shared sequence across both trades tables */
     public static function nextInstrumentNumber(): string
     {
         $year = now()->year;
-        $last = static::where('instrument_number', 'like', "INST-{$year}-%")
-            ->lockForUpdate()->max('instrument_number');
+        $last = DB::table('trades')->select('instrument_number')
+            ->union(DB::table('financial_trades')->select('instrument_number'))
+            ->where('instrument_number', 'like', "INST-{$year}-%")
+            ->orderByDesc('instrument_number')
+            ->value('instrument_number');
         $seq = $last ? (int) substr($last, -4) + 1 : 1;
         return sprintf('INST-%d-%04d', $year, $seq);
     }

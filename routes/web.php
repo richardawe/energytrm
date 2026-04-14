@@ -18,6 +18,8 @@ use App\Http\Controllers\Operations\InvoiceController;
 use App\Http\Controllers\Operations\SettlementController;
 use App\Http\Controllers\Operations\NominationController;
 use App\Http\Controllers\Operations\EobChecklistController;
+use App\Http\Controllers\Financials\FinancialTradeController;
+use App\Http\Controllers\Financials\FinancialSettlementController;
 use App\Http\Controllers\Financials\MarketPricesController;
 use App\Http\Controllers\Financials\BrokerFeesController;
 use App\Http\Controllers\Financials\PnlController;
@@ -111,7 +113,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/eob/{eobChecklist}/reset',    [EobChecklistController::class, 'reset'])->name('eob.reset');
     });
 
-    // ── Financials (Phase 4) ──────────────────────────────────────────────────
+    // ── Financials (Phase 4 + Financial Trades) ───────────────────────────────
     Route::get('/financials', fn() => view('financials.dashboard'))->name('financials.dashboard');
     Route::prefix('financials')->name('financials.')->group(function () {
         Route::get('market-prices',                          [MarketPricesController::class, 'index'])->name('market-prices.index');
@@ -120,6 +122,19 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('market-prices/point/{point}',         [MarketPricesController::class, 'destroy'])->name('market-prices.destroy');
         Route::get('broker-fees',                            [BrokerFeesController::class, 'index'])->name('broker-fees.index');
         Route::get('pnl',                                    [PnlController::class, 'index'])->name('pnl.index');
+
+        // Financial Trades (write routes before {financialTrade} wildcard)
+        Route::middleware('role:admin,trader')->group(function () {
+            Route::resource('financial-trades', FinancialTradeController::class)->except(['index', 'show', 'destroy']);
+            Route::post('financial-trades/{financialTrade}/validate', [FinancialTradeController::class, 'validate'])->name('financial-trades.validate');
+            Route::post('financial-trades/{financialTrade}/revert',   [FinancialTradeController::class, 'revert'])->name('financial-trades.revert');
+            Route::get( 'financial-trades/{financialTrade}/settlements/create', [FinancialSettlementController::class, 'create'])->name('financial-trades.settlements.create');
+            Route::post('financial-trades/{financialTrade}/settlements',        [FinancialSettlementController::class, 'store'])->name('financial-trades.settlements.store');
+        });
+        Route::middleware('role:admin')->group(function () {
+            Route::delete('financial-trades/{financialTrade}', [FinancialTradeController::class, 'destroy'])->name('financial-trades.destroy');
+        });
+        Route::resource('financial-trades', FinancialTradeController::class)->only(['index', 'show']);
     });
 
     // ── Risk & Analytics (Phase 6) ────────────────────────────────────────────

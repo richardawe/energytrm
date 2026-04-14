@@ -73,14 +73,13 @@
                 <thead>
                     <tr>
                         <th>Deal No</th>
+                        <th>Type</th>
                         <th>Trade Date</th>
                         <th>Counterparty</th>
                         <th>Product</th>
                         <th class="text-center">B/S</th>
-                        <th class="text-end">Qty</th>
-                        <th class="text-end">Trade Price</th>
-                        <th class="text-end">Market Price</th>
                         <th class="text-end">Trade Value</th>
+                        <th class="text-end">Market Value</th>
                         <th class="text-end">Unrealised P&amp;L</th>
                         <th class="text-end">Realised P&amp;L</th>
                         <th class="text-center">Status</th>
@@ -88,32 +87,43 @@
                 </thead>
                 <tbody>
                     @forelse($rows as $row)
-                    @php $t = $row['trade']; @endphp
+                    @php
+                        $t       = $row['trade'];
+                        $isPhys  = $row['kind'] === 'physical';
+                        $route   = $isPhys
+                            ? route('trades.show', $t)
+                            : route('financials.financial-trades.show', $t);
+                        $badgeClass = match($t->trade_status) {
+                            'Pending'   => 'badge-pending',
+                            'Validated', 'Active', 'Open' => 'badge-authorized',
+                            default     => 'badge-settled',
+                        };
+                    @endphp
                     <tr>
-                        <td><a href="{{ route('trades.show', $t) }}" class="fw-semibold text-decoration-none">{{ $t->deal_number }}</a></td>
+                        <td><a href="{{ $route }}" class="fw-semibold text-decoration-none">{{ $t->deal_number }}</a></td>
+                        <td>
+                            <span class="badge" style="font-size:.7rem;
+                                {{ $isPhys ? 'background:#6c757d' : ($t->instrument_type === 'swap' ? 'background:#0dcaf0;color:#000' : ($t->instrument_type === 'futures' ? 'background:#ffc107;color:#000' : 'background:#6f42c1')) }}">
+                                {{ $row['instrument'] }}
+                            </span>
+                        </td>
                         <td>{{ $t->trade_date->format('d-M-Y') }}</td>
                         <td>{{ $t->counterparty->short_name }}</td>
                         <td>{{ $t->product->name }}</td>
                         <td class="text-center">
                             <span class="badge {{ $t->buy_sell === 'Buy' ? 'bg-success' : 'bg-danger' }}">{{ $t->buy_sell }}</span>
                         </td>
-                        <td class="text-end">{{ number_format($t->quantity, 0) }} {{ $t->uom->code }}</td>
-                        <td class="text-end">{{ number_format($row['tradePrice'], 4) }}</td>
+                        <td class="text-end fw-semibold">{{ number_format($row['tradeValue'], 2) }}</td>
                         <td class="text-end">
-                            @if($t->fixed_float === 'Float')
-                                <span title="{{ $t->index?->index_name }}">{{ number_format($row['marketPrice'], 4) }}</span>
+                            @if($row['marketValue'] !== null)
+                                {{ number_format($row['marketValue'], 2) }}
                                 <span class="text-muted" style="font-size:.7rem;">MTM</span>
                             @else
                                 <span class="text-muted">—</span>
                             @endif
                         </td>
-                        <td class="text-end fw-semibold">{{ number_format($row['tradeValue'], 2) }}</td>
                         <td class="text-end fw-semibold {{ $row['unrealisedPnl'] >= 0 ? 'text-success' : 'text-danger' }}">
-                            @if($t->fixed_float === 'Float')
-                                {{ ($row['unrealisedPnl'] >= 0 ? '+' : '') . number_format($row['unrealisedPnl'], 2) }}
-                            @else
-                                <span class="text-muted">—</span>
-                            @endif
+                            {{ ($row['unrealisedPnl'] >= 0 ? '+' : '') . number_format($row['unrealisedPnl'], 2) }}
                         </td>
                         <td class="text-end fw-semibold">
                             @if($row['realisedPnl'] !== null)
@@ -125,20 +135,19 @@
                             @endif
                         </td>
                         <td class="text-center">
-                            <span class="badge {{ $t->trade_status === 'Settled' ? 'badge-authorized' : 'badge-validated' }}">
-                                {{ $t->trade_status }}
-                            </span>
+                            <span class="badge {{ $badgeClass }}">{{ $t->trade_status }}</span>
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="12" class="text-center text-muted py-4">No validated or settled trades found.</td></tr>
+                    <tr><td colspan="11" class="text-center text-muted py-4">No active or settled trades found.</td></tr>
                     @endforelse
                 </tbody>
                 @if($rows->isNotEmpty())
                 <tfoot>
                     <tr class="fw-bold" style="border-top:2px solid #dee2e6; background:#f8f9fa;">
-                        <td colspan="8" class="text-end">Totals</td>
+                        <td colspan="6" class="text-end">Totals</td>
                         <td class="text-end">{{ number_format($totals['trade_value'], 2) }}</td>
+                        <td class="text-end">{{ number_format($totals['market_value'], 2) }}</td>
                         <td class="text-end {{ $totals['unrealised_pnl'] >= 0 ? 'text-success' : 'text-danger' }}">
                             {{ ($totals['unrealised_pnl'] >= 0 ? '+' : '') . number_format($totals['unrealised_pnl'], 2) }}
                         </td>
@@ -154,7 +163,7 @@
     </div>
 
     <div class="text-muted small mt-2">
-        Market Price = latest index grid point. Unrealised P&amp;L = (Market − Trade Price) × Qty × direction.
-        Realised P&amp;L = confirmed settlement receipts vs invoice amount (Settled trades only).
+        Physical: Unrealised P&amp;L = (Market − Trade Price) × Qty × direction. Realised = confirmed settlements vs invoice (Settled only).<br>
+        Financial swaps: MTM = float leg − fixed leg. Futures: unrealised P&amp;L from current vs trade price. Options: intrinsic + time value vs premium paid.
     </div>
 </x-app-layout>

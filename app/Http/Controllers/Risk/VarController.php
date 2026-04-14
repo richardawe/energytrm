@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Risk;
 
 use App\Http\Controllers\Controller;
+use App\Models\FinancialTrade;
 use App\Models\IndexDefinition;
 use App\Models\Trade;
 
 class VarController extends Controller
 {
-    // Stress test shocks applied to market prices (%)
     private const STRESS_SCENARIOS = [
         'Mild Down'    => -5,
         'Moderate Down'=> -10,
@@ -21,42 +21,46 @@ class VarController extends Controller
 
     public function index()
     {
+        // Physical float trades
         $floatTrades = Trade::with(['index.gridPoints', 'uom', 'product', 'currency'])
             ->whereIn('trade_status', ['Pending', 'Validated'])
             ->where('fixed_float', 'Float')
             ->whereNotNull('index_id')
             ->get();
 
-        // ── Historical VaR ────────────────────────────────────────────────────
-        // For each scenario (historical daily return), compute portfolio P&L impact
-        $scenarioPnls = $this->buildHistoricalScenarios($floatTrades);
+        // Financial swap (float leg) and futures trades with a price index
+        $finFloatTrades = FinancialTrade::with([
+            'floatIndex.gridPoints', 'futuresIndex.gridPoints', 'product', 'currency',
+        ])->whereIn('trade_status', ['Pending', 'Validated', 'Active', 'Open'])
+          ->whereIn('instrument_type', ['swap', 'futures'])
+          ->get();
 
-        $var95 = null;
-        $var99 = null;
+        // ── Historical VaR (physical + financial combined) ────────────────────
+        $scenarioPnls = $this->buildHistoricalScenarios($floatTrades, $finFloatTrades);
+
+        $var95 = $var99 = null;
         $scenarioCount = count($scenarioPnls);
         $minDataPoints = 30;
 
         if ($scenarioCount >= $minDataPoints) {
-            sort($scenarioPnls); // ascending: worst first
-            $idx95 = (int) floor(0.05 * $scenarioCount);
-            $idx99 = (int) floor(0.01 * $scenarioCount);
-            $var95 = abs($scenarioPnls[$idx95]);
-            $var99 = abs($scenarioPnls[$idx99]);
+            sort($scenarioPnls);
+            $var95 = abs($scenarioPnls[(int) floor(0.05 * $scenarioCount)]);
+            $var99 = abs($scenarioPnls[(int) floor(0.01 * $scenarioCount)]);
         }
 
         // ── Stress Tests ──────────────────────────────────────────────────────
-        $stressResults = $this->runStressTests($floatTrades);
+        $stressResults = $this->runStressTests($floatTrades, $finFloatTrades);
 
-        // ── Fixed trades (no market risk) ─────────────────────────────────────
+        // ── Summary ───────────────────────────────────────────────────────────
         $fixedTradeCount = Trade::whereIn('trade_status', ['Pending', 'Validated'])
             ->where('fixed_float', 'Fixed')->count();
 
-        // ── Summary ───────────────────────────────────────────────────────────
         $summary = [
-            'float_trade_count' => $floatTrades->count(),
-            'fixed_trade_count' => $fixedTradeCount,
-            'scenario_count'    => $scenarioCount,
-            'min_data_points'   => $minDataPoints,
+            'float_trade_count'     => $floatTrades->count(),
+            'fixed_trade_count'     => $fixedTradeCount,
+            'fin_float_trade_count' => $finFloatTrades->count(),
+            'scenario_count'        => $scenarioCount,
+            'min_data_points'       => $minDataPoints,
         ];
 
         return view('risk.var', compact(
@@ -66,25 +70,32 @@ class VarController extends Controller
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    private function buildHistoricalScenarios($floatTrades): array
+    private function buildHistoricalScenarios($floatTrades, $finFloatTrades): array
     {
-        // Group trades by index
+        // Build index→returns map (physical trades use index_id)
         $byIndex = $floatTrades->groupBy('index_id');
 
-        // For each index, get sorted price history and compute daily returns
+        // Financial swaps use float_index_id; futures use futures_index_id
+        $finByIndex = collect();
+        foreach ($finFloatTrades as $ft) {
+            $idxId = $ft->instrument_type === 'swap'
+                ? $ft->float_index_id
+                : $ft->futures_index_id;
+            if ($idxId) {
+                $finByIndex->push(['trade' => $ft, 'index_id' => $idxId]);
+            }
+        }
+        $finGrouped = $finByIndex->groupBy('index_id');
+
+        $allIndexIds = $byIndex->keys()->merge($finGrouped->keys())->unique();
+
         $indexReturns = [];
-        foreach ($byIndex->keys() as $indexId) {
-            $index  = IndexDefinition::with('gridPoints')->find($indexId);
+        foreach ($allIndexIds as $indexId) {
+            $index = IndexDefinition::with('gridPoints')->find($indexId);
             if (!$index) continue;
-
-            $points = $index->gridPoints
-                ->sortBy('price_date')
-                ->values()
-                ->map(fn($p) => (float) $p->price)
-                ->toArray();
-
+            $points = $index->gridPoints->sortBy('price_date')->values()
+                ->map(fn($p) => (float) $p->price)->toArray();
             if (count($points) < 2) continue;
-
             $returns = [];
             for ($i = 1; $i < count($points); $i++) {
                 if ($points[$i - 1] > 0) {
@@ -96,25 +107,36 @@ class VarController extends Controller
 
         if (empty($indexReturns)) return [];
 
-        // Find the common scenario length (min across all indices)
         $minLen = min(array_map('count', $indexReturns));
         if ($minLen < 1) return [];
 
-        // Use the last $minLen returns from each index (most recent history)
         $scenarioPnls = [];
         for ($s = 0; $s < $minLen; $s++) {
             $pnl = 0.0;
+            // Physical float trades
             foreach ($byIndex as $indexId => $trades) {
                 if (!isset($indexReturns[$indexId])) continue;
-                $returns    = $indexReturns[$indexId];
-                $returnIdx  = count($returns) - $minLen + $s;
-                $r          = $returns[$returnIdx] ?? 0;
-
+                $r = $indexReturns[$indexId][count($indexReturns[$indexId]) - $minLen + $s] ?? 0;
                 foreach ($trades as $trade) {
-                    $currentPrice = (float) ($trade->index?->latestPrice?->price ?? 0);
-                    $qty          = (float) $trade->quantity;
-                    $direction    = $trade->buy_sell === 'Buy' ? 1 : -1;
-                    $pnl         += $r * $currentPrice * $qty * $direction;
+                    $price     = (float) ($trade->index?->latestPrice?->price ?? 0);
+                    $direction = $trade->buy_sell === 'Buy' ? 1 : -1;
+                    $pnl      += $r * $price * (float) $trade->quantity * $direction;
+                }
+            }
+            // Financial float/futures trades
+            foreach ($finGrouped as $indexId => $items) {
+                if (!isset($indexReturns[$indexId])) continue;
+                $r = $indexReturns[$indexId][count($indexReturns[$indexId]) - $minLen + $s] ?? 0;
+                foreach ($items as $item) {
+                    $ft        = $item['trade'];
+                    $direction = $ft->buy_sell === 'Buy' ? 1 : -1;
+                    if ($ft->instrument_type === 'swap') {
+                        $price = (float) ($ft->floatIndex?->latestPrice?->price ?? 0);
+                        $pnl  += $r * $price * (float) $ft->notional_quantity * $direction;
+                    } else { // futures
+                        $price = (float) ($ft->futuresIndex?->latestPrice?->price ?? $ft->futures_price ?? 0);
+                        $pnl  += $r * $price * (float) $ft->num_contracts * (float) $ft->contract_size * $direction;
+                    }
                 }
             }
             $scenarioPnls[] = $pnl;
@@ -123,17 +145,26 @@ class VarController extends Controller
         return $scenarioPnls;
     }
 
-    private function runStressTests($floatTrades): array
+    private function runStressTests($floatTrades, $finFloatTrades): array
     {
         $results = [];
         foreach (self::STRESS_SCENARIOS as $label => $shockPct) {
             $portfolioPnl = 0.0;
             foreach ($floatTrades as $trade) {
-                $currentPrice = (float) ($trade->index?->latestPrice?->price ?? 0);
-                $shockedPrice = $currentPrice * (1 + $shockPct / 100);
-                $priceDelta   = $shockedPrice - $currentPrice;
-                $direction    = $trade->buy_sell === 'Buy' ? 1 : -1;
-                $portfolioPnl += $priceDelta * (float) $trade->quantity * $direction;
+                $price      = (float) ($trade->index?->latestPrice?->price ?? 0);
+                $delta      = $price * ($shockPct / 100);
+                $direction  = $trade->buy_sell === 'Buy' ? 1 : -1;
+                $portfolioPnl += $delta * (float) $trade->quantity * $direction;
+            }
+            foreach ($finFloatTrades as $ft) {
+                $direction = $ft->buy_sell === 'Buy' ? 1 : -1;
+                if ($ft->instrument_type === 'swap') {
+                    $price        = (float) ($ft->floatIndex?->latestPrice?->price ?? 0);
+                    $portfolioPnl += $price * ($shockPct / 100) * (float) $ft->notional_quantity * $direction;
+                } else { // futures
+                    $price        = (float) ($ft->futuresIndex?->latestPrice?->price ?? $ft->futures_price ?? 0);
+                    $portfolioPnl += $price * ($shockPct / 100) * (float) $ft->num_contracts * (float) $ft->contract_size * $direction;
+                }
             }
             $results[] = [
                 'scenario'   => $label,

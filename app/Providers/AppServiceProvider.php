@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\FinancialTrade;
 use App\Models\Trade;
 use App\Models\User;
+use App\Policies\FinancialTradePolicy;
 use App\Policies\TradePolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
@@ -23,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Policies
         Gate::policy(Trade::class, TradePolicy::class);
+        Gate::policy(FinancialTrade::class, FinancialTradePolicy::class);
         Gate::policy(User::class, UserPolicy::class);
 
         // Admins bypass all gates

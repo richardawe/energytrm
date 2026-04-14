@@ -95,6 +95,40 @@
     <div class="alert alert-info">No active trades found.</div>
     @endforelse
 
+    {{-- Financial Instruments MTM --}}
+    @if($financialMtm['trade_count'] > 0)
+    <div class="card card-etrm mt-2 mb-3" style="border-left:3px solid var(--etrm-secondary);">
+        <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
+            <span>Financial Instruments — MTM Summary</span>
+            <span class="text-muted small">{{ $financialMtm['trade_count'] }} trade(s)</span>
+        </div>
+        <div class="card-body">
+            <div class="row g-3 text-center">
+                <div class="col-md-3">
+                    <div class="text-muted small">Swap MTM</div>
+                    <div class="fw-bold fs-5 {{ $financialMtm['swap_mtm'] >= 0 ? 'text-success' : 'text-danger' }}">
+                        {{ ($financialMtm['swap_mtm'] >= 0 ? '+' : '') . number_format($financialMtm['swap_mtm'], 2) }}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-muted small">Futures Unrealised P&amp;L</div>
+                    <div class="fw-bold fs-5 {{ $financialMtm['futures_pnl'] >= 0 ? 'text-success' : 'text-danger' }}">
+                        {{ ($financialMtm['futures_pnl'] >= 0 ? '+' : '') . number_format($financialMtm['futures_pnl'], 2) }}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-muted small">Options Intrinsic Value</div>
+                    <div class="fw-bold fs-5">{{ number_format($financialMtm['options_intrinsic'], 2) }}</div>
+                </div>
+                <div class="col-md-3">
+                    <div class="text-muted small">Options Time Value</div>
+                    <div class="fw-bold fs-5">{{ number_format($financialMtm['options_timevalue'], 2) }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     {{-- Exposure by Currency --}}
     @if($byCurrency->isNotEmpty())
     <div class="card card-etrm mt-2">
@@ -127,7 +161,8 @@
     @endif
 
     <div class="text-muted small mt-2">
-        Net Position = sum(Buy qty) − sum(Sell qty). MTM uses latest index price for float trades.
-        Unrealised P&amp;L = (Market − Trade Price) × Qty × direction (float trades only).
+        Physical net position = sum(Buy qty) − sum(Sell qty). MTM uses latest index price for float trades.<br>
+        Financial MTM: Swap = float leg − fixed leg; Futures = (current − trade price) × contracts × size; Options = intrinsic + time value.
+        Currency exposure includes both physical and financial notional.
     </div>
 </x-app-layout>

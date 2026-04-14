@@ -25,9 +25,18 @@
                     <a class="nav-link {{ request()->routeIs('master.*') ? 'active' : '' }}"
                        href="{{ route('master.dashboard') }}">Master Data</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('trades.*') ? 'active' : '' }}"
-                       href="{{ route('trades.index') }}">Physical Trades</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {{ request()->routeIs('trades.*') || request()->routeIs('financials.financial-trades.*') ? 'active' : '' }}"
+                       href="#" role="button" data-bs-toggle="dropdown">Trades</a>
+                    <ul class="dropdown-menu">
+                        <li><h6 class="dropdown-header" style="font-size:.7rem;">PHYSICAL</h6></li>
+                        <li><a class="dropdown-item {{ request()->routeIs('trades.*') ? 'active' : '' }}"
+                               href="{{ route('trades.index') }}">Physical Trades</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><h6 class="dropdown-header" style="font-size:.7rem;">FINANCIAL</h6></li>
+                        <li><a class="dropdown-item {{ request()->routeIs('financials.financial-trades.*') ? 'active' : '' }}"
+                               href="{{ route('financials.financial-trades.index') }}">Financial Trades</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('operations.*') ? 'active' : '' }}"

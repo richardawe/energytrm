@@ -42,8 +42,22 @@
                             <br><span class="text-muted" style="font-size:.75rem;">{{ $row['party']->long_name }}</span>
                             @endif
                         </td>
-                        <td class="text-end">{{ $row['trade_count'] }}</td>
-                        <td class="text-end fw-semibold">{{ number_format($row['exposure'], 2) }}</td>
+                        <td class="text-end">
+                            {{ $row['trade_count'] }}
+                            @if($row['phys_trade_count'] > 0 && $row['fin_trade_count'] > 0)
+                            <br><span class="text-muted" style="font-size:.7rem;">
+                                {{ $row['phys_trade_count'] }} phys / {{ $row['fin_trade_count'] }} fin
+                            </span>
+                            @endif
+                        </td>
+                        <td class="text-end fw-semibold">
+                            {{ number_format($row['exposure'], 2) }}
+                            @if($row['fin_exposure'] > 0)
+                            <br><span class="text-muted" style="font-size:.7rem;">
+                                Fin: {{ number_format($row['fin_exposure'], 0) }}
+                            </span>
+                            @endif
+                        </td>
                         <td class="text-end">
                             @if($row['credit_limit'])
                                 {{ number_format($row['credit_limit'], 2) }}
@@ -100,7 +114,7 @@
     </div>
 
     <div class="text-muted small mt-2">
-        Exposure = sum of trade values (Qty × Price) for all Pending and Validated trades per counterparty.
+        Physical exposure = Qty × Price (Pending &amp; Validated). Financial exposure = notional value (swap: notional × fixed rate; futures: contracts × size × price; options: premium).
         Credit limits are set on the counterparty record in Master Data → Parties.
     </div>
 </x-app-layout>
