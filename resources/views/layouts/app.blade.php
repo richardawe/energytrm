@@ -41,10 +41,12 @@
                     <a class="nav-link {{ request()->routeIs('risk.*') ? 'active' : '' }}"
                        href="{{ route('risk.dashboard') }}">Risk &amp; Analytics</a>
                 </li>
+                @if(Auth::user()->isAdmin())
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}"
                        href="{{ route('admin.users.index') }}">User Management</a>
                 </li>
+                @endif
             </ul>
 
             {{-- User dropdown --}}

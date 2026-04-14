@@ -21,6 +21,7 @@ use App\Http\Controllers\Operations\EobChecklistController;
 use App\Http\Controllers\Financials\MarketPricesController;
 use App\Http\Controllers\Financials\BrokerFeesController;
 use App\Http\Controllers\Financials\PnlController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root to login or dashboard
@@ -46,23 +47,46 @@ Route::middleware(['auth'])->group(function () {
     })->name('master.dashboard');
 
     Route::prefix('master')->name('master.')->group(function () {
-        Route::resource('currencies', CurrencyController::class);
-        Route::resource('payment-terms', PaymentTermController::class);
-        Route::resource('incoterms', IncotermController::class);
-        Route::resource('transport-classes', TransportClassController::class);
-        Route::resource('parties', PartyController::class);
-        Route::resource('products', ProductController::class);
-        Route::resource('uoms', UomController::class);
-        Route::resource('indices', IndexDefinitionController::class);
-        Route::resource('agreements', AgreementController::class);
-        Route::resource('brokers', BrokerController::class);
-        Route::resource('portfolios', PortfolioController::class);
+        // Read-only routes — all authenticated users
+        Route::resource('currencies',       CurrencyController::class)->only(['index', 'show']);
+        Route::resource('payment-terms',    PaymentTermController::class)->only(['index', 'show']);
+        Route::resource('incoterms',        IncotermController::class)->only(['index', 'show']);
+        Route::resource('transport-classes',TransportClassController::class)->only(['index', 'show']);
+        Route::resource('parties',          PartyController::class)->only(['index', 'show']);
+        Route::resource('products',         ProductController::class)->only(['index', 'show']);
+        Route::resource('uoms',             UomController::class)->only(['index', 'show']);
+        Route::resource('indices',          IndexDefinitionController::class)->only(['index', 'show']);
+        Route::resource('agreements',       AgreementController::class)->only(['index', 'show']);
+        Route::resource('brokers',          BrokerController::class)->only(['index', 'show']);
+        Route::resource('portfolios',       PortfolioController::class)->only(['index', 'show']);
+
+        // Write routes — admin only
+        Route::middleware('role:admin')->group(function () {
+            Route::resource('currencies',       CurrencyController::class)->except(['index', 'show']);
+            Route::resource('payment-terms',    PaymentTermController::class)->except(['index', 'show']);
+            Route::resource('incoterms',        IncotermController::class)->except(['index', 'show']);
+            Route::resource('transport-classes',TransportClassController::class)->except(['index', 'show']);
+            Route::resource('parties',          PartyController::class)->except(['index', 'show']);
+            Route::resource('products',         ProductController::class)->except(['index', 'show']);
+            Route::resource('uoms',             UomController::class)->except(['index', 'show']);
+            Route::resource('indices',          IndexDefinitionController::class)->except(['index', 'show']);
+            Route::resource('agreements',       AgreementController::class)->except(['index', 'show']);
+            Route::resource('brokers',          BrokerController::class)->except(['index', 'show']);
+            Route::resource('portfolios',       PortfolioController::class)->except(['index', 'show']);
+        });
     });
 
     // ── Physical Trades (Phase 2) ─────────────────────────────────────────────
-    Route::resource('trades', TradeController::class);
-    Route::post('/trades/{trade}/validate', [TradeController::class, 'validate'])->name('trades.validate');
-    Route::post('/trades/{trade}/revert',   [TradeController::class, 'revert'])->name('trades.revert');
+    // Read — all authenticated users; write — admin + trader only
+    Route::resource('trades', TradeController::class)->only(['index', 'show']);
+    Route::middleware('role:admin,trader')->group(function () {
+        Route::resource('trades', TradeController::class)->except(['index', 'show', 'destroy']);
+        Route::post('/trades/{trade}/validate', [TradeController::class, 'validate'])->name('trades.validate');
+        Route::post('/trades/{trade}/revert',   [TradeController::class, 'revert'])->name('trades.revert');
+    });
+    Route::middleware('role:admin')->group(function () {
+        Route::delete('/trades/{trade}', [TradeController::class, 'destroy'])->name('trades.destroy');
+    });
 
     // ── Operations (Phase 3) ──────────────────────────────────────────────────
     Route::get('/operations', fn() => view('operations.dashboard'))->name('operations.dashboard');
@@ -95,7 +119,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/risk', fn() => view('coming-soon', ['module' => 'Risk & Analytics']))->name('risk.dashboard');
 
     // ── User Management (Phase 5) ─────────────────────────────────────────────
-    Route::get('/admin/users', fn() => view('coming-soon', ['module' => 'User Management']))->name('admin.users.index');
+    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::resource('users', UserController::class)->except(['show']);
+    });
 });
 
 require __DIR__.'/auth.php';
