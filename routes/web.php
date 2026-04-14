@@ -22,6 +22,8 @@ use App\Http\Controllers\Financials\MarketPricesController;
 use App\Http\Controllers\Financials\BrokerFeesController;
 use App\Http\Controllers\Financials\PnlController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Training\ScenarioController;
 use App\Http\Controllers\Risk\PortfolioAnalysisController;
 use App\Http\Controllers\Risk\CounterpartyExposureController;
 use App\Http\Controllers\Risk\VarController;
@@ -129,9 +131,16 @@ Route::middleware(['auth'])->group(function () {
         Route::post('reports/generate',    [ReportsController::class,             'generate'])->name('reports.generate');
     });
 
-    // ── User Management (Phase 5) ─────────────────────────────────────────────
+    // ── Training UX ───────────────────────────────────────────────────────────
+    Route::prefix('training')->name('training.')->group(function () {
+        Route::get('scenarios',          [ScenarioController::class, 'index'])->name('scenarios.index');
+        Route::get('scenarios/{scenario}',[ScenarioController::class, 'show'])->name('scenarios.show');
+    });
+
+    // ── User Management & Admin (Phase 5) ─────────────────────────────────────
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::resource('users', UserController::class)->except(['show']);
+        Route::get('audit', [AuditLogController::class, 'index'])->name('audit.index');
     });
 });
 

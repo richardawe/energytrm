@@ -167,8 +167,8 @@
                 </div>
             </div>
 
-            <div class="card card-etrm">
-                <div class="card-header">Audit</div>
+            <div class="card card-etrm mb-3">
+                <div class="card-header">Record Info</div>
                 <div class="card-body" style="font-size:.85rem;">
                     <div class="row g-2">
                         <div class="col-5 text-muted">Created by</div>
@@ -188,4 +188,58 @@
             </div>
         </div>
     </div>
+
+    {{-- Audit Trail --}}
+    @if($trade->auditLogs->isNotEmpty())
+    <div class="card card-etrm mt-2">
+        <div class="card-header fw-semibold">Audit Trail</div>
+        <div class="card-body p-0">
+            <table class="table table-etrm mb-0" style="font-size:.825rem;">
+                <thead>
+                    <tr>
+                        <th style="width:120px;">Action</th>
+                        <th>User</th>
+                        <th>Timestamp</th>
+                        <th>Changes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($trade->auditLogs as $log)
+                    <tr>
+                        <td>
+                            <span class="badge {{ $log->actionBadgeClass() }}">
+                                {{ ucfirst($log->action) }}
+                            </span>
+                        </td>
+                        <td>{{ $log->user?->name ?? '—' }}</td>
+                        <td class="text-muted">{{ $log->created_at->format('d-M-Y H:i:s') }}</td>
+                        <td>
+                            @if($log->action === 'updated' && $log->old_values && $log->new_values)
+                                @php
+                                    $skip = ['updated_at','created_at','remember_token'];
+                                    $changed = collect($log->new_values)
+                                        ->filter(fn($v,$k) => !in_array($k,$skip)
+                                            && ($log->old_values[$k] ?? null) != $v)
+                                        ->keys();
+                                @endphp
+                                @if($changed->isNotEmpty())
+                                <span class="text-muted">
+                                    {{ $changed->map(fn($k) => str_replace('_',' ',ucfirst($k)))->join(', ') }}
+                                </span>
+                                @endif
+                            @elseif($log->action === 'created')
+                                <span class="text-muted">Trade captured</span>
+                            @elseif($log->action === 'validated')
+                                <span class="text-muted">Status → Validated</span>
+                            @elseif($log->action === 'reverted')
+                                <span class="text-muted">Status → Pending</span>
+                            @endif
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
 </x-app-layout>

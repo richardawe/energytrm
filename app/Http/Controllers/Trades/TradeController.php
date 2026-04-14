@@ -13,6 +13,7 @@ use App\Models\PaymentTerm;
 use App\Models\Portfolio;
 use App\Models\Product;
 use App\Models\Trade;
+use App\Models\AuditLog;
 use App\Models\Uom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -62,7 +63,8 @@ class TradeController extends Controller
     {
         $data = $this->validateTrade($request);
 
-        DB::transaction(function () use ($data, $request) {
+        $trade = null;
+        DB::transaction(function () use ($data, &$trade) {
             $data['deal_number']        = Trade::nextDealNumber();
             $data['transaction_number'] = Trade::nextTransactionNumber();
             $data['instrument_number']  = Trade::nextInstrumentNumber();
@@ -71,7 +73,8 @@ class TradeController extends Controller
             $data['version']            = 1;
             $data['created_by']         = auth()->id();
 
-            Trade::create($data);
+            $trade = Trade::create($data);
+            AuditLog::record($trade, 'created', [], $trade->getAttributes());
         });
 
         // Credit limit breach check — warn but do not block
@@ -88,6 +91,7 @@ class TradeController extends Controller
             'internalBu', 'portfolio', 'counterparty', 'product', 'uom',
             'index', 'currency', 'paymentTerms', 'broker', 'agreement',
             'createdBy', 'validatedBy',
+            'auditLogs.user',
         ]);
         return view('trades.show', compact('trade'));
     }
@@ -112,6 +116,8 @@ class TradeController extends Controller
         $data = $this->validateTrade($request, $trade);
 
         DB::transaction(function () use ($data, $trade) {
+            $old = $trade->getAttributes();
+
             $data['transaction_number'] = Trade::nextTransactionNumber();
             $data['pay_rec']            = Trade::derivePayRec($data['buy_sell']);
             $data['version']            = $trade->version + 1;
@@ -123,6 +129,7 @@ class TradeController extends Controller
             }
 
             $trade->update($data);
+            AuditLog::record($trade, 'updated', $old, $trade->fresh()->getAttributes());
         });
 
         return redirect()->route('trades.show', $trade)
@@ -140,6 +147,7 @@ class TradeController extends Controller
             'validated_by' => auth()->id(),
             'validated_at' => now(),
         ]);
+        AuditLog::record($trade, 'validated');
 
         return redirect()->route('trades.show', $trade)
             ->with('success', 'Trade validated.');
@@ -156,6 +164,7 @@ class TradeController extends Controller
             'validated_by' => null,
             'validated_at' => null,
         ]);
+        AuditLog::record($trade, 'reverted');
 
         return redirect()->route('trades.show', $trade)
             ->with('success', 'Trade reverted to Pending.');

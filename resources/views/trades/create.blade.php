@@ -18,19 +18,19 @@
                     <div class="card-body">
                         <div class="row g-3">
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold">Trade Date <span class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold">Trade Date <span class="text-danger">*</span><x-field-tip field="Trade Date" tab="Physical Trades" /></label>
                                 <input type="date" name="trade_date" class="form-control @error('trade_date') is-invalid @enderror"
                                        value="{{ old('trade_date', date('Y-m-d')) }}">
                                 @error('trade_date')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold">Delivery Start <span class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold">Delivery Start <span class="text-danger">*</span><x-field-tip field="Delivery Start Date" tab="Physical Trades" /></label>
                                 <input type="date" name="start_date" class="form-control @error('start_date') is-invalid @enderror"
                                        value="{{ old('start_date') }}">
                                 @error('start_date')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold">Delivery End <span class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold">Delivery End <span class="text-danger">*</span><x-field-tip field="Delivery End Date" tab="Physical Trades" /></label>
                                 <input type="date" name="end_date" class="form-control @error('end_date') is-invalid @enderror"
                                        value="{{ old('end_date') }}">
                                 @error('end_date')<div class="invalid-feedback">{{ $message }}</div>@enderror

@@ -10,6 +10,8 @@ class DatabaseSeeder extends Seeder
             MasterDataSeeder::class,
             UserSeeder::class,
             TradeSeeder::class,
+            FieldDescriptionSeeder::class,
+            GuidedScenarioSeeder::class,
         ]);
     }
 }

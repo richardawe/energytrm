@@ -41,10 +41,18 @@
                     <a class="nav-link {{ request()->routeIs('risk.*') ? 'active' : '' }}"
                        href="{{ route('risk.dashboard') }}">Risk &amp; Analytics</a>
                 </li>
-                @if(Auth::user()->isAdmin())
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}"
-                       href="{{ route('admin.users.index') }}">User Management</a>
+                    <a class="nav-link {{ request()->routeIs('training.*') ? 'active' : '' }}"
+                       href="{{ route('training.scenarios.index') }}">Training</a>
+                </li>
+                @if(Auth::user()->isAdmin())
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {{ request()->routeIs('admin.*') ? 'active' : '' }}"
+                       href="#" role="button" data-bs-toggle="dropdown">Admin</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ route('admin.users.index') }}">User Management</a></li>
+                        <li><a class="dropdown-item" href="{{ route('admin.audit.index') }}">Audit Log</a></li>
+                    </ul>
                 </li>
                 @endif
             </ul>
