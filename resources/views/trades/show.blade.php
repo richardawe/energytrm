@@ -93,8 +93,8 @@
 
                         <div class="col-md-3 text-muted">Counterparty</div>
                         <div class="col-md-3">{{ $trade->counterparty->short_name }}</div>
-                        <div class="col-md-3 text-muted"></div>
-                        <div class="col-md-3"></div>
+                        <div class="col-md-3 text-muted">Trader</div>
+                        <div class="col-md-3">{{ $trade->trader?->name ?? $trade->createdBy->name }}</div>
                     </div>
                 </div>
             </div>
@@ -123,7 +123,14 @@
                         <div class="col-md-3 fw-semibold">{{ $trade->index?->index_name ?? '—' }}</div>
                         <div class="col-md-3 text-muted">Spread</div>
                         <div class="col-md-3">{{ $trade->spread >= 0 ? '+' : '' }}{{ $trade->spread }}</div>
+                        <div class="col-md-3 text-muted">Reference Source</div>
+                        <div class="col-md-3">{{ $trade->reference_source ?: '—' }}</div>
                         @endif
+
+                        <div class="col-md-3 text-muted">Price Unit</div>
+                        <div class="col-md-3">{{ $trade->priceUnit?->code ?? $trade->uom->code }}</div>
+                        <div class="col-md-3 text-muted">Put / Call</div>
+                        <div class="col-md-3">{{ $trade->put_call ?: '—' }}</div>
 
                         <div class="col-md-3 text-muted">Payment Terms</div>
                         <div class="col-md-3">{{ $trade->paymentTerms?->name ?? '—' }}</div>
@@ -142,6 +149,17 @@
                         <div class="col-md-3">{{ $trade->load_port ?: '—' }}</div>
                         <div class="col-md-3 text-muted">Discharge Port</div>
                         <div class="col-md-3">{{ $trade->discharge_port ?: '—' }}</div>
+                        @if($trade->pipeline)
+                        <div class="col-12"><hr class="my-1"></div>
+                        <div class="col-md-3 text-muted">Pipeline</div>
+                        <div class="col-md-3">{{ $trade->pipeline->code }} — {{ $trade->pipeline->name }}</div>
+                        <div class="col-md-3 text-muted">Zone</div>
+                        <div class="col-md-3">{{ $trade->zone ? $trade->zone->zone_code . ' — ' . $trade->zone->zone_name : '—' }}</div>
+                        <div class="col-md-3 text-muted">Location</div>
+                        <div class="col-md-3">{{ $trade->location ? $trade->location->location_code . ' (' . $trade->location->location_type . ')' : '—' }}</div>
+                        <div class="col-md-3 text-muted">Fuel %</div>
+                        <div class="col-md-3">{{ $trade->fuel_percent ? number_format($trade->fuel_percent, 4) . '%' : '—' }}</div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -166,6 +184,50 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Hedge Link Panel --}}
+            @if($trade->hedgedBy)
+            @php $hedge = $trade->hedgedBy; @endphp
+            <div class="card card-etrm mb-3" style="border-left:3px solid #0dcaf0;">
+                <div class="card-header fw-semibold">
+                    Hedge — <span class="badge" style="background:#0dcaf0;color:#000;">{{ ucfirst($hedge->instrument_type) }}</span>
+                </div>
+                <div class="card-body" style="font-size:.9rem;">
+                    <div class="row g-2">
+                        <div class="col-5 text-muted">Deal Number</div>
+                        <div class="col-7">
+                            <a href="{{ route('financials.financial-trades.show', $hedge) }}" class="fw-semibold">
+                                {{ $hedge->deal_number }}
+                            </a>
+                        </div>
+                        <div class="col-5 text-muted">Status</div>
+                        <div class="col-7">
+                            <span class="badge {{ in_array($hedge->trade_status, ['Active','Open']) ? 'badge-authorized' : 'badge-pending' }}">
+                                {{ $hedge->trade_status }}
+                            </span>
+                        </div>
+                        @if($hedge->instrument_type === 'swap')
+                        <div class="col-5 text-muted">Swap MTM</div>
+                        <div class="col-7 fw-semibold {{ $hedge->swapMtm() >= 0 ? 'text-success' : 'text-danger' }}">
+                            {{ $hedge->swapMtm() >= 0 ? '+' : '' }}{{ number_format($hedge->swapMtm(), 2) }}
+                            {{ $hedge->currency->code }}
+                        </div>
+                        @elseif($hedge->instrument_type === 'futures')
+                        <div class="col-5 text-muted">Unrealised P&L</div>
+                        <div class="col-7 fw-semibold {{ $hedge->futuresUnrealisedPnl() >= 0 ? 'text-success' : 'text-danger' }}">
+                            {{ $hedge->futuresUnrealisedPnl() >= 0 ? '+' : '' }}{{ number_format($hedge->futuresUnrealisedPnl(), 2) }}
+                        </div>
+                        @endif
+                        <div class="col-12 mt-1">
+                            <a href="{{ route('financials.financial-trades.show', $hedge) }}"
+                               class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size:.8rem;">
+                                View Hedge →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
 
             <div class="card card-etrm mb-3">
                 <div class="card-header">Record Info</div>

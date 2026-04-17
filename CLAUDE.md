@@ -6,11 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A browser-based Energy Trading & Risk Management (ETRM) training portal simulating a system like Endur. Covers the full commodity trading lifecycle — deal capture → validation → logistics → invoicing → settlement → risk monitoring — for training traders and back-office staff.
 
-**Current status:** Fully scaffolded Laravel application. All 6 phases are built. Financial instruments (swaps, futures, options) are being added as a Phase 7 extension — `financial_trades` and `financial_settlements` tables and the `FinancialTrade` model exist; controllers/views/routes are pending.
+**Current status:** Fully built Laravel 13 / PHP 8.4 application. All 6 phases plus Phase 7 (financial instruments) are complete — `FinancialTradeController`, `FinancialSettlementController`, all views, and routes are implemented.
 
 ## Tech Stack
 
-- **Backend:** PHP 8.x + Laravel (Blade templates, Eloquent ORM, Artisan CLI)
+- **Backend:** PHP 8.4 + Laravel 13 (Blade templates, Eloquent ORM, Artisan CLI)
 - **Frontend:** Alpine.js + Bootstrap 5 (no separate build step — no React/Vue)
 - **Database:** MySQL
 - **Auth:** Laravel Breeze (email/password sessions)
@@ -45,7 +45,7 @@ Controllers are namespaced by module under `app/Http/Controllers/`:
 | `Master\*` | Master data (currencies, parties, products, indices, etc.) |
 | `Trades\TradeController` | Physical trade capture & lifecycle |
 | `Operations\*` | Shipments, invoices, settlements, nominations, EoB checklist |
-| `Financials\*` | Market prices, broker fees, P&L |
+| `Financials\*` | Market prices, broker fees, P&L, financial trade capture & settlements |
 | `Admin\*` | User management, audit log |
 | `Risk\*` | Portfolio analysis, counterparty exposure, VaR, reports |
 | `Training\ScenarioController` | Guided training scenarios |
@@ -88,7 +88,7 @@ Three roles on `users.role`: `admin` (full access), `trader` (trade capture + vi
 - `Party` — both internal BUs and external counterparties (`party_type`: `LE`/`BU`, `internal_external`)
 - `IndexDefinition` → `IndexGridPoint` — price curves; `latestPrice` accessor used by analytics
 - `Trade` and `FinancialTrade` are independent models (separate tables) but share transaction/instrument number sequences
-- `FinancialTrade` → `FinancialSettlement` (hasMany); `FinancialSettlement` model still to be created (migration exists at `2026_04_14_200001`)
+- `FinancialTrade` → `FinancialSettlement` (hasMany); `FinancialSettlementController` auto-closes the trade when final settlement is confirmed
 - All auditable models morph to `AuditLog` via `MorphMany`
 
 ### Seeder Stack

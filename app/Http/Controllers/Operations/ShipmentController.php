@@ -23,7 +23,7 @@ class ShipmentController extends Controller
         }
 
         $shipments = $query->paginate(25)->withQueryString();
-        $trades    = Trade::whereIn('trade_status', ['Validated', 'Settled'])
+        $trades    = Trade::whereIn('trade_status', ['Validated', 'Active', 'Settled'])
                           ->orderBy('deal_number')->get();
 
         return view('operations.shipments.index', compact('shipments', 'trades'));
@@ -32,7 +32,7 @@ class ShipmentController extends Controller
     public function create(Request $request)
     {
         $trade    = $request->filled('trade_id') ? Trade::findOrFail($request->trade_id) : null;
-        $trades   = Trade::whereIn('trade_status', ['Validated', 'Settled'])->orderBy('deal_number')->get();
+        $trades   = Trade::whereIn('trade_status', ['Validated', 'Active', 'Settled'])->orderBy('deal_number')->get();
         $carriers = Party::where('internal_external', 'External')->orderBy('short_name')->get();
 
         return view('operations.shipments.create', compact('trade', 'trades', 'carriers'));
@@ -62,7 +62,10 @@ class ShipmentController extends Controller
         $data['shipment_number'] = Shipment::nextShipmentNumber();
         $data['created_by']      = auth()->id();
 
-        Shipment::create($data);
+        $shipment = Shipment::create($data);
+
+        // Auto-advance trade to Active on first confirmed delivery
+        $this->advanceTradeToActive($shipment->trade);
 
         return redirect()->route('operations.shipments.index')
             ->with('success', 'Shipment created.');
@@ -76,7 +79,7 @@ class ShipmentController extends Controller
 
     public function edit(Shipment $shipment)
     {
-        $trades   = Trade::whereIn('trade_status', ['Validated', 'Settled'])->orderBy('deal_number')->get();
+        $trades   = Trade::whereIn('trade_status', ['Validated', 'Active', 'Settled'])->orderBy('deal_number')->get();
         $carriers = Party::where('internal_external', 'External')->orderBy('short_name')->get();
         return view('operations.shipments.edit', compact('shipment', 'trades', 'carriers'));
     }
@@ -103,7 +106,19 @@ class ShipmentController extends Controller
 
         $shipment->update($data);
 
+        $this->advanceTradeToActive($shipment->trade);
+
         return redirect()->route('operations.shipments.show', $shipment)
             ->with('success', 'Shipment updated.');
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private function advanceTradeToActive(Trade $trade): void
+    {
+        if ($trade->trade_status === 'Validated') {
+            $trade->update(['trade_status' => 'Active']);
+            \App\Models\AuditLog::record($trade, 'activated');
+        }
     }
 }

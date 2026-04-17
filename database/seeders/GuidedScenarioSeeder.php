@@ -175,10 +175,121 @@ class GuidedScenarioSeeder extends Seeder
             ],
 
             [
+                'title'       => 'Capture a Float Gas Trade with Pipeline Path',
+                'description' => 'Capture a floating-price natural gas trade referencing the TTF index, linked to a specific pipeline zone and delivery location. Observe how Reference Source, Price Unit, and the Pipeline cascade fields work.',
+                'module'      => 'trades',
+                'sort_order'  => 5,
+                'steps'       => [
+                    [
+                        'title'       => 'Open a new trade for Natural Gas',
+                        'instruction' => 'Go to Physical Trades → New Trade. Select product "TTF Natural Gas". Notice that once a product is selected, the Index dropdown in the Pricing section filters to show only indices linked to that commodity. This prevents accidental cross-commodity mis-pricing.',
+                        'route_name'  => 'trades.create',
+                        'fields'      => ['product_id'],
+                    ],
+                    [
+                        'title'       => 'Set pricing to Float and choose the TTF index',
+                        'instruction' => 'Set Fixed/Float to "Float". Select "TTF Day-Ahead" as the index and enter a spread (e.g. +0.05). Set Reference Source to "Heren" — this identifies which publisher\'s price applies on the fixing date, a critical audit field in real ETRM systems.',
+                        'route_name'  => 'trades.create',
+                        'fields'      => ['fixed_float', 'index_id', 'spread', 'reference_source'],
+                    ],
+                    [
+                        'title'       => 'Set Price Unit separately from Volume UOM',
+                        'instruction' => 'Set UOM to MMBTU (the contracted volume unit). Set Price Unit to GJ — when the published price is in $/GJ but volume is in MMBTU, you need both fields to ensure accurate invoicing. If Price Unit is left blank it defaults to the same UOM.',
+                        'route_name'  => 'trades.create',
+                        'fields'      => ['uom_id', 'price_unit_id'],
+                    ],
+                    [
+                        'title'       => 'Select the pipeline delivery path',
+                        'instruction' => 'In the Logistics section, select pipeline "TTF". The Zone dropdown populates automatically with TTF zones. Select zone "NL — Netherlands Virtual Hub", then select location "TTF-VH" (the virtual hub). Enter a Fuel % of 0 (gas hubs have no physical shrinkage).',
+                        'route_name'  => 'trades.create',
+                        'fields'      => ['pipeline_id', 'zone_id', 'location_id', 'fuel_percent'],
+                    ],
+                    [
+                        'title'       => 'Save and verify the full trade record',
+                        'instruction' => 'Capture the trade. On the show page, verify: Pricing section shows Index + Spread + Reference Source; Logistics section shows the full Pipeline → Zone → Location path. These fields will pre-populate the nomination and shipment when an operational event is created.',
+                        'route_name'  => 'trades.index',
+                        'fields'      => [],
+                    ],
+                ],
+            ],
+
+            [
+                'title'       => 'Hedge a Physical Float Trade with a Swap',
+                'description' => 'Link a floating-price physical gas trade to a commodity swap, then observe the combined hedge position on each trade\'s detail page and in the P&L view.',
+                'module'      => 'financials',
+                'sort_order'  => 6,
+                'steps'       => [
+                    [
+                        'title'       => 'Identify the physical float trade to hedge',
+                        'instruction' => 'Go to Physical Trades and find a float-priced trade (Fixed/Float = Float) that is Validated or Active. Note its product, currency, notional quantity and index. These will define the terms of the offsetting swap.',
+                        'route_name'  => 'trades.index',
+                        'fields'      => [],
+                    ],
+                    [
+                        'title'       => 'Capture the offsetting swap',
+                        'instruction' => 'Go to Financials → Financial Trades → New Financial Trade. Select instrument type "Swap". Set the same product and currency as the physical trade. If the physical is a Buy (you pay floating), the swap should be Buy too — you receive floating from the swap to offset. Set Fixed Rate = the price you want to lock in. Set Float Index = the same index as the physical trade.',
+                        'route_name'  => 'financials.financial-trades.create',
+                        'fields'      => ['instrument_type', 'buy_sell', 'fixed_rate', 'float_index_id', 'notional_quantity'],
+                    ],
+                    [
+                        'title'       => 'Link the swap back to the physical trade',
+                        'instruction' => 'On the physical trade Edit page, scroll to the "Hedge Link" panel. Select the swap you just created from the "Hedged By Financial Trade" dropdown. Save the amendment. Both trades now reference each other.',
+                        'route_name'  => 'trades.index',
+                        'fields'      => ['hedged_by_financial_trade_id'],
+                    ],
+                    [
+                        'title'       => 'View the hedge panel on the physical trade',
+                        'instruction' => 'Open the physical trade. The right column now shows a "Hedge" panel with the swap\'s deal number, status, and live Swap MTM. The MTM should move opposite to the physical unrealised P&L — this is the hedge working. Click "View Hedge →" to jump to the financial trade.',
+                        'route_name'  => 'trades.index',
+                        'fields'      => [],
+                    ],
+                    [
+                        'title'       => 'View the hedged position on the financial trade',
+                        'instruction' => 'Open the financial trade. The right column shows a "Hedged Physical Trade" panel with the physical deal number, product, quantity, delivery period, and direction. A real trader uses this cross-reference to confirm the hedge is sized correctly against the physical exposure.',
+                        'route_name'  => 'financials.financial-trades.index',
+                        'fields'      => [],
+                    ],
+                ],
+            ],
+
+            [
+                'title'       => 'Analyse Combined Physical and Financial P&L',
+                'description' => 'Use the P&L view to see physical MTM, swap MTM and net hedge effectiveness side by side. Understand how the hedge offsets price risk on a float physical position.',
+                'module'      => 'financials',
+                'sort_order'  => 7,
+                'steps'       => [
+                    [
+                        'title'       => 'Navigate to the P&L View',
+                        'instruction' => 'Go to Financials → P&L View. The table shows both physical trades and financial instruments together. Physical rows show unrealised P&L based on (Market Price − Trade Price) × Quantity × direction. Financial rows show MTM (swap) or unrealised PnL (futures/options).',
+                        'route_name'  => 'financials.pnl.index',
+                        'fields'      => [],
+                    ],
+                    [
+                        'title'       => 'Filter to a single product to focus the view',
+                        'instruction' => 'Use the Product filter to select e.g. "TTF Natural Gas". You should now see only the physical gas trade and its linked swap. Observe the Unrealised P&L column — if the physical trade is a Buy-Float and price has risen, it shows a positive unrealised gain. The swap MTM should be negative (you receive float but pay fixed at a lower rate). The net should be near zero: the hedge is working.',
+                        'route_name'  => 'financials.pnl.index',
+                        'fields'      => [],
+                    ],
+                    [
+                        'title'       => 'Update the market price to shift MTM',
+                        'instruction' => 'Go to Financials → Market Prices and enter a new price for TTF Day-Ahead — move it significantly (e.g. raise it by $2). Return to P&L View and observe: the physical Buy-Float unrealised P&L increases (market rose), while the swap MTM becomes more negative (you\'re locked into a fixed rate below market). The total row shows that gains and losses roughly cancel — net exposure is hedged.',
+                        'route_name'  => 'financials.market-prices.index',
+                        'fields'      => [],
+                    ],
+                    [
+                        'title'       => 'Observe realised P&L on settlement',
+                        'instruction' => 'When a swap settlement is confirmed (Financials → Financial Trades → open the swap → + Settlement → Confirmed), the settled amount appears in the Realised P&L column. At physical settlement, the invoice and payment flow through Operations. In a production ETRM these would be reconciled in the General Ledger.',
+                        'route_name'  => 'financials.pnl.index',
+                        'fields'      => [],
+                    ],
+                ],
+            ],
+
+            [
                 'title'       => 'Enter Market Prices and View P&L',
                 'description' => 'Enter index price data and observe the effect on float-priced trade MTM and unrealised P&L.',
                 'module'      => 'financials',
-                'sort_order'  => 5,
+                'sort_order'  => 8,
                 'steps'       => [
                     [
                         'title'       => 'Navigate to Market Prices',

@@ -16,11 +16,15 @@ class Trade extends Model
         'trade_status', 'trade_date', 'buy_sell', 'pay_rec',
         'start_date', 'end_date',
         'internal_bu_id', 'portfolio_id', 'counterparty_id',
-        'product_id', 'quantity', 'volume_type', 'uom_id',
+        'trader_id',
+        'product_id', 'quantity', 'volume_type', 'uom_id', 'price_unit_id',
         'fixed_float', 'index_id', 'fixed_price', 'spread',
+        'reference_source', 'put_call',
         'currency_id', 'payment_terms_id',
         'incoterm_code', 'load_port', 'discharge_port',
+        'pipeline_id', 'zone_id', 'location_id', 'fuel_percent',
         'broker_id', 'agreement_id', 'comments',
+        'hedged_by_financial_trade_id',
         'created_by', 'validated_by', 'validated_at',
     ];
 
@@ -32,15 +36,16 @@ class Trade extends Model
         'quantity'     => 'decimal:4',
         'fixed_price'  => 'decimal:6',
         'spread'       => 'decimal:6',
+        'fuel_percent' => 'decimal:4',
     ];
 
-    // ── Auto-derive pay_rec from buy_sell ─────────────────────────────────────
     public static function derivePayRec(string $buySell): string
     {
         return $buySell === 'Buy' ? 'Pay' : 'Receive';
     }
 
     // ── ID generators ─────────────────────────────────────────────────────────
+
     public static function nextDealNumber(): string
     {
         $year = now()->year;
@@ -50,7 +55,6 @@ class Trade extends Model
         return sprintf('DL-%d-%04d', $year, $seq);
     }
 
-    /** Shared sequence across both trades tables */
     public static function nextTransactionNumber(): string
     {
         $year = now()->year;
@@ -63,7 +67,6 @@ class Trade extends Model
         return sprintf('TXN-%d-%04d', $year, $seq);
     }
 
-    /** Shared sequence across both trades tables */
     public static function nextInstrumentNumber(): string
     {
         $year = now()->year;
@@ -77,11 +80,14 @@ class Trade extends Model
     }
 
     // ── Scopes ────────────────────────────────────────────────────────────────
-    public function scopePending($q)   { return $q->where('trade_status', 'Pending'); }
-    public function scopeValidated($q) { return $q->where('trade_status', 'Validated'); }
-    public function scopeSettled($q)   { return $q->where('trade_status', 'Settled'); }
+
+    public function scopePending($q)    { return $q->where('trade_status', 'Pending'); }
+    public function scopeValidated($q)  { return $q->where('trade_status', 'Validated'); }
+    public function scopeActive($q)     { return $q->where('trade_status', 'Active'); }
+    public function scopeSettled($q)    { return $q->where('trade_status', 'Settled'); }
 
     // ── Relationships ─────────────────────────────────────────────────────────
+
     public function internalBu(): BelongsTo
     {
         return $this->belongsTo(Party::class, 'internal_bu_id');
@@ -105,6 +111,11 @@ class Trade extends Model
     public function uom(): BelongsTo
     {
         return $this->belongsTo(Uom::class);
+    }
+
+    public function priceUnit(): BelongsTo
+    {
+        return $this->belongsTo(Uom::class, 'price_unit_id');
     }
 
     public function index(): BelongsTo
@@ -132,6 +143,26 @@ class Trade extends Model
         return $this->belongsTo(Agreement::class);
     }
 
+    public function pipeline(): BelongsTo
+    {
+        return $this->belongsTo(Pipeline::class);
+    }
+
+    public function zone(): BelongsTo
+    {
+        return $this->belongsTo(PipelineZone::class, 'zone_id');
+    }
+
+    public function location(): BelongsTo
+    {
+        return $this->belongsTo(PipelineLocation::class, 'location_id');
+    }
+
+    public function trader(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'trader_id');
+    }
+
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -140,6 +171,11 @@ class Trade extends Model
     public function validatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'validated_by');
+    }
+
+    public function hedgedBy(): BelongsTo
+    {
+        return $this->belongsTo(FinancialTrade::class, 'hedged_by_financial_trade_id');
     }
 
     public function shipments(): HasMany    { return $this->hasMany(Shipment::class); }

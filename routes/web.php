@@ -12,6 +12,7 @@ use App\Http\Controllers\Master\IndexDefinitionController;
 use App\Http\Controllers\Master\AgreementController;
 use App\Http\Controllers\Master\BrokerController;
 use App\Http\Controllers\Master\PortfolioController;
+use App\Http\Controllers\Master\PipelineController;
 use App\Http\Controllers\Trades\TradeController;
 use App\Http\Controllers\Operations\ShipmentController;
 use App\Http\Controllers\Operations\InvoiceController;
@@ -68,6 +69,9 @@ Route::middleware(['auth'])->group(function () {
             Route::resource('agreements',        AgreementController::class)->except(['index', 'show']);
             Route::resource('brokers',           BrokerController::class)->except(['index', 'show']);
             Route::resource('portfolios',        PortfolioController::class)->except(['index', 'show']);
+            Route::resource('pipelines',         PipelineController::class)->except(['index', 'show', 'destroy']);
+            Route::post('pipelines/{pipeline}/zones',                      [PipelineController::class, 'storeZone'])->name('pipelines.zones.store');
+            Route::post('pipelines/{pipeline}/zones/{zone}/locations',     [PipelineController::class, 'storeLocation'])->name('pipelines.locations.store');
         });
 
         // Read-only routes — all authenticated users (registered after write routes)
@@ -82,6 +86,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('agreements',        AgreementController::class)->only(['index', 'show']);
         Route::resource('brokers',           BrokerController::class)->only(['index', 'show']);
         Route::resource('portfolios',        PortfolioController::class)->only(['index', 'show']);
+        Route::resource('pipelines',         PipelineController::class)->only(['index', 'show']);
     });
 
     // ── Physical Trades (Phase 2) ─────────────────────────────────────────────

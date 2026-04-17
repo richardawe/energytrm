@@ -365,6 +365,46 @@
                 </div>
             </div>
 
+            {{-- Hedged Physical Trade Panel --}}
+            @if($trade->hedgesPhysicalTrade)
+            @php $phys = $trade->hedgesPhysicalTrade; @endphp
+            <div class="card card-etrm mb-3" style="border-left:3px solid #198754;">
+                <div class="card-header fw-semibold">
+                    Hedged Physical Trade
+                </div>
+                <div class="card-body" style="font-size:.9rem;">
+                    <div class="row g-2">
+                        <div class="col-5 text-muted">Deal Number</div>
+                        <div class="col-7">
+                            <a href="{{ route('trades.show', $phys) }}" class="fw-semibold">{{ $phys->deal_number }}</a>
+                        </div>
+                        <div class="col-5 text-muted">Status</div>
+                        <div class="col-7">
+                            <span class="badge {{ in_array($phys->trade_status, ['Active','Validated']) ? 'badge-authorized' : 'badge-pending' }}">
+                                {{ $phys->trade_status }}
+                            </span>
+                        </div>
+                        <div class="col-5 text-muted">Product</div>
+                        <div class="col-7">{{ $phys->product->name }}</div>
+                        <div class="col-5 text-muted">Quantity</div>
+                        <div class="col-7">{{ number_format($phys->quantity, 2) }} {{ $phys->uom->code }}</div>
+                        <div class="col-5 text-muted">Delivery</div>
+                        <div class="col-7 small">{{ $phys->start_date->format('d-M-Y') }} – {{ $phys->end_date->format('d-M-Y') }}</div>
+                        <div class="col-5 text-muted">Direction</div>
+                        <div class="col-7">
+                            <span class="badge {{ $phys->buy_sell === 'Buy' ? 'bg-success' : 'bg-danger' }}">{{ $phys->buy_sell }}</span>
+                        </div>
+                        <div class="col-12 mt-1">
+                            <a href="{{ route('trades.show', $phys) }}"
+                               class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size:.8rem;">
+                                View Physical Trade →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <div class="card card-etrm mb-3">
                 <div class="card-header">Record Info</div>
                 <div class="card-body" style="font-size:.85rem;">

@@ -10,6 +10,9 @@ use App\Models\IndexDefinition;
 use App\Models\IndexGridPoint;
 use App\Models\Party;
 use App\Models\PaymentTerm;
+use App\Models\Pipeline;
+use App\Models\PipelineZone;
+use App\Models\PipelineLocation;
 use App\Models\Portfolio;
 use App\Models\Product;
 use App\Models\TransportClass;
@@ -169,13 +172,34 @@ class MasterDataSeeder extends Seeder
             ['index_name' => 'UK Power Baseload', 'market' => 'Power',        'format' => 'Monthly', 'base_currency_id' => $usd->id, 'uom_id' => $mwh->id,   'base_prices' => 95.00],
         ];
 
+        // Products for index filtering
+        $brent  = Product::where('name', 'Brent Crude Oil')->first();
+        $wti    = Product::where('name', 'WTI Crude Oil')->first();
+        $ttfGas = Product::where('name', 'TTF Natural Gas')->first();
+        $nbpGas = Product::where('name', 'NBP Natural Gas')->first();
+        $ukPwr  = Product::where('name', 'UK Power (Baseload)')->first();
+
+        $indexProductMap = [
+            'Brent 1M'         => $brent?->id,
+            'WTI 1M'           => $wti?->id,
+            'TTF Day-Ahead'    => $ttfGas?->id,
+            'NBP Day-Ahead'    => $nbpGas?->id,
+            'UK Power Baseload'=> $ukPwr?->id,
+        ];
+
         foreach ($indices as $idx) {
-            $basePrice = $idx['base_prices'];
+            $basePrice  = $idx['base_prices'];
+            $productId  = $indexProductMap[$idx['index_name']] ?? null;
             unset($idx['base_prices']);
             $index = IndexDefinition::firstOrCreate(
                 ['index_name' => $idx['index_name']],
                 $idx + ['status' => 'Official', 'rec_status' => 'Authorized', 'version' => 0]
             );
+
+            // Link index to its product for trade form filtering
+            if ($productId && !$index->product_id) {
+                $index->update(['product_id' => $productId]);
+            }
 
             // Seed 18 months of price data with realistic variation
             for ($m = -6; $m <= 12; $m++) {
@@ -185,6 +209,71 @@ class MasterDataSeeder extends Seeder
                     ['index_id' => $index->id, 'price_date' => $priceDate],
                     ['price' => round($price, 4)]
                 );
+            }
+        }
+
+        // ── Pipelines / Zones / Locations ─────────────────────────────────────
+
+        $pipelinesData = [
+            [
+                'code' => 'NGTL', 'name' => 'NOVA Gas Transmission Ltd',
+                'commodity_type' => 'Gas', 'operator' => 'TC Energy', 'country' => 'Canada',
+                'zones' => [
+                    ['zone_code' => 'NE', 'zone_name' => 'North East Alberta', 'locations' => [
+                        ['location_code' => 'NGTL-AB-N1', 'location_name' => 'Caroline Field Gate',      'location_type' => 'Receipt'],
+                        ['location_code' => 'NGTL-AB-N2', 'location_name' => 'Empress Export',           'location_type' => 'Delivery'],
+                    ]],
+                    ['zone_code' => 'SE', 'zone_name' => 'South East Alberta', 'locations' => [
+                        ['location_code' => 'NGTL-AB-S1', 'location_name' => 'Suffield Hub',             'location_type' => 'Both'],
+                        ['location_code' => 'NGTL-AB-S2', 'location_name' => 'Countess Junction',        'location_type' => 'Both'],
+                    ]],
+                ],
+            ],
+            [
+                'code' => 'TTF', 'name' => 'Title Transfer Facility (Netherlands)',
+                'commodity_type' => 'Gas', 'operator' => 'Gasunie Transport Services', 'country' => 'Netherlands',
+                'zones' => [
+                    ['zone_code' => 'NL', 'zone_name' => 'Netherlands Virtual Hub', 'locations' => [
+                        ['location_code' => 'TTF-VH', 'location_name' => 'TTF Virtual Hub',              'location_type' => 'Both'],
+                    ]],
+                    ['zone_code' => 'INT', 'zone_name' => 'Interconnection Points', 'locations' => [
+                        ['location_code' => 'TTF-BE',  'location_name' => 'Zelzate (BE-NL border)',      'location_type' => 'Both'],
+                        ['location_code' => 'TTF-DE',  'location_name' => 'Oude Statenzijl (DE-NL)',     'location_type' => 'Both'],
+                    ]],
+                ],
+            ],
+            [
+                'code' => 'NBP', 'name' => 'National Balancing Point (UK)',
+                'commodity_type' => 'Gas', 'operator' => 'National Gas Transmission', 'country' => 'UK',
+                'zones' => [
+                    ['zone_code' => 'UK', 'zone_name' => 'UK National Transmission System', 'locations' => [
+                        ['location_code' => 'NBP-VH',  'location_name' => 'NBP Virtual Hub',             'location_type' => 'Both'],
+                        ['location_code' => 'NBP-BACTON', 'location_name' => 'Bacton Beach Terminal',    'location_type' => 'Receipt'],
+                        ['location_code' => 'NBP-ST-FERGUS', 'location_name' => 'St Fergus Terminal',    'location_type' => 'Receipt'],
+                    ]],
+                ],
+            ],
+        ];
+
+        foreach ($pipelinesData as $pd) {
+            $zones = $pd['zones'];
+            unset($pd['zones']);
+            $pipeline = Pipeline::firstOrCreate(['code' => $pd['code']], $pd + ['status' => 'Authorized', 'version' => 0]);
+
+            foreach ($zones as $zd) {
+                $locations = $zd['locations'];
+                unset($zd['locations']);
+                $zone = PipelineZone::firstOrCreate(
+                    ['pipeline_id' => $pipeline->id, 'zone_code' => $zd['zone_code']],
+                    $zd + ['status' => 'Authorized']
+                );
+
+                foreach ($locations as $ld) {
+                    PipelineLocation::firstOrCreate(
+                        ['zone_id' => $zone->id, 'location_code' => $ld['location_code']],
+                        $ld + ['status' => 'Authorized']
+                    );
+                }
             }
         }
     }

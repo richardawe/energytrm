@@ -15,6 +15,7 @@ class FinancialTrade extends Model
         'instrument_type', 'trade_status', 'trade_date',
         'internal_bu_id', 'portfolio_id', 'counterparty_id', 'currency_id',
         'product_id', 'buy_sell', 'pay_rec', 'broker_id', 'agreement_id', 'comments',
+        'hedges_physical_trade_id',
         // Swap
         'swap_type', 'fixed_rate', 'float_index_id', 'second_index_id',
         'notional_quantity', 'uom_id', 'spread', 'payment_frequency',
@@ -125,6 +126,11 @@ class FinancialTrade extends Model
     public function secondIndex(): BelongsTo     { return $this->belongsTo(IndexDefinition::class, 'second_index_id'); }
     public function futuresIndex(): BelongsTo    { return $this->belongsTo(IndexDefinition::class, 'futures_index_id'); }
     public function underlyingIndex(): BelongsTo { return $this->belongsTo(IndexDefinition::class, 'underlying_index_id'); }
+
+    public function hedgesPhysicalTrade(): BelongsTo
+    {
+        return $this->belongsTo(Trade::class, 'hedges_physical_trade_id');
+    }
 
     public function settlements(): HasMany { return $this->hasMany(FinancialSettlement::class); }
     public function auditLogs(): MorphMany { return $this->morphMany(AuditLog::class, 'auditable')->latest(); }

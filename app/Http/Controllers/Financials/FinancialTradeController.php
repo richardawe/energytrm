@@ -89,6 +89,7 @@ class FinancialTradeController extends Controller
             'currency', 'broker', 'agreement',
             'floatIndex', 'secondIndex', 'futuresIndex', 'underlyingIndex',
             'createdBy', 'validatedBy',
+            'hedgesPhysicalTrade.product', 'hedgesPhysicalTrade.currency', 'hedgesPhysicalTrade.uom',
             'settlements.createdBy',
             'auditLogs.user',
         ]);
