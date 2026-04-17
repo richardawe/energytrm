@@ -71,7 +71,7 @@
                         {{ $creditBreachCount }}
                     </div>
                     <div class="text-muted" style="font-size:.75rem;">
-                        <a href="{{ route('risk.counterparty-exposure') }}" class="text-muted text-decoration-none">View exposure →</a>
+                        <a href="{{ route('risk.counterparty-exposure') }}" class="text-muted text-decoration-none small">View exposure →</a>
                     </div>
                 </div>
             </div>
@@ -105,7 +105,7 @@
                     @else
                         <div class="fw-bold fs-4 text-muted">—</div>
                         <div class="text-muted" style="font-size:.75rem;">
-                            <a href="{{ route('eob.index') }}" class="text-muted text-decoration-none">Start checklist →</a>
+                            <a href="{{ route('operations.eob.index') }}" class="text-muted text-decoration-none">Start checklist →</a>
                         </div>
                     @endif
                 </div>
@@ -219,7 +219,7 @@
                     @if($eobToday && !$eobToday->signed_off)
                     <div class="border-top px-3 py-2 d-flex justify-content-between align-items-center" style="background:#fff3cd22;">
                         <span class="small text-warning fw-semibold">EoB checklist not signed off for today</span>
-                        <a href="{{ route('eob.index') }}" class="btn btn-xs btn-outline-warning py-0 px-2" style="font-size:.75rem;">Open checklist →</a>
+                        <a href="{{ route('operations.eob.index') }}" class="btn btn-xs btn-outline-warning py-0 px-2" style="font-size:.75rem;">Open checklist →</a>
                     </div>
                     @endif
 
@@ -230,7 +230,7 @@
             <div class="card card-etrm">
                 <div class="card-header fw-semibold d-flex justify-content-between">
                     <span>Recent Activity</span>
-                    <a href="{{ route('admin.audit-log.index') }}" class="text-muted small text-decoration-none">Full log →</a>
+                    <a href="{{ route('admin.audit.index') }}" class="text-muted small text-decoration-none">Full log →</a>
                 </div>
                 <div class="card-body p-0">
                     @if($recentActivity->isNotEmpty())
