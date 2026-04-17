@@ -31,6 +31,7 @@ use App\Http\Controllers\Risk\PortfolioAnalysisController;
 use App\Http\Controllers\Risk\CounterpartyExposureController;
 use App\Http\Controllers\Risk\VarController;
 use App\Http\Controllers\Risk\ReportsController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root to login or dashboard
@@ -39,9 +40,8 @@ Route::get('/', function () {
 });
 
 // Dashboard
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
 
