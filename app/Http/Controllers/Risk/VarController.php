@@ -23,7 +23,7 @@ class VarController extends Controller
     {
         // Physical float trades
         $floatTrades = Trade::with(['index.gridPoints', 'uom', 'product', 'currency'])
-            ->whereIn('trade_status', ['Pending', 'Validated'])
+            ->whereIn('trade_status', ['Pending', 'Validated', 'Active'])
             ->where('fixed_float', 'Float')
             ->whereNotNull('index_id')
             ->get();
@@ -52,7 +52,7 @@ class VarController extends Controller
         $stressResults = $this->runStressTests($floatTrades, $finFloatTrades);
 
         // ── Summary ───────────────────────────────────────────────────────────
-        $fixedTradeCount = Trade::whereIn('trade_status', ['Pending', 'Validated'])
+        $fixedTradeCount = Trade::whereIn('trade_status', ['Pending', 'Validated', 'Active'])
             ->where('fixed_float', 'Fixed')->count();
 
         $summary = [

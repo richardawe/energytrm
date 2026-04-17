@@ -63,7 +63,7 @@ class ReportsController extends Controller
     private function portfolioAnalysisCsv(): string
     {
         $trades = Trade::with(['product', 'uom', 'currency', 'portfolio', 'index.latestPrice'])
-            ->whereIn('trade_status', ['Pending', 'Validated', 'Settled'])
+            ->whereIn('trade_status', ['Pending', 'Validated', 'Active', 'Settled'])
             ->get();
 
         $rows   = [['Portfolio', 'Product', 'UOM', 'Net Qty', 'Trade Value', 'MTM Value', 'Unrealised PnL', 'Currency']];
@@ -89,7 +89,7 @@ class ReportsController extends Controller
     private function pnlCsv(): string
     {
         $trades = Trade::with(['product', 'uom', 'currency', 'counterparty', 'index.latestPrice', 'invoices.settlements'])
-            ->whereIn('trade_status', ['Validated', 'Settled'])
+            ->whereIn('trade_status', ['Validated', 'Active', 'Settled'])
             ->orderByDesc('trade_date')
             ->get();
 
@@ -125,7 +125,7 @@ class ReportsController extends Controller
     private function counterpartyExposureCsv(): string
     {
         $trades = Trade::with(['counterparty.creditLimitCurrency', 'index.latestPrice'])
-            ->whereIn('trade_status', ['Pending', 'Validated'])
+            ->whereIn('trade_status', ['Pending', 'Validated', 'Active'])
             ->get();
 
         $rows = [['Counterparty', 'Trade Count', 'Total Exposure', 'Credit Limit', 'Utilisation %', 'Breached', 'CCY']];

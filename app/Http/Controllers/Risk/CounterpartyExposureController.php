@@ -13,7 +13,7 @@ class CounterpartyExposureController extends Controller
         $physicalTrades = Trade::with([
             'counterparty.creditLimitCurrency', 'product', 'currency',
             'index.latestPrice',
-        ])->whereIn('trade_status', ['Pending', 'Validated'])->get();
+        ])->whereIn('trade_status', ['Pending', 'Validated', 'Active'])->get();
 
         $financialTrades = FinancialTrade::with([
             'counterparty.creditLimitCurrency', 'product', 'currency',

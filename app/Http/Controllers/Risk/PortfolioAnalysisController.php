@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Risk;
 use App\Http\Controllers\Controller;
 use App\Models\FinancialTrade;
 use App\Models\Trade;
+use Illuminate\Http\Request;
 
 class PortfolioAnalysisController extends Controller
 {
@@ -13,7 +14,7 @@ class PortfolioAnalysisController extends Controller
         $physicalTrades = Trade::with([
             'product', 'uom', 'currency', 'portfolio',
             'index.latestPrice', 'invoices.settlements',
-        ])->whereIn('trade_status', ['Pending', 'Validated', 'Settled'])->get();
+        ])->whereIn('trade_status', ['Pending', 'Validated', 'Active', 'Settled'])->get();
 
         $financialTrades = FinancialTrade::with([
             'product', 'uom', 'currency', 'portfolio',
@@ -61,7 +62,7 @@ class PortfolioAnalysisController extends Controller
         ];
 
         // ── Exposure by Currency (physical + financial combined) ──────────────
-        $allActive = $physicalTrades->whereIn('trade_status', ['Pending', 'Validated']);
+        $allActive = $physicalTrades->whereIn('trade_status', ['Pending', 'Validated', 'Active']);
         $finActive = $financialTrades->whereIn('trade_status', ['Pending', 'Validated', 'Active', 'Open']);
 
         $physCcyGroups = $allActive->groupBy('currency_id');
