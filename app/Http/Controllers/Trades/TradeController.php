@@ -246,7 +246,7 @@ class TradeController extends Controller
             'currencies'      => Currency::where('is_active', true)->orderBy('code')->get(),
             'paymentTerms'    => PaymentTerm::orderBy('name')->get(),
             'incoterms'       => Incoterm::orderBy('code')->get(),
-            'brokers'         => Broker::where('status', 'Authorized')->orderBy('name')->get(),
+            'brokers'         => Broker::where('status', 'Active')->orderBy('name')->get(),
             'agreements'      => Agreement::where('status', 'Authorized')->orderBy('name')->get(),
             'traders'         => User::orderBy('name')->get(),
             'pipelines'       => $pipelines,

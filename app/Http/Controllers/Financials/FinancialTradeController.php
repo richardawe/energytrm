@@ -203,9 +203,9 @@ class FinancialTradeController extends Controller
                                      ->orderBy('short_name')->get(),
             'products'       => Product::where('status', 'Authorized')->orderBy('name')->get(),
             'uoms'           => Uom::orderBy('code')->get(),
-            'indices'        => IndexDefinition::where('status', 'Authorized')->orderBy('index_name')->get(),
+            'indices'        => IndexDefinition::where('rec_status', 'Authorized')->orderBy('index_name')->get(),
             'currencies'     => Currency::where('is_active', true)->orderBy('code')->get(),
-            'brokers'        => Broker::where('status', 'Authorized')->orderBy('name')->get(),
+            'brokers'        => Broker::where('status', 'Active')->orderBy('name')->get(),
             'agreements'     => Agreement::where('status', 'Authorized')->orderBy('name')->get(),
         ];
     }
