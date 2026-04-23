@@ -405,6 +405,47 @@
             </div>
             @endif
 
+            {{-- Clearing & Hedge --}}
+            @if($trade->settlement_method || $trade->clearing_venue || $trade->clearing_broker_id || $trade->hedge_designation)
+            <div class="card card-etrm mb-3">
+                <div class="card-header">Clearing &amp; Hedge Accounting</div>
+                <div class="card-body" style="font-size:.85rem;">
+                    <div class="row g-2">
+                        <div class="col-5 text-muted">Settlement Method</div>
+                        <div class="col-7">{{ $trade->settlement_method ?? '—' }}</div>
+                        @if($trade->lot_size)
+                        <div class="col-5 text-muted">Lot Size</div>
+                        <div class="col-7">{{ number_format($trade->lot_size, 2) }}</div>
+                        @endif
+                        @if($trade->number_of_lots)
+                        <div class="col-5 text-muted">Number of Lots</div>
+                        <div class="col-7">{{ $trade->number_of_lots }}</div>
+                        @endif
+                        @if($trade->clearing_venue)
+                        <div class="col-5 text-muted">Clearing Venue</div>
+                        <div class="col-7">{{ $trade->clearing_venue }}</div>
+                        @endif
+                        @if($trade->clearingBroker)
+                        <div class="col-5 text-muted">Clearing Broker</div>
+                        <div class="col-7">{{ $trade->clearingBroker->short_name }}</div>
+                        @endif
+                        @if($trade->margin_account_ref)
+                        <div class="col-5 text-muted">Margin Account Ref</div>
+                        <div class="col-7">{{ $trade->margin_account_ref }}</div>
+                        @endif
+                        @if($trade->hedge_designation)
+                        <div class="col-5 text-muted">Hedge Designation</div>
+                        <div class="col-7">{{ $trade->hedge_designation }}</div>
+                        @endif
+                        @if($trade->hedged_item_reference)
+                        <div class="col-5 text-muted">Hedged Item Ref</div>
+                        <div class="col-7">{{ $trade->hedged_item_reference }}</div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <div class="card card-etrm mb-3">
                 <div class="card-header">Record Info</div>
                 <div class="card-body" style="font-size:.85rem;">

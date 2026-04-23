@@ -16,6 +16,7 @@ use App\Models\Portfolio;
 use App\Models\Product;
 use App\Models\Trade;
 use App\Models\AuditLog;
+use App\Models\TransportClass;
 use App\Models\Uom;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -252,8 +253,9 @@ class TradeController extends Controller
             'pipelines'       => $pipelines,
             'pipelineCascade' => $pipelineCascade,
             'productIndexMap' => $productIndexMap,
-            'financialTrades' => FinancialTrade::whereIn('trade_status', ['Active', 'Open', 'Validated'])
-                                               ->orderBy('deal_number')->get(),
+            'financialTrades'   => FinancialTrade::whereIn('trade_status', ['Active', 'Open', 'Validated'])
+                                                 ->orderBy('deal_number')->get(),
+            'transportClasses' => TransportClass::where('is_active', true)->orderBy('name')->get(),
         ];
     }
 

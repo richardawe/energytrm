@@ -14,15 +14,17 @@ class Trade extends Model
     protected $fillable = [
         'deal_number', 'transaction_number', 'instrument_number', 'version',
         'trade_status', 'trade_date', 'buy_sell', 'pay_rec',
-        'start_date', 'end_date',
+        'start_date', 'start_time', 'end_date',
         'internal_bu_id', 'portfolio_id', 'counterparty_id',
         'trader_id',
-        'product_id', 'quantity', 'volume_type', 'uom_id', 'price_unit_id',
-        'fixed_float', 'index_id', 'fixed_price', 'spread',
+        'product_id', 'quantity', 'volume_type', 'deal_volume_type', 'uom_id', 'price_unit_id',
+        'fixed_float', 'reset_period', 'payment_period', 'payment_date_offset', 'pricing_formula',
+        'index_id', 'fixed_price', 'spread',
         'reference_source', 'put_call',
         'currency_id', 'payment_terms_id',
         'incoterm_code', 'load_port', 'discharge_port',
         'pipeline_id', 'zone_id', 'location_id', 'fuel_percent',
+        'transfer_method_id',
         'broker_id', 'agreement_id', 'comments',
         'hedged_by_financial_trade_id',
         'created_by', 'validated_by', 'validated_at',
@@ -37,6 +39,7 @@ class Trade extends Model
         'fixed_price'  => 'decimal:6',
         'spread'       => 'decimal:6',
         'fuel_percent' => 'decimal:4',
+        'start_time'   => 'string',
     ];
 
     public static function derivePayRec(string $buySell): string
@@ -156,6 +159,11 @@ class Trade extends Model
     public function location(): BelongsTo
     {
         return $this->belongsTo(PipelineLocation::class, 'location_id');
+    }
+
+    public function transferMethod(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\TransportClass::class, 'transfer_method_id');
     }
 
     public function trader(): BelongsTo

@@ -34,6 +34,26 @@ class Party extends Model
         return $this->hasMany(Portfolio::class, 'business_unit_id');
     }
 
+    public function addresses(): HasMany
+    {
+        return $this->hasMany(PartyAddress::class);
+    }
+
+    public function notes(): HasMany
+    {
+        return $this->hasMany(PartyNote::class);
+    }
+
+    public function creditRatings(): HasMany
+    {
+        return $this->hasMany(CreditRating::class);
+    }
+
+    public function settlementInstructions(): HasMany
+    {
+        return $this->hasMany(SettlementInstruction::class);
+    }
+
     // Scope helpers
     public function scopeGroups($q)       { return $q->where('party_type', 'Group'); }
     public function scopeLegalEntities($q){ return $q->where('party_type', 'LE'); }

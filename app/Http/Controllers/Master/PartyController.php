@@ -47,7 +47,7 @@ class PartyController extends Controller
 
     public function show(Party $party)
     {
-        $party->load('parent', 'children', 'creditLimitCurrency', 'portfolios');
+        $party->load(['parent', 'children', 'creditLimitCurrency', 'portfolios', 'addresses', 'notes', 'creditRatings', 'settlementInstructions']);
         return view('master.parties.show', compact('party'));
     }
 

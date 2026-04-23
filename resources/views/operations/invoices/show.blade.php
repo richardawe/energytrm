@@ -53,6 +53,33 @@
 
                         <div class="col-md-3 text-muted">Payment Terms</div>
                         <div class="col-md-3">{{ $invoice->paymentTerms?->name ?? '—' }}</div>
+
+                        <div class="col-md-3 text-muted">Invoice Type</div>
+                        <div class="col-md-3">{{ $invoice->invoice_type ?? 'Commodity' }}</div>
+                        @if($invoice->invoice_reference_external)
+                        <div class="col-md-3 text-muted">External Reference</div>
+                        <div class="col-md-3"><code>{{ $invoice->invoice_reference_external }}</code></div>
+                        @endif
+                        @if($invoice->tax_amount)
+                        <div class="col-md-3 text-muted">Tax Amount</div>
+                        <div class="col-md-3">{{ number_format($invoice->tax_amount, 2) }} {{ $invoice->currency->code }}
+                            @if($invoice->tax_code) <span class="text-muted small">({{ $invoice->tax_code }})</span>@endif
+                        </div>
+                        @endif
+                        <div class="col-md-3 text-muted">Dispute Status</div>
+                        <div class="col-md-3">
+                            @if($invoice->dispute_status === 'Disputed')
+                                <span class="badge badge-do-not-use">Disputed</span>
+                            @elseif($invoice->dispute_status === 'Under Review')
+                                <span class="badge badge-pending">Under Review</span>
+                            @else
+                                <span class="badge bg-secondary">Undisputed</span>
+                            @endif
+                        </div>
+                        @if($invoice->dispute_reason)
+                        <div class="col-md-3 text-muted">Dispute Reason</div>
+                        <div class="col-md-9 text-danger small">{{ $invoice->dispute_reason }}</div>
+                        @endif
                     </div>
                 </div>
             </div>

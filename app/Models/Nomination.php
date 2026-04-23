@@ -9,15 +9,19 @@ class Nomination extends Model
 {
     protected $fillable = [
         'nomination_number', 'trade_id',
-        'gas_day', 'pipeline_operator', 'delivery_point',
-        'nominated_volume', 'confirmed_volume', 'uom_id',
-        'nomination_status', 'comments', 'created_by',
+        'gas_day', 'scheduling_window', 'pipeline_operator', 'delivery_point',
+        'nominated_volume', 'counterpart_nominated_volume', 'imbalance_quantity',
+        'confirmed_volume', 'uom_id',
+        'nomination_status', 'submission_timestamp', 'comments', 'created_by',
     ];
 
     protected $casts = [
-        'gas_day'           => 'date',
-        'nominated_volume'  => 'decimal:4',
-        'confirmed_volume'  => 'decimal:4',
+        'gas_day'                       => 'date',
+        'nominated_volume'              => 'decimal:4',
+        'confirmed_volume'              => 'decimal:4',
+        'counterpart_nominated_volume'  => 'decimal:4',
+        'imbalance_quantity'            => 'decimal:4',
+        'submission_timestamp'          => 'datetime',
     ];
 
     public static function nextNominationNumber(): string

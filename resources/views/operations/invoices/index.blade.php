@@ -32,6 +32,7 @@
                 <thead>
                     <tr>
                         <th>Invoice No</th>
+                        <th>Type</th>
                         <th>Trade</th>
                         <th>Counterparty</th>
                         <th>Invoice Date</th>
@@ -39,6 +40,7 @@
                         <th class="text-end">Amount</th>
                         <th>CCY</th>
                         <th class="text-center">Status</th>
+                        <th class="text-center">Dispute</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -46,6 +48,7 @@
                     @forelse($invoices as $inv)
                     <tr>
                         <td><a href="{{ route('operations.invoices.show', $inv) }}" class="fw-semibold text-decoration-none">{{ $inv->invoice_number }}</a></td>
+                        <td><span class="badge bg-secondary" style="font-size:.7rem;">{{ $inv->invoice_type ?? 'Commodity' }}</span></td>
                         <td><a href="{{ route('trades.show', $inv->trade) }}" class="text-decoration-none">{{ $inv->trade->deal_number }}</a></td>
                         <td>{{ $inv->counterparty->short_name }}</td>
                         <td>{{ $inv->invoice_date->format('d-M-Y') }}</td>
@@ -64,12 +67,19 @@
                             @endphp
                             <span class="badge {{ $cls }}">{{ $inv->invoice_status }}</span>
                         </td>
+                        <td class="text-center">
+                            @if(($inv->dispute_status ?? 'Undisputed') === 'Disputed')
+                                <span class="badge badge-do-not-use" style="font-size:.7rem;">Disputed</span>
+                            @elseif(($inv->dispute_status ?? '') === 'Under Review')
+                                <span class="badge badge-pending" style="font-size:.7rem;">Review</span>
+                            @endif
+                        </td>
                         <td class="text-end">
                             <a href="{{ route('operations.invoices.show', $inv) }}" class="btn btn-outline-secondary btn-xs py-0 px-2" style="font-size:.75rem;">View</a>
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="9" class="text-center text-muted py-4">No invoices found.</td></tr>
+                    <tr><td colspan="11" class="text-center text-muted py-4">No invoices found.</td></tr>
                     @endforelse
                 </tbody>
             </table>

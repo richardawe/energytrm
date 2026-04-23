@@ -340,6 +340,52 @@
             </div>
         </div>
 
+        {{-- Clearing & Hedge --}}
+        <div class="card card-etrm mt-3">
+            <div class="card-header">Clearing &amp; Hedge Accounting <span class="text-muted small fw-normal">— optional</span></div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Settlement Method</label>
+                        <select name="settlement_method" class="form-select">
+                            <option value="Cash-Settled" {{ old('settlement_method', $trade->settlement_method ?? 'Cash-Settled') == 'Cash-Settled' ? 'selected' : '' }}>Cash-Settled</option>
+                            <option value="Physically-Delivered" {{ old('settlement_method', $trade->settlement_method ?? '') == 'Physically-Delivered' ? 'selected' : '' }}>Physically-Delivered</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Clearing Venue</label>
+                        <input type="text" name="clearing_venue" class="form-control" value="{{ old('clearing_venue', $trade->clearing_venue) }}" placeholder="ICE Clear Europe, CME Clearing…">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Clearing Broker</label>
+                        <select name="clearing_broker_id" class="form-select">
+                            <option value="">— none —</option>
+                            @foreach($clearingParties as $p)
+                            <option value="{{ $p->id }}" {{ old('clearing_broker_id', $trade->clearing_broker_id) == $p->id ? 'selected' : '' }}>{{ $p->short_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Margin Account Reference</label>
+                        <input type="text" name="margin_account_ref" class="form-control" value="{{ old('margin_account_ref', $trade->margin_account_ref) }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Hedge Designation</label>
+                        <select name="hedge_designation" class="form-select">
+                            <option value="">— none / speculative —</option>
+                            @foreach(['Fair Value Hedge','Cash Flow Hedge','Economic Hedge','Speculative'] as $hd)
+                            <option value="{{ $hd }}" {{ old('hedge_designation', $trade->hedge_designation) == $hd ? 'selected' : '' }}>{{ $hd }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Hedged Item Reference</label>
+                        <input type="text" name="hedged_item_reference" class="form-control" value="{{ old('hedged_item_reference', $trade->hedged_item_reference) }}" placeholder="Physical trade ID or description">
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="d-flex gap-2 mt-2 mb-4">
             <button type="submit" class="btn btn-primary"
                     style="background:var(--etrm-secondary);border-color:var(--etrm-secondary);">
