@@ -6,13 +6,26 @@ use App\Http\Controllers\Master\PaymentTermController;
 use App\Http\Controllers\Master\IncotermController;
 use App\Http\Controllers\Master\TransportClassController;
 use App\Http\Controllers\Master\PartyController;
+use App\Http\Controllers\Master\PartyAddressController;
+use App\Http\Controllers\Master\PartyNoteController;
+use App\Http\Controllers\Master\CreditRatingController;
 use App\Http\Controllers\Master\ProductController;
 use App\Http\Controllers\Master\UomController;
 use App\Http\Controllers\Master\IndexDefinitionController;
+use App\Http\Controllers\Master\IndexGridPointController;
 use App\Http\Controllers\Master\AgreementController;
 use App\Http\Controllers\Master\BrokerController;
+use App\Http\Controllers\Master\BrokerCommissionController;
 use App\Http\Controllers\Master\PortfolioController;
 use App\Http\Controllers\Master\PipelineController;
+use App\Http\Controllers\Master\ExchangeController;
+use App\Http\Controllers\Master\GoverningBodyController;
+use App\Http\Controllers\Master\CommodityController;
+use App\Http\Controllers\Master\ContractTypeController;
+use App\Http\Controllers\Master\SettlementInstructionController;
+use App\Http\Controllers\Master\AccountController;
+use App\Http\Controllers\Master\SecurityGroupController;
+use App\Http\Controllers\Master\TradingLocationController;
 use App\Http\Controllers\Trades\TradeController;
 use App\Http\Controllers\Operations\ShipmentController;
 use App\Http\Controllers\Operations\InvoiceController;
@@ -30,6 +43,9 @@ use App\Http\Controllers\Training\ScenarioController;
 use App\Http\Controllers\Risk\PortfolioAnalysisController;
 use App\Http\Controllers\Risk\CounterpartyExposureController;
 use App\Http\Controllers\Risk\VarController;
+use App\Http\Controllers\Risk\VarConfigController;
+use App\Http\Controllers\Risk\StressScenarioController;
+use App\Http\Controllers\Risk\CreditWarningController;
 use App\Http\Controllers\Risk\ReportsController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
@@ -58,35 +74,79 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('master')->name('master.')->group(function () {
         // Write routes registered FIRST so /create and /edit are matched before the {id} wildcard
         Route::middleware('role:admin')->group(function () {
-            Route::resource('currencies',        CurrencyController::class)->except(['index', 'show']);
-            Route::resource('payment-terms',     PaymentTermController::class)->except(['index', 'show']);
-            Route::resource('incoterms',         IncotermController::class)->except(['index', 'show']);
-            Route::resource('transport-classes', TransportClassController::class)->except(['index', 'show']);
-            Route::resource('parties',           PartyController::class)->except(['index', 'show']);
-            Route::resource('products',          ProductController::class)->except(['index', 'show']);
-            Route::resource('uoms',              UomController::class)->except(['index', 'show']);
-            Route::resource('indices',           IndexDefinitionController::class)->except(['index', 'show']);
-            Route::resource('agreements',        AgreementController::class)->except(['index', 'show']);
-            Route::resource('brokers',           BrokerController::class)->except(['index', 'show']);
-            Route::resource('portfolios',        PortfolioController::class)->except(['index', 'show']);
-            Route::resource('pipelines',         PipelineController::class)->except(['index', 'show', 'destroy']);
-            Route::post('pipelines/{pipeline}/zones',                      [PipelineController::class, 'storeZone'])->name('pipelines.zones.store');
-            Route::post('pipelines/{pipeline}/zones/{zone}/locations',     [PipelineController::class, 'storeLocation'])->name('pipelines.locations.store');
+            Route::resource('currencies',             CurrencyController::class)->except(['index', 'show']);
+            Route::resource('payment-terms',          PaymentTermController::class)->except(['index', 'show']);
+            Route::resource('incoterms',              IncotermController::class)->except(['index', 'show']);
+            Route::resource('transport-classes',      TransportClassController::class)->except(['index', 'show']);
+            Route::resource('parties',                PartyController::class)->except(['index', 'show']);
+            Route::resource('products',               ProductController::class)->except(['index', 'show']);
+            Route::resource('uoms',                   UomController::class)->except(['index', 'show']);
+            Route::resource('indices',                IndexDefinitionController::class)->except(['index', 'show']);
+            Route::resource('agreements',             AgreementController::class)->except(['index', 'show']);
+            Route::resource('brokers',                BrokerController::class)->except(['index', 'show']);
+            Route::resource('portfolios',             PortfolioController::class)->except(['index', 'show']);
+            Route::resource('pipelines',              PipelineController::class)->except(['index', 'show', 'destroy']);
+            Route::resource('exchanges',              ExchangeController::class)->except(['index', 'show']);
+            Route::resource('governing-bodies',       GoverningBodyController::class)->except(['index', 'show']);
+            Route::resource('commodities',            CommodityController::class)->except(['index', 'show']);
+            Route::resource('contract-types',         ContractTypeController::class)->except(['index', 'show']);
+            Route::resource('settlement-instructions',SettlementInstructionController::class)->except(['index', 'show']);
+            Route::resource('accounts',               AccountController::class)->except(['index', 'show']);
+            Route::resource('security-groups',        SecurityGroupController::class)->except(['index']);
+            Route::resource('trading-locations',      TradingLocationController::class)->except(['index']);
+            // Party nested resources — write routes before wildcards
+            Route::post('parties/{party}/addresses',               [PartyAddressController::class, 'store'])->name('parties.addresses.store');
+            Route::get('parties/{party}/addresses/create',         [PartyAddressController::class, 'create'])->name('parties.addresses.create');
+            Route::get('parties/{party}/addresses/{address}/edit', [PartyAddressController::class, 'edit'])->name('parties.addresses.edit');
+            Route::put('parties/{party}/addresses/{address}',      [PartyAddressController::class, 'update'])->name('parties.addresses.update');
+            Route::delete('parties/{party}/addresses/{address}',   [PartyAddressController::class, 'destroy'])->name('parties.addresses.destroy');
+            Route::post('parties/{party}/notes',                   [PartyNoteController::class, 'store'])->name('parties.notes.store');
+            Route::get('parties/{party}/notes/create',             [PartyNoteController::class, 'create'])->name('parties.notes.create');
+            Route::get('parties/{party}/notes/{note}/edit',        [PartyNoteController::class, 'edit'])->name('parties.notes.edit');
+            Route::put('parties/{party}/notes/{note}',             [PartyNoteController::class, 'update'])->name('parties.notes.update');
+            Route::delete('parties/{party}/notes/{note}',          [PartyNoteController::class, 'destroy'])->name('parties.notes.destroy');
+            Route::post('parties/{party}/credit-ratings',               [CreditRatingController::class, 'store'])->name('parties.credit-ratings.store');
+            Route::get('parties/{party}/credit-ratings/create',         [CreditRatingController::class, 'create'])->name('parties.credit-ratings.create');
+            Route::get('parties/{party}/credit-ratings/{rating}/edit',  [CreditRatingController::class, 'edit'])->name('parties.credit-ratings.edit');
+            Route::put('parties/{party}/credit-ratings/{rating}',       [CreditRatingController::class, 'update'])->name('parties.credit-ratings.update');
+            Route::delete('parties/{party}/credit-ratings/{rating}',    [CreditRatingController::class, 'destroy'])->name('parties.credit-ratings.destroy');
+            // Broker commission nested routes
+            Route::get('brokers/{broker}/commissions/create',           [BrokerCommissionController::class, 'create'])->name('brokers.commissions.create');
+            Route::post('brokers/{broker}/commissions',                  [BrokerCommissionController::class, 'store'])->name('brokers.commissions.store');
+            Route::get('broker-commissions/{commission}/edit',           [BrokerCommissionController::class, 'edit'])->name('brokers.commissions.edit');
+            Route::put('broker-commissions/{commission}',                [BrokerCommissionController::class, 'update'])->name('brokers.commissions.update');
+            Route::delete('broker-commissions/{commission}',             [BrokerCommissionController::class, 'destroy'])->name('brokers.commissions.destroy');
+            // Index grid point nested routes — write before {index} wildcard
+            Route::get('indices/{index}/grid-points/create',             [IndexGridPointController::class, 'create'])->name('indices.grid-points.create');
+            Route::post('indices/{index}/grid-points',                   [IndexGridPointController::class, 'store'])->name('indices.grid-points.store');
+            Route::get('indices/{index}/grid-points/{gridPoint}/edit',   [IndexGridPointController::class, 'edit'])->name('indices.grid-points.edit');
+            Route::put('indices/{index}/grid-points/{gridPoint}',        [IndexGridPointController::class, 'update'])->name('indices.grid-points.update');
+            Route::delete('indices/{index}/grid-points/{gridPoint}',     [IndexGridPointController::class, 'destroy'])->name('indices.grid-points.destroy');
+            Route::post('pipelines/{pipeline}/zones',                    [PipelineController::class, 'storeZone'])->name('pipelines.zones.store');
+            Route::post('pipelines/{pipeline}/zones/{zone}/locations',   [PipelineController::class, 'storeLocation'])->name('pipelines.locations.store');
         });
 
         // Read-only routes — all authenticated users (registered after write routes)
-        Route::resource('currencies',        CurrencyController::class)->only(['index', 'show']);
-        Route::resource('payment-terms',     PaymentTermController::class)->only(['index', 'show']);
-        Route::resource('incoterms',         IncotermController::class)->only(['index', 'show']);
-        Route::resource('transport-classes', TransportClassController::class)->only(['index', 'show']);
-        Route::resource('parties',           PartyController::class)->only(['index', 'show']);
-        Route::resource('products',          ProductController::class)->only(['index', 'show']);
-        Route::resource('uoms',              UomController::class)->only(['index', 'show']);
-        Route::resource('indices',           IndexDefinitionController::class)->only(['index', 'show']);
-        Route::resource('agreements',        AgreementController::class)->only(['index', 'show']);
-        Route::resource('brokers',           BrokerController::class)->only(['index', 'show']);
-        Route::resource('portfolios',        PortfolioController::class)->only(['index', 'show']);
-        Route::resource('pipelines',         PipelineController::class)->only(['index', 'show']);
+        Route::resource('currencies',             CurrencyController::class)->only(['index', 'show']);
+        Route::resource('payment-terms',          PaymentTermController::class)->only(['index', 'show']);
+        Route::resource('incoterms',              IncotermController::class)->only(['index', 'show']);
+        Route::resource('transport-classes',      TransportClassController::class)->only(['index', 'show']);
+        Route::resource('parties',                PartyController::class)->only(['index', 'show']);
+        Route::resource('products',               ProductController::class)->only(['index', 'show']);
+        Route::resource('uoms',                   UomController::class)->only(['index', 'show']);
+        Route::resource('indices',                IndexDefinitionController::class)->only(['index', 'show']);
+        Route::resource('agreements',             AgreementController::class)->only(['index', 'show']);
+        Route::resource('brokers',                BrokerController::class)->only(['index', 'show']);
+        Route::resource('portfolios',             PortfolioController::class)->only(['index', 'show']);
+        Route::resource('pipelines',              PipelineController::class)->only(['index', 'show']);
+        Route::resource('exchanges',              ExchangeController::class)->only(['index', 'show']);
+        Route::resource('governing-bodies',       GoverningBodyController::class)->only(['index', 'show']);
+        Route::resource('commodities',            CommodityController::class)->only(['index', 'show']);
+        Route::resource('contract-types',         ContractTypeController::class)->only(['index', 'show']);
+        Route::resource('settlement-instructions',SettlementInstructionController::class)->only(['index', 'show']);
+        Route::resource('accounts',               AccountController::class)->only(['index', 'show']);
+        Route::resource('security-groups',        SecurityGroupController::class)->only(['index']);
+        Route::resource('trading-locations',      TradingLocationController::class)->only(['index']);
     });
 
     // ── Physical Trades (Phase 2) ─────────────────────────────────────────────
@@ -150,6 +210,15 @@ Route::middleware(['auth'])->group(function () {
         Route::get('var',                  [VarController::class,                 'index'])->name('var');
         Route::get('reports',              [ReportsController::class,             'index'])->name('reports');
         Route::post('reports/generate',    [ReportsController::class,             'generate'])->name('reports.generate');
+        // VaR Configuration, Stress Scenarios, Credit Warnings — write behind admin, reads for all
+        Route::middleware('role:admin')->group(function () {
+            Route::resource('var-config',       VarConfigController::class)->except(['index', 'show'])->names('var-config');
+            Route::resource('stress-scenarios', StressScenarioController::class)->except(['index', 'show'])->names('stress-scenarios');
+            Route::resource('credit-warnings',  CreditWarningController::class)->except(['index', 'show'])->names('credit-warnings');
+        });
+        Route::resource('var-config',       VarConfigController::class)->only(['index'])->names('var-config');
+        Route::resource('stress-scenarios', StressScenarioController::class)->only(['index', 'show'])->names('stress-scenarios');
+        Route::resource('credit-warnings',  CreditWarningController::class)->only(['index'])->names('credit-warnings');
     });
 
     // ── Training UX ───────────────────────────────────────────────────────────
@@ -160,7 +229,7 @@ Route::middleware(['auth'])->group(function () {
 
     // ── User Management & Admin (Phase 5) ─────────────────────────────────────
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
-        Route::resource('users', UserController::class)->except(['show']);
+        Route::resource('users', UserController::class);
         Route::get('audit', [AuditLogController::class, 'index'])->name('audit.index');
     });
 });

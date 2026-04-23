@@ -54,6 +54,25 @@
                         <label class="form-label fw-semibold">Comments</label>
                         <textarea name="comments" class="form-control" rows="2">{{ old('comments', $nomination->comments) }}</textarea>
                     </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Scheduling Window</label>
+                        <select name="scheduling_window" class="form-select">
+                            <option value="">— none —</option>
+                            @foreach(['Gas Day','Trading Day','Calendar Day','Hourly'] as $w)
+                                <option value="{{ $w }}" {{ old('scheduling_window', $nomination->scheduling_window) == $w ? 'selected' : '' }}>{{ $w }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Counterpart Nominated Volume</label>
+                        <input type="number" step="0.0001" name="counterpart_nominated_volume" class="form-control"
+                               value="{{ old('counterpart_nominated_volume', $nomination->counterpart_nominated_volume) }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Imbalance Quantity</label>
+                        <input type="number" step="0.0001" name="imbalance_quantity" class="form-control"
+                               value="{{ old('imbalance_quantity', $nomination->imbalance_quantity) }}">
+                    </div>
                 </div>
             </div>
             <div class="card-footer d-flex gap-2">

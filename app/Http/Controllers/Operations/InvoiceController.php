@@ -46,14 +46,20 @@ class InvoiceController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'trade_id'        => 'required|exists:trades,id',
-            'invoice_date'    => 'required|date',
-            'due_date'        => 'nullable|date|after_or_equal:invoice_date',
-            'invoice_amount'  => 'required|numeric|min:0',
-            'currency_id'     => 'required|exists:currencies,id',
-            'payment_terms_id'=> 'nullable|exists:payment_terms,id',
-            'invoice_status'  => 'required|in:Draft,Issued,Paid,Overdue,Cancelled',
-            'comments'        => 'nullable|string|max:1000',
+            'trade_id'                   => 'required|exists:trades,id',
+            'invoice_date'               => 'required|date',
+            'due_date'                   => 'nullable|date|after_or_equal:invoice_date',
+            'invoice_amount'             => 'required|numeric|min:0',
+            'currency_id'                => 'required|exists:currencies,id',
+            'payment_terms_id'           => 'nullable|exists:payment_terms,id',
+            'invoice_status'             => 'required|in:Draft,Issued,Paid,Overdue,Cancelled',
+            'comments'                   => 'nullable|string|max:1000',
+            'invoice_type'               => 'nullable|in:Commodity,Demurrage,Freight,Commission,Tax,Other',
+            'invoice_reference_external' => 'nullable|string|max:100',
+            'tax_amount'                 => 'nullable|numeric|min:0',
+            'tax_code'                   => 'nullable|string|max:50',
+            'dispute_status'             => 'nullable|in:Undisputed,In Dispute,Resolved',
+            'dispute_reason'             => 'nullable|string|max:2000',
         ]);
 
         $trade = Trade::findOrFail($data['trade_id']);
@@ -88,13 +94,19 @@ class InvoiceController extends Controller
     public function update(Request $request, Invoice $invoice)
     {
         $data = $request->validate([
-            'invoice_date'    => 'required|date',
-            'due_date'        => 'nullable|date',
-            'invoice_amount'  => 'required|numeric|min:0',
-            'currency_id'     => 'required|exists:currencies,id',
-            'payment_terms_id'=> 'nullable|exists:payment_terms,id',
-            'invoice_status'  => 'required|in:Draft,Issued,Paid,Overdue,Cancelled',
-            'comments'        => 'nullable|string|max:1000',
+            'invoice_date'               => 'required|date',
+            'due_date'                   => 'nullable|date',
+            'invoice_amount'             => 'required|numeric|min:0',
+            'currency_id'               => 'required|exists:currencies,id',
+            'payment_terms_id'           => 'nullable|exists:payment_terms,id',
+            'invoice_status'             => 'required|in:Draft,Issued,Paid,Overdue,Cancelled',
+            'comments'                   => 'nullable|string|max:1000',
+            'invoice_type'               => 'nullable|in:Commodity,Demurrage,Freight,Commission,Tax,Other',
+            'invoice_reference_external' => 'nullable|string|max:100',
+            'tax_amount'                 => 'nullable|numeric|min:0',
+            'tax_code'                   => 'nullable|string|max:50',
+            'dispute_status'             => 'nullable|in:Undisputed,In Dispute,Resolved',
+            'dispute_reason'             => 'nullable|string|max:2000',
         ]);
 
         DB::transaction(function () use ($data, $invoice) {

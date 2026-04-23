@@ -36,15 +36,18 @@ class NominationController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'trade_id'          => 'required|exists:trades,id',
-            'gas_day'           => 'required|date',
-            'pipeline_operator' => 'nullable|string|max:100',
-            'delivery_point'    => 'nullable|string|max:100',
-            'nominated_volume'  => 'required|numeric|min:0.0001',
-            'confirmed_volume'  => 'nullable|numeric|min:0',
-            'uom_id'            => 'required|exists:uoms,id',
-            'nomination_status' => 'required|in:Pending,Confirmed,Matched,Unmatched',
-            'comments'          => 'nullable|string|max:1000',
+            'trade_id'                    => 'required|exists:trades,id',
+            'gas_day'                     => 'required|date',
+            'pipeline_operator'           => 'nullable|string|max:100',
+            'delivery_point'              => 'nullable|string|max:100',
+            'nominated_volume'            => 'required|numeric|min:0.0001',
+            'confirmed_volume'            => 'nullable|numeric|min:0',
+            'uom_id'                      => 'required|exists:uoms,id',
+            'nomination_status'           => 'required|in:Pending,Confirmed,Matched,Unmatched',
+            'comments'                    => 'nullable|string|max:1000',
+            'scheduling_window'           => 'nullable|in:Gas Day,Trading Day,Calendar Day,Hourly',
+            'counterpart_nominated_volume'=> 'nullable|numeric|min:0',
+            'imbalance_quantity'          => 'nullable|numeric',
         ]);
 
         $data['nomination_number'] = Nomination::nextNominationNumber();
@@ -65,14 +68,17 @@ class NominationController extends Controller
     public function update(Request $request, Nomination $nomination)
     {
         $data = $request->validate([
-            'gas_day'           => 'required|date',
-            'pipeline_operator' => 'nullable|string|max:100',
-            'delivery_point'    => 'nullable|string|max:100',
-            'nominated_volume'  => 'required|numeric|min:0.0001',
-            'confirmed_volume'  => 'nullable|numeric|min:0',
-            'uom_id'            => 'required|exists:uoms,id',
-            'nomination_status' => 'required|in:Pending,Confirmed,Matched,Unmatched',
-            'comments'          => 'nullable|string|max:1000',
+            'gas_day'                     => 'required|date',
+            'pipeline_operator'           => 'nullable|string|max:100',
+            'delivery_point'              => 'nullable|string|max:100',
+            'nominated_volume'            => 'required|numeric|min:0.0001',
+            'confirmed_volume'            => 'nullable|numeric|min:0',
+            'uom_id'                      => 'required|exists:uoms,id',
+            'nomination_status'           => 'required|in:Pending,Confirmed,Matched,Unmatched',
+            'comments'                    => 'nullable|string|max:1000',
+            'scheduling_window'           => 'nullable|in:Gas Day,Trading Day,Calendar Day,Hourly',
+            'counterpart_nominated_volume'=> 'nullable|numeric|min:0',
+            'imbalance_quantity'          => 'nullable|numeric',
         ]);
 
         $nomination->update($data);

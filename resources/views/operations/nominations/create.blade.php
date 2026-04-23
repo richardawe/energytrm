@@ -27,6 +27,15 @@
                                value="{{ old('gas_day', date('Y-m-d')) }}">
                         @error('gas_day')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Scheduling Window</label>
+                        <select name="scheduling_window" class="form-select">
+                            <option value="">— optional —</option>
+                            @foreach(['Day-Ahead','Intraday','Real-Time','Within-Day'] as $sw)
+                            <option value="{{ $sw }}" {{ old('scheduling_window') == $sw ? 'selected' : '' }}>{{ $sw }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Pipeline Operator</label>
                         <input type="text" name="pipeline_operator" class="form-control"
@@ -48,6 +57,18 @@
                         <label class="form-label fw-semibold">Confirmed Volume</label>
                         <input type="number" name="confirmed_volume" step="0.0001" min="0"
                                class="form-control" value="{{ old('confirmed_volume') }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Counterpart Nominated Volume</label>
+                        <input type="number" name="counterpart_nominated_volume" step="0.0001" min="0"
+                               class="form-control" value="{{ old('counterpart_nominated_volume') }}"
+                               placeholder="From counterparty">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Imbalance Quantity</label>
+                        <input type="number" name="imbalance_quantity" step="0.0001"
+                               class="form-control" value="{{ old('imbalance_quantity') }}"
+                               placeholder="Nominated − Delivered">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">UOM <span class="text-danger">*</span></label>

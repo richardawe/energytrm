@@ -12,17 +12,20 @@ class FinancialTrade extends Model
 {
     protected $fillable = [
         'deal_number', 'transaction_number', 'instrument_number', 'version',
-        'instrument_type', 'trade_status', 'trade_date',
+        'instrument_type', 'settlement_method', 'trade_status', 'trade_date',
         'internal_bu_id', 'portfolio_id', 'counterparty_id', 'currency_id',
         'product_id', 'buy_sell', 'pay_rec', 'broker_id', 'agreement_id', 'comments',
+        'hedge_designation', 'hedged_item_reference',
         'hedges_physical_trade_id',
         // Swap
         'swap_type', 'fixed_rate', 'float_index_id', 'second_index_id',
         'notional_quantity', 'uom_id', 'spread', 'payment_frequency',
         'start_date', 'end_date',
         // Futures
-        'exchange', 'contract_code', 'expiry_date', 'num_contracts',
-        'contract_size', 'futures_price', 'margin_requirement', 'futures_index_id',
+        'exchange', 'clearing_venue', 'clearing_broker_id', 'margin_account_ref',
+        'contract_code', 'expiry_date', 'num_contracts',
+        'contract_size', 'lot_size', 'number_of_lots',
+        'futures_price', 'margin_requirement', 'futures_index_id',
         // Options
         'option_type', 'exercise_style', 'strike_price', 'option_expiry_date',
         'premium', 'underlying_index_id', 'volatility',
@@ -42,6 +45,7 @@ class FinancialTrade extends Model
         'spread'             => 'decimal:6',
         'futures_price'      => 'decimal:6',
         'contract_size'      => 'decimal:4',
+        'lot_size'           => 'decimal:4',
         'margin_requirement' => 'decimal:2',
         'strike_price'       => 'decimal:6',
         'premium'            => 'decimal:6',
@@ -130,6 +134,11 @@ class FinancialTrade extends Model
     public function hedgesPhysicalTrade(): BelongsTo
     {
         return $this->belongsTo(Trade::class, 'hedges_physical_trade_id');
+    }
+
+    public function clearingBroker(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Party::class, 'clearing_broker_id');
     }
 
     public function settlements(): HasMany { return $this->hasMany(FinancialSettlement::class); }

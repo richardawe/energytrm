@@ -13,12 +13,16 @@ class Invoice extends Model
         'invoice_date', 'due_date', 'invoice_amount',
         'currency_id', 'payment_terms_id',
         'invoice_status', 'comments', 'created_by',
+        'invoice_type', 'invoice_reference_external',
+        'tax_amount', 'tax_code',
+        'dispute_status', 'dispute_reason',
     ];
 
     protected $casts = [
         'invoice_date'   => 'date',
         'due_date'       => 'date',
         'invoice_amount' => 'decimal:2',
+        'tax_amount'     => 'decimal:2',
     ];
 
     public static function nextInvoiceNumber(): string

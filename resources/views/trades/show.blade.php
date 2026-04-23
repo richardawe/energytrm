@@ -229,6 +229,47 @@
             </div>
             @endif
 
+            {{-- Pricing & Scheduling --}}
+            @if($trade->start_time || $trade->deal_volume_type || $trade->reset_period || $trade->payment_period || $trade->pricing_formula || $trade->transfer_method_id)
+            <div class="card card-etrm mb-3">
+                <div class="card-header">Pricing &amp; Scheduling</div>
+                <div class="card-body" style="font-size:.85rem;">
+                    <div class="row g-2">
+                        @if($trade->start_time)
+                        <div class="col-5 text-muted">Start Time</div>
+                        <div class="col-7">{{ $trade->start_time }}</div>
+                        @endif
+                        @if($trade->deal_volume_type)
+                        <div class="col-5 text-muted">Deal Volume Type</div>
+                        <div class="col-7">{{ $trade->deal_volume_type }}</div>
+                        @endif
+                        @if($trade->reset_period)
+                        <div class="col-5 text-muted">Reset Period</div>
+                        <div class="col-7">{{ $trade->reset_period }}</div>
+                        @endif
+                        @if($trade->payment_period)
+                        <div class="col-5 text-muted">Payment Period</div>
+                        <div class="col-7">{{ $trade->payment_period }}</div>
+                        @endif
+                        @if($trade->payment_date_offset !== null)
+                        <div class="col-5 text-muted">Payment Date Offset</div>
+                        <div class="col-7">{{ $trade->payment_date_offset }} days</div>
+                        @endif
+                        @if($trade->transferMethod)
+                        <div class="col-5 text-muted">Transfer Method</div>
+                        <div class="col-7">{{ $trade->transferMethod->name }}</div>
+                        @endif
+                        @if($trade->pricing_formula)
+                        <div class="col-12 mt-1">
+                            <div class="text-muted mb-1">Pricing Formula</div>
+                            <div class="border rounded p-2 bg-light small font-monospace">{{ $trade->pricing_formula }}</div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <div class="card card-etrm mb-3">
                 <div class="card-header">Record Info</div>
                 <div class="card-body" style="font-size:.85rem;">

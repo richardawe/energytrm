@@ -344,6 +344,63 @@
             </div>
         </div>
 
+        {{-- Pricing & Scheduling --}}
+        <div class="card card-etrm mt-3">
+            <div class="card-header">Pricing &amp; Scheduling <span class="text-muted small fw-normal">— optional</span></div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Start Time</label>
+                        <input type="time" name="start_time" class="form-control" value="{{ old('start_time', $trade->start_time) }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Deal Volume Type</label>
+                        <select name="deal_volume_type" class="form-select">
+                            <option value="">— optional —</option>
+                            @foreach(['Contract','Daily','Hourly','Period','Yearly'] as $vt)
+                            <option value="{{ $vt }}" {{ old('deal_volume_type', $trade->deal_volume_type) == $vt ? 'selected' : '' }}>{{ $vt }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Reset Period</label>
+                        <select name="reset_period" class="form-select">
+                            <option value="">— optional —</option>
+                            @foreach(['Daily','Weekly','Monthly','Quarterly','Yearly'] as $rp)
+                            <option value="{{ $rp }}" {{ old('reset_period', $trade->reset_period) == $rp ? 'selected' : '' }}>{{ $rp }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Payment Period</label>
+                        <select name="payment_period" class="form-select">
+                            <option value="">— optional —</option>
+                            @foreach(['Daily','Weekly','Monthly','Quarterly','Yearly'] as $pp)
+                            <option value="{{ $pp }}" {{ old('payment_period', $trade->payment_period) == $pp ? 'selected' : '' }}>{{ $pp }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Payment Date Offset (days)</label>
+                        <input type="number" name="payment_date_offset" class="form-control" value="{{ old('payment_date_offset', $trade->payment_date_offset) }}">
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label fw-semibold">Transfer Method</label>
+                        <select name="transfer_method_id" class="form-select">
+                            <option value="">— optional —</option>
+                            @foreach($transportClasses as $tc)
+                            <option value="{{ $tc->id }}" {{ old('transfer_method_id', $trade->transfer_method_id) == $tc->id ? 'selected' : '' }}>{{ $tc->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Pricing Formula</label>
+                        <textarea name="pricing_formula" class="form-control" rows="2" placeholder="e.g. AVG(BRENT, -3D, 0D) + 2.50">{{ old('pricing_formula', $trade->pricing_formula) }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="d-flex gap-2 mt-2 mb-4">
             <button type="submit" class="btn btn-warning fw-semibold">Save Amendment</button>
             <a href="{{ route('trades.show', $trade) }}" class="btn btn-outline-secondary">Cancel</a>

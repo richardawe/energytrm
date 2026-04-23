@@ -8,17 +8,25 @@
     <div class="row g-3">
         @php
         $sections = [
-            ['title'=>'Currencies',        'route'=>'master.currencies.index',        'icon'=>'💱', 'desc'=>'FX rates and currency codes'],
-            ['title'=>'Payment Terms',     'route'=>'master.payment-terms.index',     'icon'=>'📅', 'desc'=>'Invoice payment conditions'],
-            ['title'=>'Incoterms',         'route'=>'master.incoterms.index',         'icon'=>'🚢', 'desc'=>'Trade delivery terms'],
-            ['title'=>'Transport Classes', 'route'=>'master.transport-classes.index', 'icon'=>'🚛', 'desc'=>'Barge, pipeline, rail, truck'],
-            ['title'=>'Parties',           'route'=>'master.parties.index',           'icon'=>'🏢', 'desc'=>'Legal entities, business units'],
-            ['title'=>'Products',          'route'=>'master.products.index',          'icon'=>'🛢️', 'desc'=>'Commodities and products'],
-            ['title'=>'Units of Measure',  'route'=>'master.uoms.index',              'icon'=>'⚖️', 'desc'=>'MT, BBL, MMBTU, MWh'],
-            ['title'=>'Indices / Curves',  'route'=>'master.indices.index',           'icon'=>'📈', 'desc'=>'Market indices and forward curves'],
-            ['title'=>'Agreements',        'route'=>'master.agreements.index',        'icon'=>'📄', 'desc'=>'Counterparty agreements'],
-            ['title'=>'Brokers',           'route'=>'master.brokers.index',           'icon'=>'🤝', 'desc'=>'Brokerage firms and commission schedules'],
-            ['title'=>'Portfolios',        'route'=>'master.portfolios.index',        'icon'=>'📁', 'desc'=>'Internal trading portfolios'],
+            ['title'=>'Currencies',             'route'=>'master.currencies.index',             'icon'=>'💱', 'desc'=>'FX rates and currency codes'],
+            ['title'=>'Payment Terms',          'route'=>'master.payment-terms.index',          'icon'=>'📅', 'desc'=>'Invoice payment conditions'],
+            ['title'=>'Incoterms',              'route'=>'master.incoterms.index',              'icon'=>'🚢', 'desc'=>'Trade delivery terms'],
+            ['title'=>'Transport Classes',      'route'=>'master.transport-classes.index',      'icon'=>'🚛', 'desc'=>'Barge, pipeline, rail, truck'],
+            ['title'=>'Parties',                'route'=>'master.parties.index',                'icon'=>'🏢', 'desc'=>'Legal entities, business units'],
+            ['title'=>'Products',               'route'=>'master.products.index',               'icon'=>'🛢️', 'desc'=>'Commodities and products'],
+            ['title'=>'Units of Measure',       'route'=>'master.uoms.index',                   'icon'=>'⚖️', 'desc'=>'MT, BBL, MMBTU, MWh'],
+            ['title'=>'Indices / Curves',       'route'=>'master.indices.index',                'icon'=>'📈', 'desc'=>'Market indices and forward curves'],
+            ['title'=>'Agreements',             'route'=>'master.agreements.index',             'icon'=>'📄', 'desc'=>'Counterparty agreements'],
+            ['title'=>'Brokers',                'route'=>'master.brokers.index',                'icon'=>'🤝', 'desc'=>'Brokerage firms and commission schedules'],
+            ['title'=>'Portfolios',             'route'=>'master.portfolios.index',             'icon'=>'📁', 'desc'=>'Internal trading portfolios'],
+            ['title'=>'Exchanges',              'route'=>'master.exchanges.index',              'icon'=>'🏛️', 'desc'=>'ICE, CME and other trading exchanges'],
+            ['title'=>'Governing Bodies',       'route'=>'master.governing-bodies.index',       'icon'=>'⚖️', 'desc'=>'Regulatory and legal authorities'],
+            ['title'=>'Commodities',            'route'=>'master.commodities.index',            'icon'=>'⚡', 'desc'=>'Energy, metal and agricultural commodities'],
+            ['title'=>'Contract Types',         'route'=>'master.contract-types.index',         'icon'=>'📋', 'desc'=>'Spot, term, framework contracts'],
+            ['title'=>'Settlement Instructions','route'=>'master.settlement-instructions.index','icon'=>'🏦', 'desc'=>'SI records for payment routing'],
+            ['title'=>'Accounts',               'route'=>'master.accounts.index',               'icon'=>'💳', 'desc'=>'Nostro, Vostro, margin accounts'],
+            ['title'=>'Security Groups',        'route'=>'master.security-groups.index',        'icon'=>'🔐', 'desc'=>'User access and permission groups'],
+            ['title'=>'Trading Locations',      'route'=>'master.trading-locations.index',      'icon'=>'📍', 'desc'=>'Office and trading desk locations'],
         ];
         @endphp
 

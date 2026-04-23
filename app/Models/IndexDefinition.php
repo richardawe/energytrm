@@ -7,8 +7,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class IndexDefinition extends Model
 {
     protected $fillable = [
-        'version', 'index_name', 'market', 'index_group', 'format',
-        'class', 'base_currency_id', 'uom_id', 'status', 'rec_status',
+        'version', 'index_name', 'label', 'market', 'index_group', 'index_subgroup', 'format',
+        'class', 'base_currency_id', 'uom_id', 'status', 'version_status', 'rec_status',
+        'delivery_unit', 'date_sequence', 'payment_convention', 'coverage_end_date',
+        'interpolation', 'inheritance', 'discount_index_id', 'reference_source',
+        'projection_method', 'day_start_time', 'holiday_schedule', 'index_type',
+    ];
+
+    protected $casts = [
+        'inheritance'       => 'boolean',
+        'coverage_end_date' => 'date',
+        'discount_index_id' => 'integer',
     ];
 
     public function baseCurrency(): BelongsTo
@@ -29,5 +38,10 @@ class IndexDefinition extends Model
     public function latestPrice()
     {
         return $this->hasOne(IndexGridPoint::class, 'index_id')->latestOfMany('price_date');
+    }
+
+    public function discountIndex(): BelongsTo
+    {
+        return $this->belongsTo(IndexDefinition::class, 'discount_index_id');
     }
 }
