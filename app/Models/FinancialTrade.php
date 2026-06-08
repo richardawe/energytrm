@@ -252,7 +252,7 @@ class FinancialTrade extends Model
         $S     = $this->optionSpotPrice();
         $K     = (float) $this->strike_price;
         $sigma = (float) $this->volatility;
-        $r     = 0.05; // risk-free rate (training constant — 5%)
+        $r     = (float) \Illuminate\Support\Facades\Cache::get('risk_free_rate', 0.05);
         $T     = max(0, now()->diffInDays($this->option_expiry_date) / 365.0);
 
         if ($T <= 0 || $S <= 0 || $K <= 0 || $sigma <= 0) return null;

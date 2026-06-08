@@ -234,6 +234,8 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::resource('users', UserController::class);
         Route::get('audit', [AuditLogController::class, 'index'])->name('audit.index');
+        Route::post('market-data/refresh', [App\Http\Controllers\Admin\MarketDataRefreshController::class, 'refresh'])
+             ->name('market-data.refresh');
     });
 });
 

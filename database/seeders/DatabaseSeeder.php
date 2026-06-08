@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             FinancialTradeSeeder::class,
             FieldDescriptionSeeder::class,
             GuidedScenarioSeeder::class,
+            MarketDataFeedSeeder::class,  // wire live data sources to index definitions
         ]);
     }
 }

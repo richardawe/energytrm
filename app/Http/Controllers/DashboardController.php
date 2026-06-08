@@ -13,11 +13,12 @@ use App\Models\Invoice;
 use App\Models\Party;
 use App\Models\Settlement;
 use App\Models\Trade;
+use App\Services\MarketData\MarketDataIngestor;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(MarketDataIngestor $ingestor)
     {
         // ── KPI: Pending validation ───────────────────────────────────────────
         $pendingPhysical  = Trade::where('trade_status', 'Pending')->count();
@@ -99,6 +100,9 @@ class DashboardController extends Controller
         $scenarios = GuidedScenario::where('is_active', true)
             ->orderBy('sort_order')->get();
 
+        // ── Market data feed status ───────────────────────────────────────────
+        $feedStatus = $ingestor->feedStatus();
+
         return view('dashboard', compact(
             'pendingTotal', 'pendingPhysical', 'pendingFinancial',
             'portfolioMtm', 'swapMtm', 'futuresPnl', 'physicalPnl',
@@ -107,7 +111,8 @@ class DashboardController extends Controller
             'pendingPhysicalTrades', 'pendingFinancialTrades',
             'overdueInvoices',
             'marketPrices', 'netPositions',
-            'recentActivity', 'scenarios'
+            'recentActivity', 'scenarios',
+            'feedStatus'
         ));
     }
 

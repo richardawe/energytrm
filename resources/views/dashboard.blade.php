@@ -310,6 +310,9 @@
                 </div>
             </div>
 
+            {{-- Market Data Feed Status --}}
+            @include('partials.market-feed-status')
+
             {{-- Net Position --}}
             <div class="card card-etrm mb-3">
                 <div class="card-header fw-semibold d-flex justify-content-between">
