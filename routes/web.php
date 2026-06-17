@@ -41,6 +41,7 @@ use App\Http\Controllers\Financials\PnlController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Training\ScenarioController;
+use App\Http\Controllers\Training\VideoController;
 use App\Http\Controllers\Risk\PortfolioAnalysisController;
 use App\Http\Controllers\Risk\CounterpartyExposureController;
 use App\Http\Controllers\Risk\VarController;
@@ -226,8 +227,10 @@ Route::middleware(['auth'])->group(function () {
 
     // ── Training UX ───────────────────────────────────────────────────────────
     Route::prefix('training')->name('training.')->group(function () {
-        Route::get('scenarios',          [ScenarioController::class, 'index'])->name('scenarios.index');
+        Route::get('scenarios',           [ScenarioController::class, 'index'])->name('scenarios.index');
         Route::get('scenarios/{scenario}',[ScenarioController::class, 'show'])->name('scenarios.show');
+        Route::get('videos',              [VideoController::class, 'index'])->name('videos.index');
+        Route::get('videos/{module}',     [VideoController::class, 'show'])->name('videos.show');
     });
 
     // ── User Management & Admin (Phase 5) ─────────────────────────────────────

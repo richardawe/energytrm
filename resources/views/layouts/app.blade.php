@@ -50,9 +50,23 @@
                     <a class="nav-link {{ request()->routeIs('risk.*') ? 'active' : '' }}"
                        href="{{ route('risk.dashboard') }}">Risk &amp; Analytics</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('training.*') ? 'active' : '' }}"
-                       href="{{ route('training.scenarios.index') }}">Training</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {{ request()->routeIs('training.*') ? 'active' : '' }}"
+                       href="#" role="button" data-bs-toggle="dropdown">Training</a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item {{ request()->routeIs('training.videos.*') ? 'active' : '' }}"
+                               href="{{ route('training.videos.index') }}">
+                                <i class="bi bi-play-circle me-2"></i>Video Library
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item {{ request()->routeIs('training.scenarios.*') ? 'active' : '' }}"
+                               href="{{ route('training.scenarios.index') }}">
+                                <i class="bi bi-signpost-2 me-2"></i>Guided Scenarios
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 @if(Auth::user()->isAdmin())
                 <li class="nav-item dropdown">
