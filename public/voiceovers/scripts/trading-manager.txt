@@ -1,0 +1,251 @@
+======================================================================
+MODULE: Trading Manager and Trade Lifecycle
+Slides: 58–85  (28 slides)
+Estimated runtime: 227 seconds
+======================================================================
+
+[TITLE CARD — 3s]
+Module narration: "Welcome to Trading Manager and Trade Lifecycle."
+
+[SLIDE 58  —  8s  (1/28)]
+  Raw text from slide:
+    • Overview of Endur
+    • Trading Manager
+  Narration script:
+    Overview of Endur.  Trading Manager.
+
+[SLIDE 59  —  8s  (2/28)]
+  Raw text from slide:
+    • Trading Manager
+    • Captures deals
+    • Retrieve and view existing trades
+    • Run and view reports
+    • Performs on-the-fly simulations
+    • Revalue portfolios
+  Narration script:
+    Trading Manager.  Captures deals.  Retrieve and view existing trades.  Run and view reports.  Performs on-the-fly simulations.  Revalue portfolios.
+
+[SLIDE 60  —  8s  (3/28)]
+  Raw text from slide:
+    • Trading Manager Browser
+  Narration script:
+    Trading Manager Browser.
+
+[SLIDE 61  —  8s  (4/28)]
+  Raw text from slide:
+    • Trade Numbering
+    • Toolsets
+    • Instruments
+    • Transactions
+    • Instrument Number
+    • Transaction Number
+    • Deal Number
+    • Each trade has specific identification numbers and dates assigned to it
+  Narration script:
+    Trade Numbering.  Toolsets.  Instruments.  Transactions.  Instrument Number.  Transaction Number.  Deal Number.  Each trade has specific identification numbers and dates assigned to it.
+
+[SLIDE 62  —  8s  (5/28)]
+  Raw text from slide:
+    • Trade Dates
+    • Input Date
+    • Deal
+    • Trade Date
+  Narration script:
+    Trade Dates.  Input Date.  Deal.  Trade Date.
+
+[SLIDE 63  —  8s  (6/28)]
+  Raw text from slide:
+    • Trading Platform
+    • Browser window
+    • Trading query
+    • Customisable browser
+    • Trade key concepts:
+    • Dates
+    • Input
+    • Trade
+    • Numbers
+    • Instrument
+  Narration script:
+    Trading Platform.  Browser window.  Trading query.  Customisable browser.  Trade key concepts:.  Dates.  Input.  Trade.  Numbers.
+
+[SLIDE 64  —  8s  (7/28)]
+  Raw text from slide:
+    • Transaction Lifecycle
+  Narration script:
+    Transaction Lifecycle.
+
+[SLIDE 65  —  8s  (8/28)]
+  Raw text from slide:
+    • Trade Events
+    • Generated when deals are booked to
+    • Validated
+    • status
+    • Represent a roadmap operating on the deal
+  Narration script:
+    Trade Events.  Generated when deals are booked to.  Validated.  status.  Represent a roadmap operating on the deal.
+
+[SLIDE 66  —  8s  (9/28)]
+  Raw text from slide:
+    • Trade Numbering
+  Narration script:
+    Trade Numbering.
+
+[SLIDE 67  —  8s  (10/28)]
+  Raw text from slide:
+    • Power Trading
+    • Products -
+    • defines the days and hours, including holidays, in which electricity will be delivered
+    • Custom
+    • Full requirement
+    • Hourly Products
+  Narration script:
+    Power Trading.  Products -.  defines the days and hours, including holidays, in which electricity will be delivered.  Custom.  Full requirement.  Hourly Products.
+
+[SLIDE 68  —  8s  (11/28)]
+  Raw text from slide:
+    • Price Bands, Power Products, Power Curves and Delivery Locations
+    • Power Curves
+    • Power Product
+    • Price Bands
+    • Delivery Locations
+    • Peak
+    • Off-Peak
+    • Hourly
+    • Valuation Curve
+    • Valuation product
+  Narration script:
+    Price Bands, Power Products, Power Curves and Delivery Locations.  Power Curves.  Power Product.  Price Bands.  Delivery Locations.  Peak.  Off-Peak.  Hourly.  Valuation Curve.
+
+[SLIDE 69  —  8s  (12/28)]
+  Raw text from slide:
+    • Deal Entry in the Power Toolset
+  Narration script:
+    Deal Entry in the Power Toolset.
+
+[SLIDE 70  —  8s  (13/28)]
+  Raw text from slide:
+    • Deal Entry - Secondary Input
+  Narration script:
+    Deal Entry - Secondary Input.
+
+[SLIDE 71  —  8s  (14/28)]
+  Raw text from slide:
+    • Deal Entry - Deal Profile - Physical side
+  Narration script:
+    Deal Entry - Deal Profile - Physical side.
+
+[SLIDE 72  —  8s  (15/28)]
+  Raw text from slide:
+    • Deal Entry - Deal Profile - Fixed Side
+  Narration script:
+    Deal Entry - Deal Profile - Fixed Side.
+
+[SLIDE 73  —  8s  (16/28)]
+  Raw text from slide:
+    • Deal Entry - Reset - Physical Side
+  Narration script:
+    Deal Entry - Reset - Physical Side.
+
+[SLIDE 74  —  8s  (17/28)]
+  Raw text from slide:
+    • Deal Entry - Reset - Physical Side - Priced
+  Narration script:
+    Deal Entry - Reset - Physical Side - Priced.
+
+[SLIDE 75  —  8s  (18/28)]
+  Raw text from slide:
+    • Price the Deal
+    • NPV
+    • Physical Side + Fixed Side
+  Narration script:
+    Price the Deal.  NPV.  Physical Side + Fixed Side.
+
+[SLIDE 76  —  8s  (19/28)]
+  Raw text from slide:
+    • Pricing the Fixed Side of the deal
+  Narration script:
+    Pricing the Fixed Side of the deal.
+
+[SLIDE 77  —  8s  (20/28)]
+  Raw text from slide:
+    • Pricing the Physical Side of the deal
+  Narration script:
+    Pricing the Physical Side of the deal.
+
+[SLIDE 78  —  8s  (21/28)]
+  Raw text from slide:
+    • Modify the deal
+    • Modify the Deal
+    • Note the changes to Value of the Deal
+    • Run a Simulation:
+  Narration script:
+    Modify the deal.  Modify the Deal.  Note the changes to Value of the Deal.  Run a Simulation:.
+
+[SLIDE 79  —  8s  (22/28)]
+  Raw text from slide:
+    • Validate the Deal
+  Narration script:
+    Validate the Deal.
+
+[SLIDE 80  —  8s  (23/28)]
+  Raw text from slide:
+    • Portfolio Revaluations
+    • Simulations are a list of results for pricing, valuing and accounting for transactions
+    • Run simulations against transactions
+    • Can be run
+    • on-the-fly
+    • or as part of
+    • EOD
+    • Accrued interest calculations
+    • Cash settlements
+    • MTM
+  Narration script:
+    Portfolio Revaluations.  Simulations are a list of results for pricing, valuing and accounting for transactions.  Run simulations against transactions.  Can be run.  on-the-fly.  or as part of.  EOD.  Accrued interest calculations.  Cash settlements.
+
+[SLIDE 81  —  8s  (24/28)]
+  Raw text from slide:
+    • Trade Entry
+    • TOOLSETS
+    • Represents a specific market / Group of similar instruments
+    • Enter one deal at a time
+    • Multiple fields of information
+    • TRADER DESKTOP
+    • Generic or for a specific instrument
+    • Enter multiple deals at a time
+    • User configurable (fields, columns, and push buttons)
+    • Can enter default values
+  Narration script:
+    Trade Entry.  TOOLSETS.  Represents a specific market / Group of similar instruments.  Enter one deal at a time.  Multiple fields of information.  TRADER DESKTOP.  Generic or for a specific instrument.  Enter multiple deals at a time.  User configurable (fields, columns, and push buttons).
+
+[SLIDE 82  —  8s  (25/28)]
+  Raw text from slide:
+    • Trader Desktop
+  Narration script:
+    Trader Desktop.
+
+[SLIDE 83  —  8s  (26/28)]
+  Raw text from slide:
+    • Recap and Questions ?
+  Narration script:
+    Recap and Questions ?.
+
+[SLIDE 84  —  8s  (27/28)]
+  Raw text from slide:
+    • The Lifecycle of a Trade
+  Narration script:
+    The Lifecycle of a Trade.
+
+[SLIDE 85  —  8s  (28/28)]
+  Raw text from slide:
+    • Endur Managers
+    • Back office validation
+    • Commit to a preliminary status
+    • Trading Manager:
+    • Trade Blotter
+    • (Deal Entry)
+    • Admin Manager:
+    • Global administrative data (i.e., static data maintenance, security privileges, network grids)
+    • Trading Manager:
+    • Master instrument  - sharable toolset, templates - unique toolset
+  Narration script:
+    Endur Managers.  Back office validation.  Commit to a preliminary status.  Trading Manager:.  Trade Blotter.  (Deal Entry).  Admin Manager:.  Global administrative data (i.e., static data maintenance, security privileges, network grids).  Trading Manager:.

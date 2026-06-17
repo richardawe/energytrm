@@ -1,0 +1,94 @@
+======================================================================
+MODULE: Admin Manager
+Slides: 32–39  (8 slides)
+Estimated runtime: 67 seconds
+======================================================================
+
+[TITLE CARD — 3s]
+Module narration: "Welcome to Admin Manager."
+
+[SLIDE 32  —  8s  (1/8)]
+  Raw text from slide:
+    • Admin Manager
+  Narration script:
+    Admin Manager.
+
+[SLIDE 33  —  8s  (2/8)]
+  Raw text from slide:
+    • Admin Manager
+    • Performs multiple administrative tasks:
+    • System configuration
+    • Maintenance of static data
+    • Security privileges
+    • Data Model Extension
+  Narration script:
+    Admin Manager.  Performs multiple administrative tasks:.  System configuration.  Maintenance of static data.  Security privileges.  Data Model Extension.
+
+[SLIDE 34  —  8s  (3/8)]
+  Raw text from slide:
+    • Admin Manager
+  Narration script:
+    Admin Manager.
+
+[SLIDE 35  —  8s  (4/8)]
+  Raw text from slide:
+    • Admin Manager
+    • General Administration
+    • Contains links to the general tasks used to set up Endur .
+    • Compliance
+    • Contains compliance related tasks, such as
+    • Security Groups and Activity Audit .
+    • Data Model Extension
+    • Used to create fields beyond those stored in the base system .
+    • Energy Administration
+    • Tasks specific to the energy industry such as pipelines, locations, zones, products, and time zones.
+  Narration script:
+    Admin Manager.  General Administration.  Contains links to the general tasks used to set up Endur .  Compliance.  Contains compliance related tasks, such as.  Security Groups and Activity Audit .  Data Model Extension.  Used to create fields beyond those stored in the base system .  Energy Administration.
+
+[SLIDE 36  —  8s  (5/8)]
+  Raw text from slide:
+    • Admin Manager
+    • General Administration
+    • Broadcast Channel
+    • Date Sequence
+    • Portfolio Groups
+    • Printer Set-up
+    • Purge Configuration
+    • Static Data
+    • System Wide Configuration
+    • Unit conversion
+  Narration script:
+    Admin Manager.  General Administration.  Broadcast Channel.  Date Sequence.  Portfolio Groups.  Printer Set-up.  Purge Configuration.  Static Data.  System Wide Configuration.
+
+[SLIDE 37  —  8s  (6/8)]
+  Raw text from slide:
+    • Admin Manager
+    • Compliance
+    • Activity Audit
+    • Error Log and Console Viewer
+    • Password Modification
+    • Security Groups
+    • System Shutdown
+  Narration script:
+    Admin Manager.  Compliance.  Activity Audit.  Error Log and Console Viewer.  Password Modification.  Security Groups.  System Shutdown.
+
+[SLIDE 38  —  8s  (7/8)]
+  Raw text from slide:
+    • Admin Manager
+    • Data Model Extension
+    • Adhoc Query
+    • Index Info
+    • Instrument Builder/Tran Info
+    • Password Modification
+    • Security Groups
+    • System Shutdown
+  Narration script:
+    Admin Manager.  Data Model Extension.  Adhoc Query.  Index Info.  Instrument Builder/Tran Info.  Password Modification.  Security Groups.  System Shutdown.
+
+[SLIDE 39  —  8s  (8/8)]
+  Raw text from slide:
+    • Admin Manager
+    • Transportation Network
+    • ??
+  Narration script:
+    Admin Manager.  Transportation Network.

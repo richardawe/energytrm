@@ -1,0 +1,94 @@
+======================================================================
+MODULE: Reference Manager
+Slides: 40–50  (11 slides)
+Estimated runtime: 91 seconds
+======================================================================
+
+[TITLE CARD — 3s]
+Module narration: "Welcome to Reference Manager."
+
+[SLIDE 40  —  8s  (1/11)]
+  Raw text from slide:
+    • Reference Manager
+  Narration script:
+    Reference Manager.
+
+[SLIDE 41  —  8s  (2/11)]
+  Raw text from slide:
+    • Reference Manager
+    • Portfolio
+    • Personnel
+    • Parties
+  Narration script:
+    Reference Manager.  Portfolio.  Personnel.  Parties.
+
+[SLIDE 42  —  8s  (3/11)]
+  Raw text from slide:
+    • Reference Manager Portfolios
+    • Portfolios - The trader's "book" structure.
+  Narration script:
+    Reference Manager Portfolios.  Portfolios - The trader's "book" structure.
+
+[SLIDE 43  —  8s  (4/11)]
+  Raw text from slide:
+    • Reference Manager Personnel
+    • Contacts in counterparty organizations
+    • Internal
+    • E.G.: broker contacts
+    • Personnel - users in the system.
+    • External
+    • Contacts in your Organisation (Non-System users)
+    • E.G.: Admin Staff/Manager
+    • Licensed user
+    • Contacts in your Organisation (Authorized System users)
+  Narration script:
+    Reference Manager Personnel.  Contacts in counterparty organizations.  Internal.  E.G.: broker contacts.  Personnel - users in the system.  External.  Contacts in your Organisation (Non-System users).  E.G.: Admin Staff/Manager.  Licensed user.
+
+[SLIDE 44  —  8s  (5/11)]
+  Raw text from slide:
+    • Reference Manager Personnel
+  Narration script:
+    Reference Manager Personnel.
+
+[SLIDE 45  —  8s  (6/11)]
+  Raw text from slide:
+    • A corporate structure is a "party group" in the system.
+    • Legal entities
+    • Business units.
+    • Reference Manager   Party Group
+  Narration script:
+    A corporate structure is a "party group" in the system.  Legal entities.  Business units.  Reference Manager   Party Group.
+
+[SLIDE 46  —  8s  (7/11)]
+  Raw text from slide:
+    • Reference Manager   Party Group
+  Narration script:
+    Reference Manager   Party Group.
+
+[SLIDE 47  —  8s  (8/11)]
+  Raw text from slide:
+    • Party Group - Required Party Information
+    • An Account  - to be used for trading.
+    • Settlement Instructions  - Tells the system how to settle each instrument in the currency or commodity traded.
+    • Party Agreement and Agreement Conditions  - created and maintained within the Legal Entity to determine the terms of the trades that will be booked by the party.
+  Narration script:
+    Party Group - Required Party Information.  An Account  - to be used for trading.  Settlement Instructions  - Tells the system how to settle each instrument in the currency or commodity traded.  Party Agreement and Agreement Conditions  - created and maintained within the Legal Entity to determine the terms of the trades that will be booked by the party.
+
+[SLIDE 48  —  8s  (9/11)]
+  Raw text from slide:
+    • Party Group Business Unit
+  Narration script:
+    Party Group Business Unit.
+
+[SLIDE 49  —  8s  (10/11)]
+  Raw text from slide:
+    • Party Group Legal Entity
+    • Contractual obligations of the Party Group
+  Narration script:
+    Party Group Legal Entity.  Contractual obligations of the Party Group.
+
+[SLIDE 50  —  8s  (11/11)]
+  Raw text from slide:
+    • Party Group   Party Agreements
+  Narration script:
+    Party Group   Party Agreements.

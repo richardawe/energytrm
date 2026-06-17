@@ -1,0 +1,213 @@
+======================================================================
+MODULE: Introduction to OpenLink and Endur
+Slides: 1–18  (18 slides)
+Estimated runtime: 147 seconds
+======================================================================
+
+[TITLE CARD — 3s]
+Module narration: "Welcome to Introduction to OpenLink and Endur."
+
+[SLIDE 1  —  8s  (1/18)]
+  Raw text from slide:
+    • Introduction to
+    • OpenLink and Endur
+    • Endur Training
+  Narration script:
+    Introduction to.  OpenLink and Endur.  Endur Training.
+
+[SLIDE 2  —  8s  (2/18)]
+  Raw text from slide:
+    • INTRODUCTION TO ENDUR
+    • Our Aim for today:
+    • To provide an overview of OpenLink Endur processes, terminology and key functionality
+  Narration script:
+    INTRODUCTION TO ENDUR.  Our Aim for today:.  To provide an overview of OpenLink Endur processes, terminology and key functionality.
+
+[SLIDE 3  —  8s  (3/18)]
+  Raw text from slide:
+    • Overview of Endur
+  Narration script:
+    Overview of Endur.
+
+[SLIDE 4  —  8s  (4/18)]
+  Raw text from slide:
+    • Overview of Endur
+    • Middle
+    • Office
+    • Risk Management
+    • Front Office
+    • Trading
+    • Back
+    • Office
+    • Operations Processes
+    • Main functions:
+  Narration script:
+    Overview of Endur.  Middle.  Office.  Risk Management.  Front Office.  Trading.  Back.  Office.  Operations Processes.
+
+[SLIDE 5  —  8s  (5/18)]
+  Raw text from slide:
+    • Overview of Endur Front Office
+    • Enter trades
+    • Price Trades
+    • Revalue portfolios
+    • Run scenario reports
+    • View position reports
+    • Middle
+    • Office
+    • Risk Management
+    • Back
+  Narration script:
+    Overview of Endur Front Office.  Enter trades.  Price Trades.  Revalue portfolios.  Run scenario reports.  View position reports.  Middle.  Office.  Risk Management.
+
+[SLIDE 6  —  8s  (6/18)]
+  Raw text from slide:
+    • Overview of Endur Middle Office
+    • Monitor credit and market risks
+    • Revalue portfolios
+    • Run scenarios
+    • Position and Price Analysis
+    • VaR
+    • Back
+    • Office
+    • Front Office
+    • Trading
+  Narration script:
+    Overview of Endur Middle Office.  Monitor credit and market risks.  Revalue portfolios.  Run scenarios.  Position and Price Analysis.  VaR.  Back.  Office.  Front Office.
+
+[SLIDE 7  —  8s  (7/18)]
+  Raw text from slide:
+    • Overview of Endur Back Office
+    • Price fixings
+    • Generate confirmations and invoices
+    • Document management
+    • Generate reports
+    • Account postings
+    • Front Office
+    • Middle
+    • Office
+    • Risk Management
+  Narration script:
+    Overview of Endur Back Office.  Price fixings.  Generate confirmations and invoices.  Document management.  Generate reports.  Account postings.  Front Office.  Middle.  Office.
+
+[SLIDE 8  —  8s  (8/18)]
+  Raw text from slide:
+    • Overview of Endur
+    • Front-Mid-Back
+    • Middle
+    • Office
+    • Back
+    • Office
+    • Front
+    • Office
+  Narration script:
+    Overview of Endur.  Front-Mid-Back.  Middle.  Office.  Back.  Office.  Front.  Office.
+
+[SLIDE 9  —  8s  (9/18)]
+  Raw text from slide:
+    • Overview of Endur OpenLink Central
+    • Standard View
+    • This is the central point for accessing all Endur Managers - One-Click Access
+  Narration script:
+    Overview of Endur OpenLink Central.  Standard View.  This is the central point for accessing all Endur Managers - One-Click Access.
+
+[SLIDE 10  —  8s  (10/18)]
+  Raw text from slide:
+    • Reference Manager
+    • Maintains internal and external party information:
+    • Parties
+    • Party Groups
+    • Business units
+    • Legal entities
+    • Portfolios
+    • Personnel
+    • Remember the 3Ps!!
+  Narration script:
+    Reference Manager.  Maintains internal and external party information:.  Parties.  Party Groups.  Business units.  Legal entities.  Portfolios.  Personnel.  Remember the 3Ps!!
+
+[SLIDE 11  —  8s  (11/18)]
+  Raw text from slide:
+    • Admin Manager
+    • Performs multiple administrative tasks
+    • Static Data set-up
+    • Security Administration
+    • Data Model Extension
+  Narration script:
+    Admin Manager.  Performs multiple administrative tasks.  Static Data set-up.  Security Administration.  Data Model Extension.
+
+[SLIDE 12  —  8s  (12/18)]
+  Raw text from slide:
+    • Market Manager
+    • Defines curve/index structure:
+    • Financial market curves
+    • Valuation Curves
+    • Market data
+    • Prices
+    • Rates
+    • Volatility and correlation matrices
+  Narration script:
+    Market Manager.  Defines curve/index structure:.  Financial market curves.  Valuation Curves.  Market data.  Prices.  Rates.  Volatility and correlation matrices.
+
+[SLIDE 13  —  8s  (13/18)]
+  Raw text from slide:
+    • Trading Manager
+    • Captures deals
+    • Retrieve and view existing trades
+    • Run and view reports
+    • Performs on-the-fly simulations
+    • Revalue portfolios
+    • Position Management
+  Narration script:
+    Trading Manager.  Captures deals.  Retrieve and view existing trades.  Run and view reports.  Performs on-the-fly simulations.  Revalue portfolios.  Position Management.
+
+[SLIDE 14  —  8s  (14/18)]
+  Raw text from slide:
+    • Credit and Risk Managers
+    • Monitors credit and risk limits through user-defined credit and risk calculations
+    • Credit Manager
+    • Check external exposures
+    • Risk Manager
+    • Check internal exposures
+  Narration script:
+    Credit and Risk Managers.  Monitors credit and risk limits through user-defined credit and risk calculations.  Credit Manager.  Check external exposures.  Risk Manager.  Check internal exposures.
+
+[SLIDE 15  —  8s  (15/18)]
+  Raw text from slide:
+    • Operations Manager
+    • Performs multiple trade administration and back office tasks
+    • Settlements and Confirmation
+    • Document Management
+    • Instrument Fixings
+    • Options Exercise
+    • Automation
+  Narration script:
+    Operations Manager.  Performs multiple trade administration and back office tasks.  Settlements and Confirmation.  Document Management.  Instrument Fixings.  Options Exercise.  Automation.
+
+[SLIDE 16  —  8s  (16/18)]
+  Raw text from slide:
+    • Accounting Manager
+    • Generates accounting data from transactions
+    • Extract and insert information into appropriate accounts at the appropriate time, based on event criteria
+    • Accounting Manager provides the mechanism to answer questions about when/What/Where to make a posting
+  Narration script:
+    Accounting Manager.  Generates accounting data from transactions.  Extract and insert information into appropriate accounts at the appropriate time, based on event criteria.  Accounting Manager provides the mechanism to answer questions about when/What/Where to make a posting.
+
+[SLIDE 17  —  8s  (17/18)]
+  Raw text from slide:
+    • Endur Managers
+    • Back office validation
+    • Commit to a preliminary status
+    • Trading Manager:
+    • Trade Blotter
+    • (Deal Entry)
+    • Admin Manager:
+    • Global administrative data (i.e., static data maintenance, security privileges, network grids)
+    • Trading Manager:
+    • Master instrument  - sharable toolset, templates - unique toolset
+  Narration script:
+    Endur Managers.  Back office validation.  Commit to a preliminary status.  Trading Manager:.  Trade Blotter.  (Deal Entry).  Admin Manager:.  Global administrative data (i.e., static data maintenance, security privileges, network grids).  Trading Manager:.
+
+[SLIDE 18  —  8s  (18/18)]
+  Raw text from slide:
+    • Any Questions ?
+  Narration script:
+    (no narration — transition slide)
