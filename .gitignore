@@ -18,7 +18,9 @@
 /public/slide-images
 /video-generator/node_modules
 /video-generator/tts-cache
+/video-generator/scripts/__pycache__/
 /public/videos/*.mp4
+/energytrm
 /public/voiceovers/*.wav
 /public/voiceovers/*.mp3
 /public/hot
