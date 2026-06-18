@@ -1,251 +1,86 @@
-======================================================================
 MODULE: Trading Manager and Trade Lifecycle
-Slides: 58–85  (28 slides)
-Estimated runtime: 227 seconds
-======================================================================
+Slides: 58–85
 
-[TITLE CARD — 3s]
-Module narration: "Welcome to Trading Manager and Trade Lifecycle."
+[SLIDE 58]
+The Trading Manager is the heart of Endur — where traders capture deals, manage their book, and monitor positions. This module covers both the Trading Manager interface and the full lifecycle of a trade from entry to settlement.
 
-[SLIDE 58  —  8s  (1/28)]
-  Raw text from slide:
-    • Overview of Endur
-    • Trading Manager
-  Narration script:
-    Overview of Endur.  Trading Manager.
+[SLIDE 59]
+The Trading Manager supports the complete front-office workflow: capturing new deals, retrieving and reviewing existing trades, running and viewing reports, performing on-the-fly simulations, revaluing portfolios, and managing your position across all instruments.
 
-[SLIDE 59  —  8s  (2/28)]
-  Raw text from slide:
-    • Trading Manager
-    • Captures deals
-    • Retrieve and view existing trades
-    • Run and view reports
-    • Performs on-the-fly simulations
-    • Revalue portfolios
-  Narration script:
-    Trading Manager.  Captures deals.  Retrieve and view existing trades.  Run and view reports.  Performs on-the-fly simulations.  Revalue portfolios.
+[SLIDE 60]
+When you open the Trading Manager, you land in the Trade Browser — a configurable blotter showing all trades that match your current query. From here you can navigate into any existing deal or launch the deal entry screen to book a new one.
 
-[SLIDE 60  —  8s  (3/28)]
-  Raw text from slide:
-    • Trading Manager Browser
-  Narration script:
-    Trading Manager Browser.
+[SLIDE 61]
+Every trade in Endur receives three distinct identifier numbers. The Instrument Number identifies the specific financial instrument and never changes. The Transaction Number identifies a particular version of the deal and changes when an amendment is made. The Deal Number is a permanent reference that stays the same throughout the trade's life.
 
-[SLIDE 61  —  8s  (4/28)]
-  Raw text from slide:
-    • Trade Numbering
-    • Toolsets
-    • Instruments
-    • Transactions
-    • Instrument Number
-    • Transaction Number
-    • Deal Number
-    • Each trade has specific identification numbers and dates assigned to it
-  Narration script:
-    Trade Numbering.  Toolsets.  Instruments.  Transactions.  Instrument Number.  Transaction Number.  Deal Number.  Each trade has specific identification numbers and dates assigned to it.
+[SLIDE 62]
+Trade dates are equally important to understand. The Input Date is the system timestamp recording when the deal was keyed in. The Trade Date is the economic date — when the parties agreed to the transaction — and may differ from the input date if a deal is back-entered.
 
-[SLIDE 62  —  8s  (5/28)]
-  Raw text from slide:
-    • Trade Dates
-    • Input Date
-    • Deal
-    • Trade Date
-  Narration script:
-    Trade Dates.  Input Date.  Deal.  Trade Date.
+[SLIDE 63]
+The Trading Manager's browser window supports flexible queries so you can filter your trade universe by any combination of criteria: date range, counterparty, instrument type, or status. The browser columns are fully customizable to show whatever matters most to your workflow.
 
-[SLIDE 63  —  8s  (6/28)]
-  Raw text from slide:
-    • Trading Platform
-    • Browser window
-    • Trading query
-    • Customisable browser
-    • Trade key concepts:
-    • Dates
-    • Input
-    • Trade
-    • Numbers
-    • Instrument
-  Narration script:
-    Trading Platform.  Browser window.  Trading query.  Customisable browser.  Trade key concepts:.  Dates.  Input.  Trade.  Numbers.
+[SLIDE 64]
+Every deal in Endur follows a defined transaction lifecycle. A new deal enters in New status, passes through validation and booking, and progresses through a sequence of statuses all the way to settlement or closure.
 
-[SLIDE 64  —  8s  (7/28)]
-  Raw text from slide:
-    • Transaction Lifecycle
-  Narration script:
-    Transaction Lifecycle.
+[SLIDE 65]
+When a deal is booked to Validated status, Endur automatically generates a series of Trade Events. These events represent the operational roadmap for the deal — each event defines an action that must happen, such as a price fixing, a confirmation, or a settlement payment.
 
-[SLIDE 65  —  8s  (8/28)]
-  Raw text from slide:
-    • Trade Events
-    • Generated when deals are booked to
-    • Validated
-    • status
-    • Represent a roadmap operating on the deal
-  Narration script:
-    Trade Events.  Generated when deals are booked to.  Validated.  status.  Represent a roadmap operating on the deal.
+[SLIDE 66]
+Looking at trade numbering in more detail: instruments and transactions are connected in a parent-child relationship. One instrument can have multiple transactions representing different versions over its life. The Instrument Number ties all versions together into a single deal history.
 
-[SLIDE 66  —  8s  (9/28)]
-  Raw text from slide:
-    • Trade Numbering
-  Narration script:
-    Trade Numbering.
+[SLIDE 67]
+For power trading specifically, Endur uses Products to define the delivery schedule — specifying the days and hours, including holiday calendars, during which electricity will be delivered. You can use standard off-the-shelf profiles or create custom hourly products for specific delivery shapes.
 
-[SLIDE 67  —  8s  (10/28)]
-  Raw text from slide:
-    • Power Trading
-    • Products -
-    • defines the days and hours, including holidays, in which electricity will be delivered
-    • Custom
-    • Full requirement
-    • Hourly Products
-  Narration script:
-    Power Trading.  Products -.  defines the days and hours, including holidays, in which electricity will be delivered.  Custom.  Full requirement.  Hourly Products.
+[SLIDE 68]
+Power trades in Endur work with four interconnected concepts: Price Bands distinguish peak delivery from off-peak, Power Products define the delivery schedule, Power Curves provide the market price reference, and Delivery Locations define where the power flows. Each combination can carry its own valuation curve.
 
-[SLIDE 68  —  8s  (11/28)]
-  Raw text from slide:
-    • Price Bands, Power Products, Power Curves and Delivery Locations
-    • Power Curves
-    • Power Product
-    • Price Bands
-    • Delivery Locations
-    • Peak
-    • Off-Peak
-    • Hourly
-    • Valuation Curve
-    • Valuation product
-  Narration script:
-    Price Bands, Power Products, Power Curves and Delivery Locations.  Power Curves.  Power Product.  Price Bands.  Delivery Locations.  Peak.  Off-Peak.  Hourly.  Valuation Curve.
+[SLIDE 69]
+The deal entry screen for the Power Toolset collects the primary deal parameters: counterparty, portfolio, buy or sell direction, commodity, delivery product, and volume. The system performs credit limit checks in real time as you enter the details.
 
-[SLIDE 69  —  8s  (12/28)]
-  Raw text from slide:
-    • Deal Entry in the Power Toolset
-  Narration script:
-    Deal Entry in the Power Toolset.
+[SLIDE 70]
+The Secondary Input tab holds additional deal attributes beyond the primary economics — special payment terms, price formula overrides, scheduling information, and any user-defined fields added through the Admin Manager's Data Model Extension.
 
-[SLIDE 70  —  8s  (13/28)]
-  Raw text from slide:
-    • Deal Entry - Secondary Input
-  Narration script:
-    Deal Entry - Secondary Input.
+[SLIDE 71]
+The Deal Profile for the Physical side captures delivery details: delivery location, timing, and volume profile. For power deals, this is where you assign the Power Product that controls the delivery schedule and shapes the settlement calculations.
 
-[SLIDE 71  —  8s  (14/28)]
-  Raw text from slide:
-    • Deal Entry - Deal Profile - Physical side
-  Narration script:
-    Deal Entry - Deal Profile - Physical side.
+[SLIDE 72]
+The Fixed side of the Deal Profile captures the financial terms — the fixed price or rate at which the commodity is bought or sold. Endur uses this alongside the market index to calculate the net settlement value of the deal.
 
-[SLIDE 72  —  8s  (15/28)]
-  Raw text from slide:
-    • Deal Entry - Deal Profile - Fixed Side
-  Narration script:
-    Deal Entry - Deal Profile - Fixed Side.
+[SLIDE 73]
+The Reset section on the Physical side shows the price reset schedule — how often the deal's floating price is re-fixed against the index. For floating-price deals, this schedule controls when market prices are captured and locked in for settlement.
 
-[SLIDE 73  —  8s  (16/28)]
-  Raw text from slide:
-    • Deal Entry - Reset - Physical Side
-  Narration script:
-    Deal Entry - Reset - Physical Side.
+[SLIDE 74]
+Once a deal is priced, the Resets show the calculated settlement values based on index prices recorded at each reset date. This gives you a live view of what the deal is worth using current market data from the Market Manager.
 
-[SLIDE 74  —  8s  (17/28)]
-  Raw text from slide:
-    • Deal Entry - Reset - Physical Side - Priced
-  Narration script:
-    Deal Entry - Reset - Physical Side - Priced.
+[SLIDE 75]
+Endur calculates the Net Present Value of a deal by combining the Physical side value with the Fixed side value. A positive NPV means you're in the money — the deal is profitable at current market prices. A negative NPV means the market has moved against your position.
 
-[SLIDE 75  —  8s  (18/28)]
-  Raw text from slide:
-    • Price the Deal
-    • NPV
-    • Physical Side + Fixed Side
-  Narration script:
-    Price the Deal.  NPV.  Physical Side + Fixed Side.
+[SLIDE 76]
+Pricing the Fixed side applies the contracted fixed rate to the deal volumes over the entire term. The system breaks this down period by period — month by month or day by day — so you can see exactly how the fixed leg value is built up over the life of the deal.
 
-[SLIDE 76  —  8s  (19/28)]
-  Raw text from slide:
-    • Pricing the Fixed Side of the deal
-  Narration script:
-    Pricing the Fixed Side of the deal.
+[SLIDE 77]
+Pricing the Physical side applies the current market index rates to those same contracted volumes. The result is the floating leg value. By comparing the Physical and Fixed side values you get the mark-to-market, which tells you the current economic value of the position.
 
-[SLIDE 77  —  8s  (20/28)]
-  Raw text from slide:
-    • Pricing the Physical Side of the deal
-  Narration script:
-    Pricing the Physical Side of the deal.
+[SLIDE 78]
+Once a deal is live, you can modify it in Endur. Every change is tracked — the system generates a new transaction number on amendment and preserves the full history. After modifying a deal you can run a simulation immediately to see how the change affects value.
 
-[SLIDE 78  —  8s  (21/28)]
-  Raw text from slide:
-    • Modify the deal
-    • Modify the Deal
-    • Note the changes to Value of the Deal
-    • Run a Simulation:
-  Narration script:
-    Modify the deal.  Modify the Deal.  Note the changes to Value of the Deal.  Run a Simulation:.
+[SLIDE 79]
+Validating a deal is the formal step of committing it from New to Validated status. Once validated, the trade becomes visible to the Back Office, trade events are generated, and the deal becomes part of the official book of record for settlement and reporting.
 
-[SLIDE 79  —  8s  (22/28)]
-  Raw text from slide:
-    • Validate the Deal
-  Narration script:
-    Validate the Deal.
+[SLIDE 80]
+Portfolio Revaluations — also called Simulations — are Endur's mechanism for pricing the entire book at once. They calculate mark-to-market, accrued interest, and cash settlements across all trades in scope. You can run them on-the-fly for an instant snapshot or schedule them as part of the automated end-of-day process.
 
-[SLIDE 80  —  8s  (23/28)]
-  Raw text from slide:
-    • Portfolio Revaluations
-    • Simulations are a list of results for pricing, valuing and accounting for transactions
-    • Run simulations against transactions
-    • Can be run
-    • on-the-fly
-    • or as part of
-    • EOD
-    • Accrued interest calculations
-    • Cash settlements
-    • MTM
-  Narration script:
-    Portfolio Revaluations.  Simulations are a list of results for pricing, valuing and accounting for transactions.  Run simulations against transactions.  Can be run.  on-the-fly.  or as part of.  EOD.  Accrued interest calculations.  Cash settlements.
+[SLIDE 81]
+There are two ways to enter trades in Endur. Toolsets are dedicated screens for a specific instrument type — detailed and guided, walking you through every required field. The Trader Desktop is a more flexible blotter-style screen where you can enter multiple deals at once with configurable columns and default values.
 
-[SLIDE 81  —  8s  (24/28)]
-  Raw text from slide:
-    • Trade Entry
-    • TOOLSETS
-    • Represents a specific market / Group of similar instruments
-    • Enter one deal at a time
-    • Multiple fields of information
-    • TRADER DESKTOP
-    • Generic or for a specific instrument
-    • Enter multiple deals at a time
-    • User configurable (fields, columns, and push buttons)
-    • Can enter default values
-  Narration script:
-    Trade Entry.  TOOLSETS.  Represents a specific market / Group of similar instruments.  Enter one deal at a time.  Multiple fields of information.  TRADER DESKTOP.  Generic or for a specific instrument.  Enter multiple deals at a time.  User configurable (fields, columns, and push buttons).
+[SLIDE 82]
+The Trader Desktop is where experienced traders prefer to work. It's a configurable grid for entering multiple deals simultaneously, with user-defined columns, default values for fields that rarely change, and a layout designed around the trader's natural deal-entry workflow.
 
-[SLIDE 82  —  8s  (25/28)]
-  Raw text from slide:
-    • Trader Desktop
-  Narration script:
-    Trader Desktop.
+[SLIDE 83]
+To recap what we've covered: the Trading Manager is where deals are captured and managed through their full lifecycle, with a rich set of tools for querying, pricing, simulating, and revaluing positions. It connects directly to the Market Manager for prices and to the Operations Manager for post-trade processing.
 
-[SLIDE 83  —  8s  (26/28)]
-  Raw text from slide:
-    • Recap and Questions ?
-  Narration script:
-    Recap and Questions ?.
+[SLIDE 84]
+The lifecycle of a trade in Endur begins at deal entry and moves through validation, trade event generation, price fixings, confirmation, and finally settlement. Every step is tracked in the system, creating a complete audit trail from first booking to final payment.
 
-[SLIDE 84  —  8s  (27/28)]
-  Raw text from slide:
-    • The Lifecycle of a Trade
-  Narration script:
-    The Lifecycle of a Trade.
-
-[SLIDE 85  —  8s  (28/28)]
-  Raw text from slide:
-    • Endur Managers
-    • Back office validation
-    • Commit to a preliminary status
-    • Trading Manager:
-    • Trade Blotter
-    • (Deal Entry)
-    • Admin Manager:
-    • Global administrative data (i.e., static data maintenance, security privileges, network grids)
-    • Trading Manager:
-    • Master instrument  - sharable toolset, templates - unique toolset
-  Narration script:
-    Endur Managers.  Back office validation.  Commit to a preliminary status.  Trading Manager:.  Trade Blotter.  (Deal Entry).  Admin Manager:.  Global administrative data (i.e., static data maintenance, security privileges, network grids).  Trading Manager:.
+[SLIDE 85]
+To close, the key workflow is this: traders enter deals in the Trading Manager Trade Blotter and validate them for back-office processing. The Admin Manager holds the global configuration that governs how all of this works. Master instruments are shared toolset templates that standardize how deals are entered across the trading desk.

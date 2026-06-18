@@ -1,0 +1,85 @@
+MODULE: Deal Entry, Pricing and Validation
+Slides: 69,70,71,72,73,74,95,75,96,76,77,78,79,98,99,80,97,81,82,100,101,102,103,104,105,83,84,85
+
+[SLIDE 69]
+Deal entry in the Power Toolset starts with the Primary Input screen. On the left side you enter the internal and counterparty details — Our Unit, Our Legal Entity, Our Portfolio, Trader ID, and Counterparty information. On the right you enter the deal economics: Buy or Sell, Start and End Date, Commodity, Pipeline, Zone, Delivery Location, and Daily Volume.
+
+[SLIDE 70]
+The Secondary Input screen captures additional deal parameters. This includes the Ref Source — the price index used for floating pricing — payment terms, pricing formula configuration, accrual method, and fixing conventions. For power deals, you also set the Product, Price Bands, and Volume Profile parameters here.
+
+[SLIDE 71]
+The Deal Profile shows the Physical side of the deal in detail. This is where the delivery profile is visualised — the volume by time period, the commodity, and the pipeline and location. Physical deals involve the actual delivery of a commodity, so the profile here must match the contractual delivery schedule.
+
+[SLIDE 72]
+The Fixed side of the Deal Profile shows the financial leg of the deal — the fixed price payment that offsets the physical delivery. You can see the fixed price per unit, the currency, the total notional value, and the payment schedule. Together the Physical and Fixed sides define the full cashflow structure of the deal.
+
+[SLIDE 73]
+The Reset Physical Side shows how floating price resets are configured. For deals with a floating price component, each reset period specifies the observation window for the index price, the reset date, and the volume to be priced in that period. Resets happen automatically when the deal reaches those dates.
+
+[SLIDE 74]
+The Reset Physical Side Priced view shows the same reset schedule after prices have been applied. Each period now shows the observed index price and the calculated settlement amount. This is the view the back office uses to verify that price fixings have been applied correctly before settlement.
+
+[SLIDE 95]
+This close-up of the Primary Input form for a physical commodity deal shows all the key fields clearly. On the left: Our Unit, Our Legal Entity, Our Portfolio, Trader ID, and the counterparty fields. On the right: Buy or Sell, Pricing Level, Service Type, Start and End Dates, Commodity, Sub-Group, Pipeline, Zone, Location, and Daily Volume. These are the minimum fields required to book a physical gas or power deal.
+
+[SLIDE 75]
+The Power Pricer calculates the Net Present Value of the deal. It shows the NPV at the top, then breaks it down into the Physical side and the Fixed side with separate Local PV values for each. The Projection Index for the physical leg and the Discount Index for present-valuing cashflows are both shown here.
+
+[SLIDE 96]
+This high-resolution view of the Trading Explorer shows a bond deal — instrument type GBND — fully populated. You can see the trade in the listing grid at the top, and in the Trade Editor at the bottom: the Status as Validated, Our Unit, Counterparty, Buy direction, the Ticker, Trade Date, Settlement Date, Original Face value, Nominal, Price, Yield, Accrued Interest, and Maturity Date. This is what a completed validated bond deal looks like in the system.
+
+[SLIDE 76]
+Pricing the Fixed Side means calculating the fair fixed rate that makes the NPV of the deal equal to zero at inception. The Pricer uses the discount curve to present-value each fixed cashflow and compares it to the floating projection. The result is the par rate — the rate at which neither side has a day-one advantage.
+
+[SLIDE 77]
+Pricing the Physical Side applies the market index price to the delivery volumes. The pricer pulls the current index price for each period from the Market Manager, multiplies it by the contracted volume, and discounts the resulting cashflows back to today. The result is the fair value of the physical delivery leg.
+
+[SLIDE 78]
+Once a deal is priced, you can modify it and run a simulation before committing. A simulation runs the deal against current market data without saving any changes, letting you see the impact of a price or volume change on the deal's NPV. This is particularly useful for stress-testing deals before validation.
+
+[SLIDE 79]
+To validate a deal, select Validate from the status drop-down. This changes the Transaction Status from New to Validated and triggers the generation of trade events — the cashflow schedule that defines every future action on the deal. Validation also triggers the credit limit check against the counterparty.
+
+[SLIDE 98]
+This Trading Explorer screenshot shows a new Interest Rate Swap — instrument type IRS — in Pending status before validation. The Primary Input tab shows the Pay Float side: Pay, Float, projection index LIBOR USD, payment currency USD, notional 100 million, discounting index, start and end dates, index tenor of 3 months, and the reset and payment periods. This is the state of a deal immediately after entry, before any pricing or validation.
+
+[SLIDE 99]
+The same IRS swap after validation — the status has changed to Validated, and a Transaction Number has been assigned. The Primary Input fields are now locked. The deal is live in the system, counterparty credit has been checked, and trade events have been generated for all future rate resets and cash settlement dates.
+
+[SLIDE 80]
+Portfolio Revaluations are simulations that price, value, and generate accounting entries for all transactions in a portfolio. They can be run on-the-fly during the trading day for current mark-to-market, or as part of the end-of-day, or EOD, process. The results include Accrued Interest, Cash Settlements, Mark-to-Market — or MTM — and Realised PnL.
+
+[SLIDE 97]
+The Commodity Input form shows the complete set of fields for a physical commodity deal. Beyond the primary fields, you can see the Transport Class, Incoterms, Title Transfer Event, Deal Volume Type, Laycan Start and End dates for vessel deals, Pricing Model, and Settlement Date. This view is useful when you need to access fields that aren't visible on the condensed primary input panel.
+
+[SLIDE 81]
+Endur gives you two ways to enter deals. Toolsets are instrument-specific forms — one deal at a time — with all fields relevant to that instrument type. The Trader Desktop is a configurable grid that lets you enter multiple deals simultaneously, set default values for repeated fields, and use push buttons to automate common actions.
+
+[SLIDE 82]
+The Trader Desktop screen shows multiple deals in a blotter-style grid. Each row is a trade, and you can see the Process, Portfolio, Instrument Type, Buy or Sell, Volumes, and Price at a glance. Traders who book a high volume of similar deals prefer this view because it minimises the time spent on each entry.
+
+[SLIDE 100]
+The Transaction Viewer shows every parameter of a deal in a structured list view. For each transaction you can see the Tran Number, Deal Tracking Number, Transaction Type, Status, Asset Type, Instrument Type, Buy or Sell, Internal and External Business Units, Legal Entities, Portfolios, Trade Date, Input Date, and Settlement Date. This is the most complete single view of a deal's static data.
+
+[SLIDE 101]
+The Deal Comparison window lets you compare two versions of a deal side by side — useful when reviewing amendments. It lists every field that differs between Deal A and Deal B, showing the old value and new value for each. This makes it straightforward to understand exactly what changed during an amendment.
+
+[SLIDE 102]
+The Events window for a transaction lists every cashflow event that was generated at validation. For this swap deal, you can see Rate Reset events — which apply the index fixing — followed by Cash Settlement events where the net payment is made. Each event shows its Internal Status, Event Date, Position amount, and External Status, so the back office can track which events are known and which are still to be confirmed.
+
+[SLIDE 103]
+The Volumes window shows the daily volume schedule for a commodity deal. Each row is a calendar date, and the columns show the volume type — Trading, Nominated, Unscheduled, or Allocated. The filter panel on the left lets you switch between monthly election and daily views, and the bottom panel shows the pricing tier details tied to those volumes.
+
+[SLIDE 104]
+The Schedule Locations window is used to manage physical delivery nominations. It shows the pipeline and delivery location, and for each day in the month you can see the scheduled quantity by volume status — Unscheduled, Nominated, Confirmed, Allocated, and Final. The buttons at the bottom let you update traded quantities, view constraints, and access nomination details.
+
+[SLIDE 105]
+The Deal Constraints window defines the contractual limits on delivery volumes. The Tolerance Type can be Fixed or Formula-based. The Contractual Quantity sets the base volume. The Optimised Min and Max set the acceptable swing range. Swing Rights can be defined for upswing and downswing, and Ratchet provisions control how swing is accumulated over the contract period.
+
+[SLIDE 83 — no narration]
+
+[SLIDE 84]
+Endur supports Straight-Through-Processing across the entire trade lifecycle. A deal starts with Admin and Reference Data in place, moves through Trade Entry, then Credit and Risk Limit checks, then Trade Validation and Processing. From there it flows to Documentation Generation, then to Payment or Scheduling Systems, and finally to Sub-Ledger Posting — with no manual re-keying between steps.
+
+[SLIDE 85]
+This final diagram shows how all the Endur Managers work together. The Trading Manager captures the deal and commits it to a preliminary status. The Credit and Risk Managers perform their checks. Validation confirms the deal terms. The Operations Manager handles confirmations, settlements, fixings, and notifications. The Accounting Manager generates the P&L postings. And Reference and Market data underpin everything from start to finish.

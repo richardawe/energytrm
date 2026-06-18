@@ -24,11 +24,14 @@ VIDEOS_DIR     = REPO_ROOT / "public" / "videos"
 VOICEOVERS_DIR = REPO_ROOT / "public" / "voiceovers"
 KOKORO_MODEL   = Path("/tmp/kokoro/kokoro-v1.0-int8.onnx")
 KOKORO_VOICES  = Path("/tmp/kokoro/voices-v1.0.bin")
+TTS_CACHE_DIR  = REPO_ROOT / "video-generator" / "tts-cache"
 
 # ── Timing / video ────────────────────────────────────────────────────────────
 FPS          = 30
-SLIDE_SEC    = 8
-TITLE_SEC    = 3
+SLIDE_SEC    = 8          # chord length in music generator (not slide duration)
+TITLE_SEC    = 3          # fixed title-card duration (seconds)
+TAIL_SEC     = 0.5        # silence buffer appended after each narration
+MIN_SLIDE_SEC = 3.0       # minimum duration for image-only (no narration) slides
 FADE_FRAMES  = 12
 SAMPLE_RATE  = 24000     # Kokoro native rate
 MUSIC_VOL    = 0.14      # background music at 14% of voice
@@ -45,27 +48,38 @@ CAP_BG_ALPHA  = 195       # 0-255, semi-transparent black
 CAP_BG_COLOR  = (0, 0, 0)
 CAP_TEXT      = (255, 255, 255)
 CAP_HIGHLIGHT = (0, 220, 220)   # teal for speaker cue dots
-CAP_H         = 130             # caption bar height (pixels)
-CAP_FONT_SZ   = 34
+CAP_H         = 90              # caption bar height (pixels)
+CAP_FONT_SZ   = 38
 CAP_PADDING   = 40
+SHOW_CAPTIONS = True            # set False or pass --no-captions to disable
 
 # ── Module definitions ─────────────────────────────────────────────────────────
 MODULES = [
-    ("introduction",         "Introduction to OpenLink and Endur",    list(range(1,  19)), "am_michael"),
-    ("common-functionality", "Common System Functionality",            list(range(19, 32)), "af_heart"),
-    ("admin-manager",        "Admin Manager",                          list(range(32, 40)), "am_michael"),
-    ("reference-manager",    "Reference Manager",                      list(range(40, 51)), "af_heart"),
-    ("market-manager",       "Market Manager",                         list(range(51, 58)), "am_michael"),
-    ("trading-manager",      "Trading Manager and Trade Lifecycle",    list(range(58, 86)), "af_heart"),
+    ("introduction",         "Introduction to OpenLink and Endur",
+     list(range(1, 19)), "am_michael"),
+
+    ("common-functionality", "Common System Functionality",
+     list(range(19, 32)), "af_heart"),
+
+    ("system-setup",         "System Setup: Admin and Reference Manager",
+     [32,33,34,35,36,37,38,39,
+      40,41,86,42,43,44,87,88,45,46,47,48,89,49,50,90], "am_michael"),
+
+    ("market-and-trading",   "Market Manager and Trading Concepts",
+     [51,52,53,54,55,56,57,92,
+      58,59,60,91,61,62,63,64,65,66,67,68,93,94], "af_heart"),
+
+    ("deal-entry",           "Deal Entry, Pricing and Validation",
+     [69,70,71,72,73,74,95,75,96,76,77,78,79,98,99,
+      80,97,81,82,100,101,102,103,104,105,83,84,85], "am_michael"),
 ]
 
 DURATIONS = {
-    "introduction":         "2:24",
-    "common-functionality": "1:44",
-    "admin-manager":        "1:04",
-    "reference-manager":    "1:28",
-    "market-manager":       "0:56",
-    "trading-manager":      "3:44",
+    "introduction":       "5:20",
+    "common-functionality": "3:40",
+    "system-setup":       "6:30",
+    "market-and-trading": "5:50",
+    "deal-entry":         "8:30",
 }
 
 # ── Slide text extraction ──────────────────────────────────────────────────────
@@ -120,6 +134,35 @@ def build_narration(texts: list, mod_short: str) -> str:
     suffix = ", among others." if len(rest) > 4 else "."
     return f"{heading.rstrip('.')}. Key topics include {top}{suffix}"
 
+# ── Script file loader ─────────────────────────────────────────────────────────
+def load_script(mod_id: str) -> dict:
+    """Load per-slide narration from public/voiceovers/scripts/<mod_id>.txt.
+
+    Format expected in each file:
+        [SLIDE N]
+        Narration text here. Can span multiple lines.
+
+        [SLIDE N — no narration]
+    """
+    script_file = VOICEOVERS_DIR / "scripts" / f"{mod_id}.txt"
+    if not script_file.exists():
+        return {}
+    text = script_file.read_text(encoding="utf-8")
+    narrations = {}
+    parts = re.split(r'\[SLIDE\s+(\d+)([^\]]*)\]', text)
+    i = 1
+    while i + 2 <= len(parts):
+        snum  = int(parts[i])
+        flags = parts[i + 1].lower()
+        body  = parts[i + 2]
+        if 'no narration' not in flags:
+            lines = [ln.strip() for ln in body.splitlines() if ln.strip()]
+            narr  = ' '.join(lines)
+            if narr:
+                narrations[snum] = narr
+        i += 3
+    return narrations
+
 # ── Font cache ─────────────────────────────────────────────────────────────────
 _font_cache: dict = {}
 
@@ -128,9 +171,13 @@ def load_font(size, bold=False):
     if key in _font_cache:
         return _font_cache[key]
     candidates = (
-        ["/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+        ["/System/Library/Fonts/Supplemental/Arial Bold.ttf",
+         "/Library/Fonts/Arial Bold.ttf",
+         "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
          "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"] if bold else
-        ["/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+        ["/System/Library/Fonts/Supplemental/Arial.ttf",
+         "/Library/Fonts/Arial.ttf",
+         "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
          "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"]
     )
     for p in candidates:
@@ -144,6 +191,40 @@ def load_font(size, bold=False):
     f = ImageFont.load_default()
     _font_cache[key] = f
     return f
+
+# ── TTS cache ──────────────────────────────────────────────────────────────────
+def _tts_cached(kokoro, key: str, text: str, voice: str) -> np.ndarray:
+    """Return synthesised audio for `text`, loading from cache if available."""
+    if not text:
+        return np.zeros(int(MIN_SLIDE_SEC * SAMPLE_RATE), dtype=np.float32)
+    cache_dir = TTS_CACHE_DIR / voice
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    txt_f = cache_dir / f"{key}.txt"
+    npy_f = cache_dir / f"{key}.npy"
+    if npy_f.exists() and txt_f.exists() and txt_f.read_text(encoding="utf-8") == text:
+        return np.load(str(npy_f))
+    audio, _ = kokoro.create(text, voice=voice, speed=0.95, lang="en-us")
+    audio = audio.astype(np.float32)
+    np.save(str(npy_f), audio)
+    txt_f.write_text(text, encoding="utf-8")
+    return audio
+
+# ── Progressive caption chunking ───────────────────────────────────────────────
+def split_caption_chunks(text: str, max_chars: int = 75) -> list:
+    """Split narration into ~2-line display chunks for progressive captioning."""
+    words = text.split()
+    chunks, cur = [], ""
+    for word in words:
+        test = (cur + " " + word).strip()
+        if len(test) <= max_chars:
+            cur = test
+        else:
+            if cur:
+                chunks.append(cur)
+            cur = word
+    if cur:
+        chunks.append(cur)
+    return chunks if chunks else []
 
 # ── Caption overlay ────────────────────────────────────────────────────────────
 def wrap_text(draw, text: str, font, max_w: int) -> list:
@@ -162,12 +243,16 @@ def wrap_text(draw, text: str, font, max_w: int) -> list:
     return lines
 
 def render_caption(base_arr: np.ndarray, caption: str, voice_label: str,
-                   frame_idx: int, total_frames: int) -> np.ndarray:
+                   frame_idx: int, total_frames: int,
+                   fw: int = W, fh: int = H,
+                   cap_h: int = CAP_H, font_sz: int = CAP_FONT_SZ) -> np.ndarray:
     """Composite a caption bar onto base_arr (RGB numpy). Returns new array."""
+    if not SHOW_CAPTIONS or not caption:
+        return base_arr
+
     img  = Image.fromarray(base_arr, "RGB")
     draw = ImageDraw.Draw(img, "RGBA")
 
-    # Fade caption in/out with slide
     fade_f = min(FADE_FRAMES, total_frames // 4)
     if frame_idx < fade_f:
         alpha = int(CAP_BG_ALPHA * frame_idx / fade_f)
@@ -176,33 +261,24 @@ def render_caption(base_arr: np.ndarray, caption: str, voice_label: str,
     else:
         alpha = CAP_BG_ALPHA
 
-    if alpha <= 0 or not caption:
+    if alpha <= 0:
         return np.array(img)
 
-    # Semi-transparent caption background
-    bar_y = H - CAP_H
-    draw.rectangle([(0, bar_y), (W, H)], fill=(*CAP_BG_COLOR, alpha))
+    bar_y = fh - cap_h
+    draw.rectangle([(0, bar_y), (fw, fh)], fill=(*CAP_BG_COLOR, alpha))
 
-    # Wrap text
-    font     = load_font(CAP_FONT_SZ)
-    max_w    = W - CAP_PADDING * 2
-    lines    = wrap_text(draw, caption, font, max_w)
+    font  = load_font(font_sz, bold=True)
+    max_w = fw - CAP_PADDING * 2
+    lines = wrap_text(draw, caption, font, max_w)
 
-    lh       = CAP_FONT_SZ + 10
+    lh       = font_sz + 10
     total_th = len(lines) * lh
-    start_y  = bar_y + (CAP_H - total_th) // 2
+    start_y  = bar_y + (cap_h - total_th) // 2
 
-    txt_alpha = alpha
-    for i, line in enumerate(lines[:3]):   # max 3 caption lines
+    for i, line in enumerate(lines[:4]):
         y = start_y + i * lh
-        draw.text((W // 2, y), line, font=font,
-                  fill=(*CAP_TEXT, txt_alpha), anchor="mm")
-
-    # Small speaker indicator bottom-right
-    dot_font = load_font(20)
-    speaker  = f"♪  {voice_label}"
-    draw.text((W - CAP_PADDING, H - 22), speaker, font=dot_font,
-              fill=(*CAP_HIGHLIGHT, alpha // 2), anchor="rm")
+        draw.text((fw // 2, y), line, font=font,
+                  fill=(*CAP_TEXT, alpha), anchor="mm")
 
     return np.array(img.convert("RGB"))
 
@@ -259,43 +335,58 @@ def generate_music(duration_sec: float, sr: int = SAMPLE_RATE) -> np.ndarray:
     return (music / peak * 0.5).astype(np.float32)
 
 # ── Video frame helpers ────────────────────────────────────────────────────────
-def make_title_frame(num, title, slides, dur_str):
-    img  = Image.new("RGB", (W, H), BG)
+def make_title_frame(num, title, slides, dur_str, fw: int = W, fh: int = H):
+    img  = Image.new("RGB", (fw, fh), BG)
     draw = ImageDraw.Draw(img)
-    draw.rectangle([(0, 0), (W, 6)],    fill=ACCENT)
-    draw.rectangle([(0, H - 4), (W, H)], fill=ACCENT)
+    draw.rectangle([(0, 0), (fw, 6)],     fill=ACCENT)
+    draw.rectangle([(0, fh - 4), (fw, fh)], fill=ACCENT)
 
-    f_sm = load_font(26, bold=True)
-    f_lg = load_font(66, bold=True)
-    f_md = load_font(28)
+    scale   = min(fw / W, fh / H)
+    f_sm = load_font(int(26 * scale), bold=True)
+    f_lg = load_font(int(66 * scale), bold=True)
+    f_md = load_font(int(28 * scale))
 
-    draw.text((W // 2, H // 2 - 120), f"MODULE {num}",
+    draw.text((fw // 2, fh // 2 - int(120 * scale)), f"MODULE {num}",
               font=f_sm, fill=ACCENT, anchor="mm")
 
+    max_title_w = int(fw * 0.85)
     words = title.split()
     lines, cur = [], ""
     for w in words:
         test = (cur + " " + w).strip()
-        if draw.textlength(test, font=f_lg) <= 1400:
+        if draw.textlength(test, font=f_lg) <= max_title_w:
             cur = test
         else:
             if cur: lines.append(cur)
             cur = w
     if cur: lines.append(cur)
 
-    lh = 82
-    sy = H // 2 - (len(lines) * lh) // 2
+    lh = int(82 * scale)
+    sy = fh // 2 - (len(lines) * lh) // 2
     for i, ln in enumerate(lines):
-        draw.text((W // 2, sy + i * lh), ln, font=f_lg, fill=WHITE, anchor="mm")
+        draw.text((fw // 2, sy + i * lh), ln, font=f_lg, fill=WHITE, anchor="mm")
 
-    draw.text((W // 2, H // 2 + (len(lines) * lh) // 2 + 52),
+    draw.text((fw // 2, fh // 2 + (len(lines) * lh) // 2 + int(52 * scale)),
               f"{slides} slides  ·  {dur_str}  ·  Endur Training Series",
               font=f_md, fill=MUTED, anchor="mm")
     return np.array(img)
 
 def load_slide_frame(snum):
+    """Load slide as PIL Image (native PPTX resolution)."""
     p = SLIDES_DIR / f"slide-{snum:03d}.png"
-    return np.array(Image.open(p).convert("RGB").resize((W, H), Image.LANCZOS))
+    return Image.open(p).convert("RGB")
+
+def composite_slide(slide_img: Image.Image, fw: int, fh: int) -> np.ndarray:
+    """Place a 16:9 slide image onto a canvas of (fw × fh).
+    Landscape: fill the frame. Portrait: place slide at top, dark below."""
+    if fw >= fh:
+        return np.array(slide_img.resize((fw, fh), Image.LANCZOS))
+    # Portrait (mobile): slide occupies top portion, rest is dark background
+    slide_h = int(fw * 9 / 16)
+    canvas  = np.full((fh, fw, 3), BG, dtype=np.uint8)
+    scaled  = np.array(slide_img.resize((fw, slide_h), Image.LANCZOS))
+    canvas[:slide_h, :] = scaled
+    return canvas
 
 def apply_fade(arr, f, total):
     if f < FADE_FRAMES:
@@ -308,45 +399,48 @@ def apply_fade(arr, f, total):
 
 # ── Module encoder ─────────────────────────────────────────────────────────────
 def encode_module(kokoro, mod_id, title, slide_nums, mod_num, voice):
-    out_path   = VIDEOS_DIR / f"{mod_id}-voiced.mp4"
-    dur_str    = DURATIONS.get(mod_id, "")
-    mod_short  = title.split()[0]
+    out_path    = VIDEOS_DIR / f"{mod_id}-voiced.mp4"
+    mod_short   = title.split()[0]
     voice_label = "Michael" if voice == "am_michael" else "Heart"
 
     print(f"\n{'─' * 60}")
     print(f"  Module {mod_num}: {title}  [{voice_label}]")
     print(f"  Slides {slide_nums[0]}–{slide_nums[-1]}  ({len(slide_nums)} slides)")
 
-    # ── 1. Extract slide text + build narrations ──────────────────────────
-    with zipfile.ZipFile(PPTX_PATH) as z:
-        texts_map = {s: slide_texts(z, s) for s in slide_nums}
+    # ── 1. Load narrations from script file (falls back to PPTX extraction) ─
+    narrations = load_script(mod_id)
+    if not narrations:
+        with zipfile.ZipFile(PPTX_PATH) as z:
+            texts_map = {s: slide_texts(z, s) for s in slide_nums}
+        narrations = {s: build_narration(texts_map[s], mod_short) for s in slide_nums}
 
-    narrations = {s: build_narration(texts_map[s], mod_short) for s in slide_nums}
-
-    # ── 2. TTS synthesis ──────────────────────────────────────────────────
+    # ── 2. TTS synthesis (with disk cache) ───────────────────────────────
     print("  TTS synthesis...", flush=True)
     segments = []
 
-    title_script  = f"Module {mod_num}. {title}."
-    tc_audio, _   = kokoro.create(title_script, voice=voice, speed=0.95, lang="en-us")
-    tc_audio      = tc_audio.astype(np.float32)
-    tc_n          = int(TITLE_SEC * SAMPLE_RATE)
-    tc_audio      = np.concatenate([tc_audio, np.zeros(max(0, tc_n - len(tc_audio)))])[:tc_n]
+    title_script = f"Module {mod_num}. {title}."
+    tc_audio     = _tts_cached(kokoro, f"{mod_id}-title", title_script, voice)
+    tc_n         = int(TITLE_SEC * SAMPLE_RATE)
+    tc_audio     = np.concatenate([tc_audio, np.zeros(max(0, tc_n - len(tc_audio)))])[:tc_n]
     segments.append(tc_audio)
 
     for i, snum in enumerate(slide_nums):
-        narr   = narrations[snum]
-        tgt_n  = int(SLIDE_SEC * SAMPLE_RATE)
+        narr  = narrations.get(snum, "")
+        audio = _tts_cached(kokoro, f"{mod_id}-s{snum}", narr, voice)
         if narr:
-            audio, _ = kokoro.create(narr, voice=voice, speed=0.95, lang="en-us")
-            audio = audio.astype(np.float32)
-            audio = np.concatenate([audio, np.zeros(max(0, tgt_n - len(audio)))])[:tgt_n]
-        else:
-            audio = np.zeros(tgt_n, dtype=np.float32)
+            tail  = np.zeros(int(TAIL_SEC * SAMPLE_RATE), dtype=np.float32)
+            audio = np.concatenate([audio, tail])
         segments.append(audio)
-        print(f"    [{i+1:2d}/{len(slide_nums)}] slide {snum:3d}  {len(narr)} chars", end="\r", flush=True)
+        cached = "cache" if (TTS_CACHE_DIR / voice / f"{mod_id}-s{snum}.npy").exists() else "new"
+        print(f"    [{i+1:2d}/{len(slide_nums)}] slide {snum:3d}  {len(narr)} chars  [{cached}]", end="\r", flush=True)
 
     print()
+
+    # Compute actual total duration now that all TTS is synthesized
+    total_sec    = sum(len(s) for s in segments) / SAMPLE_RATE
+    mins, secs_r = divmod(int(total_sec), 60)
+    dur_str      = f"{mins}:{secs_r:02d}"
+    print(f"  Duration: {dur_str}", flush=True)
 
     # ── 3. Music + mix ────────────────────────────────────────────────────
     voice_full = np.concatenate(segments).astype(np.float32)
@@ -364,79 +458,107 @@ def encode_module(kokoro, mod_id, title, slide_nums, mod_num, voice):
     mixed  = mixed.astype(np.float32)
     audio_i16 = np.clip(mixed * 32767, -32767, 32767).astype(np.int16)
 
-    # ── 4. Encode MP4 ─────────────────────────────────────────────────────
-    print("  Encoding MP4...", flush=True)
+    # ── 4. Encode MP4s (PC landscape + mobile portrait) ───────────────────
     VIDEOS_DIR.mkdir(parents=True, exist_ok=True)
-    out_c = av.open(str(out_path), mode="w")
-    vid   = out_c.add_stream("h264", rate=FPS)
-    vid.width, vid.height, vid.pix_fmt = W, H, "yuv420p"
-    vid.options = {"crf": "22", "preset": "fast", "profile": "high"}
-    aud   = out_c.add_stream("aac", rate=SAMPLE_RATE)
-    aud.layout = "mono"
 
-    audio_pos       = 0
-    samples_per_frm = SAMPLE_RATE / FPS
-    vfidx           = 0
+    formats = [
+        {"suffix": "-voiced", "fw": 1920, "fh": 1080, "cap_h": 90, "font_sz": 38},
+    ]
 
-    def write_vframe(arr):
-        nonlocal vfidx
-        frame = av.VideoFrame.from_ndarray(arr, format="rgb24")
-        frame = frame.reformat(format="yuv420p")
-        frame.pts = vfidx
-        for pkt in vid.encode(frame):
-            out_c.mux(pkt)
-        vfidx += 1
+    for fmt in formats:
+        fw, fh     = fmt["fw"], fmt["fh"]
+        cap_h      = fmt["cap_h"]
+        font_sz    = fmt["font_sz"]
+        mp4_path   = VIDEOS_DIR / f"{mod_id}{fmt['suffix']}.mp4"
 
-    def flush_audio(target):
-        nonlocal audio_pos
-        chunk = 1024
-        while audio_pos < target and audio_pos < len(audio_i16):
-            end  = min(audio_pos + chunk, len(audio_i16), target)
-            data = audio_i16[audio_pos:end]
-            af   = av.AudioFrame.from_ndarray(data.reshape(1, -1), format="s16", layout="mono")
-            af.sample_rate = SAMPLE_RATE
-            af.pts         = audio_pos
-            for pkt in aud.encode(af):
-                out_c.mux(pkt)
-            audio_pos = end
+        print(f"  Encoding {fw}×{fh}...", flush=True)
 
-    # Title card (no content caption — just title narration text)
-    title_arr = make_title_frame(mod_num, title, len(slide_nums), dur_str)
-    tc_frames = TITLE_SEC * FPS
-    title_caption = title_script
-    for f in range(tc_frames):
-        base = apply_fade(title_arr, f, tc_frames)
-        captioned = render_caption(base, title_caption, voice_label, f, tc_frames)
-        write_vframe(captioned)
-        flush_audio(int(vfidx * samples_per_frm))
+        out_c = av.open(str(mp4_path), mode="w")
+        vid   = out_c.add_stream("h264", rate=FPS)
+        vid.width, vid.height, vid.pix_fmt = fw, fh, "yuv420p"
+        vid.options = {"crf": "22", "preset": "fast", "profile": "high"}
+        aud   = out_c.add_stream("aac", rate=SAMPLE_RATE)
+        aud.layout = "mono"
 
-    # Slides
-    sf_n = SLIDE_SEC * FPS
-    for si, snum in enumerate(slide_nums):
-        print(f"    video: slide {snum} [{si+1}/{len(slide_nums)}]", end="\r", flush=True)
-        sarr    = load_slide_frame(snum)
-        caption = narrations[snum]
-        for f in range(sf_n):
-            base      = apply_fade(sarr, f, sf_n)
-            captioned = render_caption(base, caption, voice_label, f, sf_n)
+        audio_pos       = 0
+        samples_per_frm = SAMPLE_RATE / FPS
+        vfidx           = 0
+
+        def write_vframe(arr, _vid=vid, _out_c=out_c):
+            nonlocal vfidx
+            frame = av.VideoFrame.from_ndarray(arr, format="rgb24")
+            frame = frame.reformat(format="yuv420p")
+            frame.pts = vfidx
+            for pkt in _vid.encode(frame):
+                _out_c.mux(pkt)
+            vfidx += 1
+
+        def flush_audio(target, _aud=aud, _out_c=out_c):
+            nonlocal audio_pos
+            chunk = 1024
+            while audio_pos < target and audio_pos < len(audio_i16):
+                end  = min(audio_pos + chunk, len(audio_i16), target)
+                data = audio_i16[audio_pos:end]
+                af   = av.AudioFrame.from_ndarray(data.reshape(1, -1), format="s16", layout="mono")
+                af.sample_rate = SAMPLE_RATE
+                af.pts         = audio_pos
+                for pkt in _aud.encode(af):
+                    _out_c.mux(pkt)
+                audio_pos = end
+
+        # Title card
+        title_arr = make_title_frame(mod_num, title, len(slide_nums), dur_str, fw, fh)
+        tc_frames = TITLE_SEC * FPS
+        for f in range(tc_frames):
+            base      = apply_fade(title_arr, f, tc_frames)
+            captioned = render_caption(base, title_script, voice_label, f, tc_frames,
+                                       fw, fh, cap_h, font_sz)
             write_vframe(captioned)
             flush_audio(int(vfidx * samples_per_frm))
 
-    for pkt in vid.encode():   out_c.mux(pkt)
-    flush_audio(len(audio_i16))
-    for pkt in aud.encode():   out_c.mux(pkt)
-    out_c.close()
+        # Slides — frame count driven by actual TTS audio length per slide
+        for si, snum in enumerate(slide_nums):
+            print(f"    {fw}×{fh}: slide {snum} [{si+1}/{len(slide_nums)}]", end="\r", flush=True)
+            seg_samples = len(segments[si + 1])
+            sf_n        = max(1, int(seg_samples / SAMPLE_RATE * FPS))
+            slide_pil   = load_slide_frame(snum)
+            sarr        = composite_slide(slide_pil, fw, fh)
+            caption     = narrations.get(snum, "")
+            chunks      = split_caption_chunks(caption) if caption else []
+            for f in range(sf_n):
+                if chunks:
+                    chunk_idx   = min(int(f / sf_n * len(chunks)), len(chunks) - 1)
+                    current_cap = chunks[chunk_idx]
+                else:
+                    current_cap = ""
+                base      = apply_fade(sarr, f, sf_n)
+                captioned = render_caption(base, current_cap, voice_label, f, sf_n,
+                                           fw, fh, cap_h, font_sz)
+                write_vframe(captioned)
+                flush_audio(int(vfidx * samples_per_frm))
+
+        for pkt in vid.encode():   out_c.mux(pkt)
+        flush_audio(len(audio_i16))
+        for pkt in aud.encode():   out_c.mux(pkt)
+        out_c.close()
+
+        mb = mp4_path.stat().st_size / 1024 / 1024
+        print(f"\n  ✓ {mp4_path.name} ({mb:.1f} MB)")
 
     # Standalone voice WAV
     VOICEOVERS_DIR.mkdir(parents=True, exist_ok=True)
     sf.write(str(VOICEOVERS_DIR / f"{mod_id}.wav"), voice_full, SAMPLE_RATE)
 
-    mb = out_path.stat().st_size / 1024 / 1024
-    print(f"\n  ✓ {out_path.name} ({mb:.1f} MB)")
-
 # ── Main ───────────────────────────────────────────────────────────────────────
 def main():
-    target = sys.argv[1] if len(sys.argv) > 1 else None
+    global SHOW_CAPTIONS
+    args   = [a for a in sys.argv[1:] if not a.startswith("--")]
+    flags  = [a for a in sys.argv[1:] if a.startswith("--")]
+    if "--no-captions" in flags:
+        SHOW_CAPTIONS = False
+    if "--captions" in flags:
+        SHOW_CAPTIONS = True
+    target = args[0] if args else None
     to_do  = [m for m in MODULES if target is None or m[0] == target]
     if not to_do:
         print(f"Unknown module: {target}")

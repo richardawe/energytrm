@@ -1,0 +1,66 @@
+MODULE: Market Manager and Trading Concepts
+Slides: 51,52,53,54,55,56,57,92,58,59,60,91,61,62,63,64,65,66,67,68,93,94
+
+[SLIDE 51 — no narration]
+
+[SLIDE 52]
+The Market Manager is where all price and rate data is defined, modified, and viewed. It covers indexes and curves — which store prices and rates across different time periods — as well as volatilities and correlation matrices used in options pricing and risk. The Focus Box on the left shows a condensed view of your query results.
+
+[SLIDE 53]
+Endur supports several types of indexes. An Official Index validates deals and is used for end-of-day revaluations — only transactions referencing official indexes are included in P&L. A Custom Index represents an individual's market view. A Standard Index is a single move curve. Composite Indexes are derived from other indexes using formulas. Child and Parent indexes form hierarchies.
+
+[SLIDE 54]
+Every index in Endur has two sides. The Definition side stores the index-level attributes: the list of grid points, the discounting index, yield basis, date sequence, interpolation method, units, and any parent curves. The Input side stores the actual price data: grid point names, dates, formats, and pricing formulas.
+
+[SLIDE 55]
+The Index Definition screen is where you configure a curve. Fields on the left identify and describe the index. The grid points panel on the right lists the tenors — daily, monthly, yearly — that prices are stored against. Function buttons at the top let you save, run queries, and link to the parent index for composite curves.
+
+[SLIDE 56]
+The Index Input screen is where price data is loaded. Data sets are stored per curve type. For Interest Rate curves, inputs are rates and the output is discount factors. For Effective Interest Rate curves like LIBOR, inputs are rates and outputs are again discount factors. For Commodity curves, inputs are spreads and outputs are all-in prices.
+
+[SLIDE 57]
+Once prices are loaded, the Market Manager lets you view and save them in two formats: a table viewer showing grid-point values in rows, or a spreadsheet view where dates run across the top and price series run down the side. You can compare multiple curves side by side in the spreadsheet view.
+
+[SLIDE 92]
+The Swap Pricer calculates the net present value of an interest rate swap. It shows the Receive Fixed and Pay Float sides separately, with each side's local present value in the deal currency. The Net PV at the top shows the overall mark-to-market value. The coupon rate on the fixed leg and the floating spread are also displayed here.
+
+[SLIDE 58 — no narration]
+
+[SLIDE 59]
+The Trading Manager is the primary workspace for capturing and managing trades. From here you can enter new deals, retrieve and view existing transactions, run and view reports, perform on-the-fly simulations against live market data, and revalue an entire portfolio in seconds.
+
+[SLIDE 60]
+The Trading Manager Browser has three main areas. The Toolset Bar across the top gives you quick access to instrument types — Swap, Option, FRA, and others. The Browser Overview, also called the Focus Box, shows a condensed graphical view of your query results. The Focus View on the right shows full detail for the selected item.
+
+[SLIDE 91]
+The Trading Explorer Desktop is a modern single-window interface for the Trading Manager. It combines the Navigation Panel on the left — showing your party group tree and instrument folders — with the Trade Listing grid at the top right and the Trade Editor panel at the bottom. All three panels are resizable and work together in real time.
+
+[SLIDE 61]
+Every trade in Endur has three identification numbers. At the top level, a Toolset groups similar instruments together. Each trade has an Instrument Number, assigned when the instrument template is first created. When a transaction is booked, it receives both a Deal Number and a Transaction Number. These three numbers track the trade throughout its life.
+
+[SLIDE 62]
+Two key dates control a trade's identity. The Input Date is the date and time the transaction was entered into the system — this is system-generated and cannot be changed. The Trade Date is the business date on which the deal was agreed — this is what the trade is priced from and is the date used for accounting and settlement.
+
+[SLIDE 63]
+The Trading Platform brings together the key concepts you need to navigate the system. The Browser Window displays your query results. The Trading Query filters what you see. The customisable browser lets you tailor your workspace. And the trade key concepts — Instrument, Deal, and Transaction Numbers, plus Input and Trade Dates — are the building blocks of every deal.
+
+[SLIDE 64]
+Every transaction moves through a defined lifecycle. It starts in an Initial Phase as Pending — a deal in progress. Once submitted, it enters the Transactional Phase as New, or Amended New if it's a changed version. When validated by the back office, it becomes Active — Validated. If subsequently amended it becomes Amended, and when it reaches maturity it becomes Matured.
+
+[SLIDE 65]
+Trade Events are generated automatically when a deal reaches Validated status. Each event represents a specific action that will happen on the deal — such as a rate reset, a cash settlement, or a close. Events form a roadmap of the deal's future cashflows and are visible in the Events window at any time.
+
+[SLIDE 66]
+As a trade moves through its lifecycle, the numbering changes. A New deal has Deal Number 101 and Transaction Number 101. When it's validated, both numbers stay at 101. If the deal is then amended, the Transaction Number increments to 102 while the Deal Number stays at 101 — so you can always trace back to the original deal from any version.
+
+[SLIDE 67]
+Power Trading in Endur uses Products to define the delivery shape of electricity. A Product specifies the days and hours — including holidays — during which power will be delivered. Products can be Custom, defined by the trader; Full Requirement, covering all hours; or Hourly Products, priced at specific hours of the day.
+
+[SLIDE 68]
+This flow diagram shows how power deal data comes together. Power Curves feed into Price Bands, which shape the delivery profile into Peak, Off-Peak, or Hourly categories. These combine with a Power Product to form a Valuation Product. Delivery Locations provide the physical destination. All of these feed into the Deal at booking time.
+
+[SLIDE 93]
+Portfolio Revaluation simulations let you price and value your entire book against current market data. This screen shows the simulation setup: you choose Intra Day or End of Day revaluation type, select the Market Data session — Current, Universal, or Closing — and specify the Scenario Names with their associated indices. The Base scenario runs the standard MTM calculation.
+
+[SLIDE 94]
+The Simulation Results grid shows the output of a portfolio revaluation. Each row represents an instrument in the portfolio, showing its Instrument Type, the Projection and Discount Indexes used, and the calculated Mark-to-Market value. You can filter by result type — MTM, PnL, Accrued Interest — and drill into individual deal results from here.

@@ -1,129 +1,39 @@
-======================================================================
 MODULE: Common System Functionality
-Slides: 19–31  (13 slides)
-Estimated runtime: 107 seconds
-======================================================================
+Slides: 19–31
 
-[TITLE CARD — 3s]
-Module narration: "Welcome to Common System Functionality."
+[SLIDE 19 — no narration]
 
-[SLIDE 19  —  8s  (1/13)]
-  Raw text from slide:
-    • Overview of Endur
-    • Common System Functionality
-  Narration script:
-    Overview of Endur.  Common System Functionality.
+[SLIDE 20]
+This is the Trading Manager Browser Window before a query has been run. You can see the Toolset Bar across the top with instrument types like Swap, Option, and FRA. The main area shows only a Main Group folder — no data yet, because no query has been executed.
 
-[SLIDE 20  —  8s  (2/13)]
-  Raw text from slide:
-    • Browser Window
-    • A- Before Query
-  Narration script:
-    Browser Window.  A- Before Query.
+[SLIDE 21]
+After running a query, the Browser Window populates with results displayed in graphical form. Each coloured block represents a portfolio or instrument group, and you can drill in to see individual deals. This visual layout is how you navigate your trade data in Endur.
 
-[SLIDE 21  —  8s  (3/13)]
-  Raw text from slide:
-    • Browser Window and Queries
-    • The Browser displays the results of a query in graphical form:
-    • B - After Query
-  Narration script:
-    Browser Window and Queries.  The Browser displays the results of a query in graphical form:.  B - After Query.
+[SLIDE 22]
+To run a query, select the Query icon on the toolbar — it looks like a question mark — or go to File and then Query from the menu bar. This opens the Query Manager where you can build and run searches across the database.
 
-[SLIDE 22  —  8s  (4/13)]
-  Raw text from slide:
-    • Accessing the query functionality
-    • The Query Manager is accessed by selecting the
-    • Query
-    • icon located on the tool bar, or by selecting
-    • File
-    • Query
-    • from the Manager menu bar.
-  Narration script:
-    Accessing the query functionality.  The Query Manager is accessed by selecting the.  Query.  icon located on the tool bar, or by selecting.  File.  Query.  from the Manager menu bar.
+[SLIDE 23]
+Inside the Query Manager, you enter search criteria on the right-hand side. The left side shows a running summary of all criteria you've added. Endur supports conditional operators: less than, greater than, equal to, less than or equal to, and the exclamation mark for not equal.
 
-[SLIDE 23  —  8s  (5/13)]
-  Raw text from slide:
-    • Running a Query
-    • Search criteria are specified in the right side of the page.
-    • As criteria are entered, the left side of the screen displays a summary of all criteria.
-    • Conditional operators:
-    • (less than)
-    • (greater than)
-    • (equal to)
-    • 
-    • (less than or equal to)
-    •    (greater than or equal to)
-  Narration script:
-    Running a Query.  Search criteria are specified in the right side of the page.  As criteria are entered, the left side of the screen displays a summary of all criteria.  Conditional operators:.  (less than).  (greater than).  (equal to).  (less than or equal to).     (greater than or equal to).
+[SLIDE 24]
+Query Defaults automatically pre-fill common filter criteria to keep database performance efficient. By default, Endur filters by Transaction Type, Transaction Status — showing only New and Validated deals — and by the Internal Portfolios you're authorised to access. You can override these in the query window.
 
-[SLIDE 24  —  8s  (6/13)]
-  Raw text from slide:
-    • Query Defaults
-    • Automatically applies default criteria to reduce database processing
-    • Navigate to defaults via the help menu
-    • Can overwrite the default settings in query window
-    • Selects transactions types listed under
-    • Tran Type
-    • Only transactions with new or validated
-    • Tran Status
-    • and Trading
-    • Asset Type
-  Narration script:
-    Query Defaults.  Automatically applies default criteria to reduce database processing.  Navigate to defaults via the help menu.  Can overwrite the default settings in query window.  Selects transactions types listed under.  Tran Type.  Only transactions with new or validated.  Tran Status.  and Trading.
+[SLIDE 25]
+For more complex searches, Endur supports direct SQL entry. Click the drop-down arrow on the far left of the Query window to open a free-format SQL field. Type your SQL expression, then click the checkmark to run the query with that additional filter applied.
 
-[SLIDE 25  —  8s  (7/13)]
-  Raw text from slide:
-    • Additional query criteria - SQL
-    • Type the SQL in the field provided on the right.  Click the check mark to run the query.
-    • Click the drop down arrow located on the far left-hand corner of the Query window.  A separate window displays.  This is a free-format field where the SQL can be entered.
-  Narration script:
-    Additional query criteria - SQL.  Type the SQL in the field provided on the right.  Click the check mark to run the query.  Click the drop down arrow located on the far left-hand corner of the Query window.  A separate window displays.  This is a free-format field where the SQL can be entered.
+[SLIDE 26]
+Endur uses shorthand conventions to speed up date and amount entry. For time periods: d for days, w for weeks, m for months, and y for years — so typing 5d means five days from today. For amounts: k means thousands and m means millions — so 3k becomes 3,000. You can combine these with operators, like greater than 5d.
 
-[SLIDE 26  —  8s  (8/13)]
-  Raw text from slide:
-    • Time Period and Amount Conventions
-    • Use time period shortcuts to query on a range of dates
-    • for days
-    • for weeks
-    • for months
-    • for years
-    • Use amount shortcuts to insert trailing 000's on numbers
-    • for thousand
-    • for million
-    • Mix and match with conditional operators
-  Narration script:
-    Time Period and Amount Conventions.  Use time period shortcuts to query on a range of dates.  for days.  for weeks.  for months.  for years.  Use amount shortcuts to insert trailing 000's on numbers.  for thousand.  for million.
+[SLIDE 27]
+The Table Viewer is Endur's standard grid for displaying lists of data — trades, parties, prices, or any other record type. The same Table Viewer appears consistently throughout the system, so once you know how to use it in one place, you know how to use it everywhere.
 
-[SLIDE 27  —  8s  (9/13)]
-  Raw text from slide:
-    • Table Viewer
-    • Used to display list of data
-    • Functionality consistent throughout system
-    • Can modify table structure
-  Narration script:
-    Table Viewer.  Used to display list of data.  Functionality consistent throughout system.  Can modify table structure.
+[SLIDE 28]
+Any data displayed in the Table Viewer can be exported directly to Microsoft Excel. This is useful for further analysis, reporting, or sharing data outside the system. The exported spreadsheet preserves the column structure exactly as it appears on screen.
 
-[SLIDE 28  —  8s  (10/13)]
-  Raw text from slide:
-    • Exporting Table Viewer Data into an Excel Spreadsheet
-    • Table Viewer - Export Data
-  Narration script:
-    Exporting Table Viewer Data into an Excel Spreadsheet.  Table Viewer - Export Data.
+[SLIDE 29]
+The Table Viewer has a built-in search function. Press F2 or use the Search menu to open the search dialog. You can search forward or reverse through the results, choose which column to search in, and toggle case-sensitive matching on or off.
 
-[SLIDE 29  —  8s  (11/13)]
-  Raw text from slide:
-    • Searching the Table Viewer
-  Narration script:
-    Searching the Table Viewer.
+[SLIDE 30]
+The Table Viewer is fully configurable. You can add or remove columns, change their order, adjust column widths, and save the layout as a named view. The configuration dialog also lets you set sort order and pin certain columns so they stay visible when you scroll horizontally.
 
-[SLIDE 30  —  8s  (12/13)]
-  Raw text from slide:
-    • Table Viewer Configuration
-  Narration script:
-    Table Viewer Configuration.
-
-[SLIDE 31  —  8s  (13/13)]
-  Raw text from slide:
-    • Any Questions ?
-  Narration script:
-    (no narration — transition slide)
+[SLIDE 31 — no narration]

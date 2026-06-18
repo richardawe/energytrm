@@ -17,6 +17,10 @@
 /public/build
 /public/slide-images
 /video-generator/node_modules
+/video-generator/tts-cache
+/public/videos/*.mp4
+/public/voiceovers/*.wav
+/public/voiceovers/*.mp3
 /public/hot
 /public/storage
 /storage/*.key

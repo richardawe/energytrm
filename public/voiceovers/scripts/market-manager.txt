@@ -1,62 +1,23 @@
-======================================================================
 MODULE: Market Manager
-Slides: 51–57  (7 slides)
-Estimated runtime: 59 seconds
-======================================================================
+Slides: 51–57
 
-[TITLE CARD — 3s]
-Module narration: "Welcome to Market Manager."
+[SLIDE 51]
+The Market Manager is the module responsible for all market data in Endur. Accurate market data is the foundation of correct trade valuation, so understanding this module is essential for anyone involved in pricing and risk management.
 
-[SLIDE 51  —  8s  (1/7)]
-  Raw text from slide:
-    • Market Manager
-  Narration script:
-    Market Manager.
+[SLIDE 52]
+In the Market Manager you define, modify, and view all prices, rates, volatilities, and correlations used across the system. This data lives in structures called Indexes — also known as curves — where each grid point represents a price or rate value for a specific time period.
 
-[SLIDE 52  —  8s  (2/7)]
-  Raw text from slide:
-    • Market Manager
-    • Define, modify, and view prices, rates, volatilities, and correlations.
-    • Indexes/Curves
-    • Grid point represents a price or rate for different time periods.
-    • Grid points on a Spot FX curve represents currencies.
-    • Prices, Rates etc can be obtained from market feeds, entered manually, or calculated via internal or user-supplied logic.
-  Narration script:
-    Market Manager.  Define, modify, and view prices, rates, volatilities, and correlations.  Indexes/Curves.  Grid point represents a price or rate for different time periods.  Grid points on a Spot FX curve represents currencies.  Prices, Rates etc can be obtained from market feeds, entered manually, or calculated via internal or user-supplied logic.
+[SLIDE 53]
+Endur supports several index types to handle different kinds of market data: commodity price curves, interest rate curves, foreign exchange spot rates, volatility surfaces, and correlation matrices. Each type has a structure specifically designed for its data.
 
-[SLIDE 53  —  8s  (3/7)]
-  Raw text from slide:
-    • Market Manager
-    • Indexes
-    • TYPES OF INDEXES
-  Narration script:
-    Market Manager.  Indexes.  TYPES OF INDEXES.
+[SLIDE 54]
+An index in Endur is essentially a named price curve. It has a Definition that controls its structure and behavior, and an Input grid that holds the actual market data. Together these two components describe both how the curve works and what the current prices are.
 
-[SLIDE 54  —  8s  (4/7)]
-  Raw text from slide:
-    • Market Manager
-    • Indexes
-  Narration script:
-    Market Manager.  Indexes.
+[SLIDE 55]
+The Index Definition screen is where you set up a new curve. Here you define the index's name, its type, unit of measure, currency, and the projection method — which governs how gaps in the data are handled, for example through flat forward projection or linear interpolation.
 
-[SLIDE 55  —  8s  (5/7)]
-  Raw text from slide:
-    • Index
-    • Definition
-  Narration script:
-    Index.  Definition.
+[SLIDE 56]
+The Index Input screen is where price data is actually entered and stored. Input and output types vary depending on the curve type — a commodity curve might take daily or monthly prices, while an interest rate curve takes deposit rates and swap rates across standard market tenors.
 
-[SLIDE 56  —  8s  (6/7)]
-  Raw text from slide:
-    • Index Input
-    • Input/Output types
-    • Data sets are stored in the Index Input window. Input and output types vary based on the type of curve
-  Narration script:
-    Index Input.  Input/Output types.  Data sets are stored in the Index Input window. Input and output types vary based on the type of curve.
-
-[SLIDE 57  —  8s  (7/7)]
-  Raw text from slide:
-    • Market Manager
-    • Viewing and Saving Prices
-  Narration script:
-    Market Manager.  Viewing and Saving Prices.
+[SLIDE 57]
+Once prices are entered or updated, they must be saved to the Endur database. The Market Manager includes a dedicated screen for viewing current prices across all curves and committing updates. This saving step is typically part of the daily end-of-day process.

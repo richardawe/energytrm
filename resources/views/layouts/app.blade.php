@@ -144,5 +144,7 @@
     {{ $slot }}
 </div>
 
+{{ $scripts ?? '' }}
+
 </body>
 </html>
