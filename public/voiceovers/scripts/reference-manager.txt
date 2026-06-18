@@ -1,0 +1,35 @@
+MODULE: Reference Manager
+Slides: 40–50
+
+[SLIDE 40]
+The Reference Manager is where all master data lives in Endur. Before you can capture a trade, the parties involved, the portfolios it belongs to, and the people connected to it must all be set up here first.
+
+[SLIDE 41]
+The Reference Manager is organized around what trainers call the Three Ps: Portfolios, Personnel, and Parties. These three data objects are the foundation for everything else in the system — every trade connects back to all three.
+
+[SLIDE 42]
+A Portfolio in Endur represents the trader's book structure — the organizational framework for grouping trades by strategy, desk, product, or any dimension your business uses. Every trade must be assigned to a portfolio at the time of entry.
+
+[SLIDE 43]
+Personnel records represent all the people connected to trading activity. There are three categories: Licensed Users who have full system access and can enter trades, Internal Contacts within your organization who don't have a system login, and External Contacts at counterparty organizations such as broker contacts.
+
+[SLIDE 44]
+The Personnel entry screen captures all relevant contact information for each person. System users are linked to their Personnel record, which controls how their name appears on trade confirmations, reports, and audit trails.
+
+[SLIDE 45]
+In Endur, a Party Group represents an entire corporate structure. It contains both Legal Entities — the entities that sign contracts — and Business Units — the operational divisions that actually book trades. This mirrors real-world corporate hierarchies.
+
+[SLIDE 46]
+The Party Group screen shows the full hierarchy: the parent company at the top with Legal Entities and Business Units nested beneath. Understanding this structure is essential because it controls how trades are booked and how settlements are routed.
+
+[SLIDE 47]
+Every Party Group needs three key pieces of information before it's ready for trading: an Account for settlement payments, Settlement Instructions that tell Endur exactly how to settle each instrument type and currency, and Party Agreements that define the contractual terms governing your relationship.
+
+[SLIDE 48]
+Business Units are the internal desks or divisions that actually book trades in Endur. Each Business Unit belongs to a Legal Entity and can have its own accounts, settlement instructions, personnel assignments, and portfolio access.
+
+[SLIDE 49]
+Legal Entities are the contracting parties — the entities with legal standing to sign agreements. In Endur, the Legal Entity holds the contractual obligations of the Party Group and is the level at which Party Agreements are created and maintained.
+
+[SLIDE 50]
+Party Agreements define the terms under which trades between two legal entities are executed. This includes which confirmation templates apply, what netting arrangements are in place, the governing law, and any specific agreement conditions that override standard booking terms.

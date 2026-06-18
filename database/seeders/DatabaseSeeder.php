@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             FieldDescriptionSeeder::class,
             GuidedScenarioSeeder::class,
             MarketDataFeedSeeder::class,  // wire live data sources to index definitions
+            EndurQuizSeeder::class,
         ]);
     }
 }

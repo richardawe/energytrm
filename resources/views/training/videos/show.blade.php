@@ -1,20 +1,50 @@
-@extends('layouts.app')
+<x-app-layout>
+<x-slot name="title">{{ $module['title'] }}</x-slot>
 
-@section('title', $module['title'] . ' — Endur Training')
-
-@section('content')
 <div class="container-fluid py-4">
+
+    @php
+        $quizResult  = session('quiz_result');
+        $moduleIndex = collect($allModules)->search(fn($m) => $m['id'] === $module['id']);
+    @endphp
+
+    {{-- Quiz result banner --}}
+    @if ($quizResult)
+        @if ($quizResult['passed'])
+        <div class="alert alert-success alert-dismissible d-flex align-items-center gap-3 mb-4" role="alert">
+            <i class="bi bi-patch-check-fill fs-3 flex-shrink-0"></i>
+            <div>
+                <strong class="d-block fs-5">Module certified!</strong>
+                You scored <strong>{{ $quizResult['score'] }}/{{ $quizResult['total'] }}</strong> —
+                your completion has been recorded on your account.
+                @if ($next)
+                    Ready for <a href="{{ route('training.videos.show', $next['id']) }}" class="alert-link">{{ $next['title'] }}</a>?
+                @endif
+            </div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+        @else
+        <div class="alert alert-warning alert-dismissible d-flex align-items-center gap-3 mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill fs-3 flex-shrink-0"></i>
+            <div>
+                <strong class="d-block">Not quite — {{ $quizResult['score'] }}/{{ $quizResult['total'] }} correct.</strong>
+                You need 9 out of 10 to pass. Review the module and try again.
+            </div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
+    @endif
 
     <div class="row g-4">
 
-        {{-- Main video column --}}
+        {{-- Main video + quiz column --}}
         <div class="col-lg-9">
 
             {{-- Breadcrumb --}}
             <nav aria-label="breadcrumb" class="mb-3">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('training.videos.index') }}">Training Videos</a>
+                        <a href="{{ route('training.videos.index') }}">Endur Training</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">{{ $module['title'] }}</li>
                 </ol>
@@ -30,9 +60,8 @@
                         style="max-height:540px;display:block;"
                         controls
                         preload="metadata"
-                        poster="{{ asset('slide-images/slide-' . str_pad(1, 3, '0', STR_PAD_LEFT) . '.png') }}"
                     >
-                        <source src="{{ asset('videos/' . $module['id'] . '.mp4') }}" type="video/mp4">
+                        <source src="{{ asset('videos/' . $module['id'] . '-voiced.mp4') }}" type="video/mp4">
                         Your browser does not support HTML5 video.
                     </video>
                     @else
@@ -40,29 +69,25 @@
                          style="min-height:400px;">
                         <i class="bi bi-hourglass-split fs-1 text-secondary mb-3"></i>
                         <h5 class="text-white mb-2">Video rendering in progress</h5>
-                        <p class="text-secondary small mb-0">
-                            Run <code class="text-info">cd video-generator && bash scripts/render-all.sh</code>
-                            to generate MP4s.
-                        </p>
+                        <p class="text-secondary small mb-0">Check back soon.</p>
                     </div>
                     @endif
                 </div>
 
-                {{-- Video metadata bar --}}
+                {{-- Metadata bar --}}
                 <div class="card-body d-flex flex-wrap align-items-center gap-3 border-top py-3">
                     <div>
                         <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold me-2">
-                            Module {{ collect($allModules)->search(fn($m) => $m['id'] === $module['id']) + 1 }}
+                            Module {{ $moduleIndex + 1 }}
                         </span>
                         <strong>{{ $module['title'] }}</strong>
                     </div>
-                    <div class="ms-auto d-flex gap-3 text-muted small">
+                    <div class="ms-auto d-flex gap-3 text-muted small align-items-center">
                         <span><i class="bi bi-collection-play me-1"></i>{{ $module['slides'] }} slides</span>
                         <span><i class="bi bi-clock me-1"></i>{{ $module['duration'] }}</span>
                         @if ($module['available'])
-                        <a href="{{ asset('videos/' . $module['id'] . '.mp4') }}"
-                           download
-                           class="btn btn-outline-secondary btn-sm py-0 px-2">
+                        <a href="{{ asset('videos/' . $module['id'] . '-voiced.mp4') }}"
+                           download class="btn btn-outline-secondary btn-sm py-0 px-2">
                             <i class="bi bi-download me-1"></i>Download
                         </a>
                         @endif
@@ -75,6 +100,103 @@
                 <h6 class="fw-bold mb-2">About this module</h6>
                 <p class="text-muted">{{ $module['description'] }}</p>
             </div>
+
+            {{-- Quiz section --}}
+            @if ($questions->isNotEmpty())
+            <div id="quiz-section" class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-bottom d-flex align-items-center justify-content-between py-3">
+                    <div>
+                        <i class="bi bi-patch-question text-primary me-2 fs-5"></i>
+                        <strong>Module Quiz</strong>
+                        <span class="text-muted small ms-2">— 10 questions &middot; pass mark 9/10</span>
+                    </div>
+                    @if ($bestAttempt)
+                        @if ($bestAttempt->passed)
+                        <span class="badge bg-success">
+                            <i class="bi bi-check-lg me-1"></i>Certified &mdash; {{ $bestAttempt->score }}/10
+                        </span>
+                        @else
+                        <span class="badge bg-warning text-dark">
+                            Best: {{ $bestAttempt->score }}/10
+                        </span>
+                        @endif
+                    @endif
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ route('training.videos.quiz.submit', $module['id']) }}" id="quiz-form">
+                        @csrf
+
+                        @foreach ($questions as $qi => $q)
+                        @php
+                            $resultForQ = $quizResult['results'][$q->id] ?? null;
+                        @endphp
+                        <div class="mb-4 pb-4 {{ !$loop->last ? 'border-bottom' : '' }}">
+                            <p class="fw-semibold mb-3">
+                                <span class="badge bg-primary bg-opacity-10 text-primary me-2">{{ $qi + 1 }}</span>
+                                {{ $q->question }}
+                            </p>
+
+                            @foreach (['a','b','c','d'] as $letter)
+                            @php
+                                $optionText = $q->optionText($letter);
+                                $isChosen   = $resultForQ && $resultForQ['chosen'] === $letter;
+                                $isCorrect  = $resultForQ && $resultForQ['correct_option'] === $letter;
+                                $bgClass    = '';
+                                if ($resultForQ) {
+                                    if ($isCorrect)      $bgClass = 'bg-success bg-opacity-10 border-success';
+                                    elseif ($isChosen)   $bgClass = 'bg-danger bg-opacity-10 border-danger';
+                                }
+                            @endphp
+                            <div class="form-check mb-2 p-3 rounded border {{ $bgClass }}"
+                                 style="cursor:pointer;"
+                                 onclick="document.getElementById('opt-{{ $q->id }}-{{ $letter }}').click()">
+                                <input class="form-check-input" type="radio"
+                                       name="answers[{{ $q->id }}]"
+                                       id="opt-{{ $q->id }}-{{ $letter }}"
+                                       value="{{ $letter }}"
+                                       {{ $isChosen ? 'checked' : '' }}
+                                       {{ $resultForQ ? 'disabled' : '' }}>
+                                <label class="form-check-label w-100" for="opt-{{ $q->id }}-{{ $letter }}" style="cursor:pointer;">
+                                    <span class="badge bg-secondary bg-opacity-25 text-secondary me-2">{{ strtoupper($letter) }}</span>
+                                    {{ $optionText }}
+                                    @if ($resultForQ && $isCorrect)
+                                        <i class="bi bi-check-circle-fill text-success ms-2"></i>
+                                    @elseif ($resultForQ && $isChosen && !$isCorrect)
+                                        <i class="bi bi-x-circle-fill text-danger ms-2"></i>
+                                    @endif
+                                </label>
+                            </div>
+                            @endforeach
+                        </div>
+                        @endforeach
+
+                        @unless ($quizResult)
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary px-5" id="quiz-submit">
+                                <i class="bi bi-send me-2"></i>Submit Quiz
+                            </button>
+                        </div>
+                        @else
+                        <div class="d-flex justify-content-between align-items-center pt-2">
+                            <span class="text-muted small">
+                                @if ($quizResult['passed'])
+                                    <i class="bi bi-patch-check-fill text-success me-1"></i>Passed
+                                @else
+                                    Retake the quiz after reviewing the module.
+                                @endif
+                            </span>
+                            @unless ($quizResult['passed'])
+                            <a href="{{ route('training.videos.show', $module['id']) }}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-arrow-repeat me-1"></i>Try Again
+                            </a>
+                            @endunless
+                        </div>
+                        @endunless
+                    </form>
+                </div>
+            </div>
+            @endif
 
             {{-- Prev / Next navigation --}}
             <div class="d-flex justify-content-between gap-3">
@@ -108,16 +230,24 @@
                 </div>
                 <div class="list-group list-group-flush">
                     @foreach ($allModules as $i => $m)
+                    @php
+                        $isCurrent = $m['id'] === $module['id'];
+                        $isPassed  = \App\Models\EndurQuizAttempt::where('user_id', auth()->id())
+                                        ->where('module_id', $m['id'])
+                                        ->where('passed', true)->exists();
+                    @endphp
                     <a href="{{ route('training.videos.show', $m['id']) }}"
                        class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3
-                              {{ $m['id'] === $module['id'] ? 'active' : '' }}">
+                              {{ $isCurrent ? 'active' : '' }}">
 
                         <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 fw-bold"
                              style="width:32px;height:32px;font-size:.85rem;
-                                    {{ $m['id'] === $module['id']
+                                    {{ $isCurrent
                                         ? 'background:rgba(255,255,255,.2);color:#fff;'
-                                        : 'background:rgba(13,110,253,.1);color:#0d6efd;' }}">
-                            {{ $i + 1 }}
+                                        : ($isPassed
+                                            ? 'background:rgba(25,135,84,.15);color:#198754;'
+                                            : 'background:rgba(13,110,253,.1);color:#0d6efd;') }}">
+                            {{ $isPassed && !$isCurrent ? '✓' : ($i + 1) }}
                         </div>
 
                         <div class="flex-grow-1 overflow-hidden">
@@ -130,11 +260,13 @@
                         </div>
 
                         @if (!$m['available'])
-                        <i class="bi bi-hourglass-split text-muted flex-shrink-0"></i>
-                        @elseif ($m['id'] === $module['id'])
-                        <i class="bi bi-play-fill flex-shrink-0"></i>
+                            <i class="bi bi-hourglass-split text-muted flex-shrink-0"></i>
+                        @elseif ($isCurrent)
+                            <i class="bi bi-play-fill flex-shrink-0"></i>
+                        @elseif ($isPassed)
+                            <i class="bi bi-patch-check-fill text-success flex-shrink-0"></i>
                         @else
-                        <i class="bi bi-chevron-right text-muted flex-shrink-0"></i>
+                            <i class="bi bi-chevron-right text-muted flex-shrink-0"></i>
                         @endif
                     </a>
                     @endforeach
@@ -157,22 +289,32 @@
 
     </div>
 </div>
-@endsection
 
-@push('scripts')
+<x-slot name="scripts">
 <script>
-// Auto-play next module when video ends
 document.addEventListener('DOMContentLoaded', () => {
-    const video = document.getElementById('training-video');
-    @if ($next && $next['available'])
-    if (video) {
+    const video    = document.getElementById('training-video');
+    const quizSect = document.getElementById('quiz-section');
+
+    if (video && quizSect) {
         video.addEventListener('ended', () => {
-            if (confirm('Module complete! Watch "{{ $next['title'] }}" next?')) {
-                window.location.href = '{{ route('training.videos.show', $next['id']) }}';
+            quizSect.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    }
+
+    const form = document.getElementById('quiz-form');
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            const total    = {{ $questions->count() }};
+            const answered = form.querySelectorAll('input[type=radio]:checked').length;
+            if (answered < total) {
+                e.preventDefault();
+                alert(`Please answer all ${total} questions before submitting (${answered} answered so far).`);
             }
         });
     }
-    @endif
 });
 </script>
-@endpush
+</x-slot>
+
+</x-app-layout>

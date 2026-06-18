@@ -229,8 +229,9 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('training')->name('training.')->group(function () {
         Route::get('scenarios',           [ScenarioController::class, 'index'])->name('scenarios.index');
         Route::get('scenarios/{scenario}',[ScenarioController::class, 'show'])->name('scenarios.show');
-        Route::get('videos',              [VideoController::class, 'index'])->name('videos.index');
+        Route::get('videos',               [VideoController::class, 'index'])->name('videos.index');
         Route::get('videos/{module}',     [VideoController::class, 'show'])->name('videos.show');
+        Route::post('videos/{module}/quiz', [VideoController::class, 'submitQuiz'])->name('videos.quiz.submit');
     });
 
     // ── User Management & Admin (Phase 5) ─────────────────────────────────────

@@ -1,22 +1,38 @@
-@extends('layouts.app')
+<x-app-layout>
+<x-slot name="title">Endur Training</x-slot>
 
-@section('title', 'Endur Training Videos')
-
-@section('content')
 <div class="container-fluid py-4">
 
     {{-- Header --}}
     <div class="d-flex align-items-start justify-content-between mb-4">
         <div>
-            <h1 class="h3 mb-1 fw-bold">Endur Training Videos</h1>
+            <h1 class="h3 mb-1 fw-bold">
+                <i class="bi bi-mortarboard text-primary me-2"></i>Endur Training
+            </h1>
             <p class="text-muted mb-0">
-                {{ $totalSlides }} slides across 6 modules &mdash; {{ $totalDuration }} total runtime
+                {{ $totalSlides }} slides across {{ count($modules) }} modules &mdash; {{ $totalDuration }} total runtime
             </p>
         </div>
         <a href="{{ route('training.scenarios.index') }}" class="btn btn-outline-secondary btn-sm">
             <i class="bi bi-signpost-2 me-1"></i>Guided Scenarios
         </a>
     </div>
+
+    {{-- Progress summary --}}
+    @php $passedCount = collect($modules)->where('passed', true)->count(); @endphp
+    @if ($passedCount > 0)
+    <div class="alert alert-success d-flex align-items-center gap-3 mb-4" role="alert">
+        <i class="bi bi-patch-check-fill fs-4 flex-shrink-0"></i>
+        <div>
+            <strong>{{ $passedCount }} of {{ count($modules) }} modules certified.</strong>
+            @if ($passedCount === count($modules))
+                Congratulations — you have completed the full Endur Training Series!
+            @else
+                Keep going to earn your full certification.
+            @endif
+        </div>
+    </div>
+    @endif
 
     {{-- Module grid --}}
     <div class="row g-4">
@@ -28,22 +44,30 @@
                  onmouseout="this.style.transform='';this.style.boxShadow=''">
 
                 {{-- Colour strip --}}
-                <div style="height:4px;background:linear-gradient(90deg,#0d6efd,#0dcaf0);border-radius:4px 4px 0 0;"></div>
+                <div style="height:4px;background:{{ $mod['passed'] ? 'linear-gradient(90deg,#198754,#20c997)' : 'linear-gradient(90deg,#0d6efd,#0dcaf0)' }};border-radius:4px 4px 0 0;"></div>
 
                 <div class="card-body d-flex flex-column p-4">
                     {{-- Module badge + icon --}}
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
-                             style="width:48px;height:48px;background:rgba(13,110,253,.1);">
-                            <i class="bi {{ $mod['icon'] }} fs-4 text-primary"></i>
+                             style="width:48px;height:48px;background:{{ $mod['passed'] ? 'rgba(25,135,84,.12)' : 'rgba(13,110,253,.1)' }};">
+                            @if ($mod['passed'])
+                                <i class="bi bi-patch-check-fill fs-4 text-success"></i>
+                            @else
+                                <i class="bi {{ $mod['icon'] }} fs-4 text-primary"></i>
+                            @endif
                         </div>
                         <div>
                             <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold">
                                 Module {{ $i + 1 }}
                             </span>
-                            @unless($mod['available'])
-                            <span class="badge bg-secondary ms-1">Rendering soon</span>
-                            @endunless
+                            @if ($mod['passed'])
+                                <span class="badge bg-success ms-1">
+                                    <i class="bi bi-check-lg me-1"></i>Certified
+                                </span>
+                            @elseif (!$mod['available'])
+                                <span class="badge bg-secondary ms-1">Rendering soon</span>
+                            @endif
                         </div>
                     </div>
 
@@ -57,8 +81,9 @@
                         </div>
                         @if ($mod['available'])
                         <a href="{{ route('training.videos.show', $mod['id']) }}"
-                           class="btn btn-primary btn-sm px-3">
-                            <i class="bi bi-play-fill me-1"></i>Watch
+                           class="btn btn-sm px-3 {{ $mod['passed'] ? 'btn-outline-success' : 'btn-primary' }}">
+                            <i class="bi {{ $mod['passed'] ? 'bi-arrow-repeat' : 'bi-play-fill' }} me-1"></i>
+                            {{ $mod['passed'] ? 'Review' : 'Watch' }}
                         </a>
                         @else
                         <button class="btn btn-secondary btn-sm px-3" disabled>
@@ -77,13 +102,12 @@
         <div class="row align-items-center">
             <div class="col-md-8">
                 <h6 class="fw-bold mb-1">
-                    <i class="bi bi-info-circle text-primary me-2"></i>About these videos
+                    <i class="bi bi-info-circle text-primary me-2"></i>About this training series
                 </h6>
                 <p class="text-muted small mb-0">
-                    Videos are generated from the official Endur training slides.
-                    Each module covers a specific area of the Endur ETRM platform.
-                    Watch them in order for a complete introduction, or jump to the module most
-                    relevant to your role.
+                    Each module covers a specific area of the Endur ETRM platform using real training slides with
+                    professional voiceover narration. Watch each module, then complete the 10-question quiz.
+                    Score 9 out of 10 or higher to earn your module certification.
                 </p>
             </div>
             <div class="col-md-4 text-md-end mt-3 mt-md-0">
@@ -95,4 +119,5 @@
     </div>
 
 </div>
-@endsection
+
+</x-app-layout>

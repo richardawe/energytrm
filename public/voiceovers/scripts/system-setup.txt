@@ -1,0 +1,72 @@
+MODULE: System Setup: Admin and Reference Manager
+Slides: 32,33,34,35,36,37,38,39,40,41,86,42,43,44,87,88,45,46,47,48,89,49,50,90
+
+[SLIDE 32 — no narration]
+
+[SLIDE 33]
+The Admin Manager performs multiple administrative tasks across the system. Your system administrator uses it for system configuration, maintaining static data, managing security privileges for users and groups, and extending Endur's data model with custom fields.
+
+[SLIDE 34]
+The Admin Manager is organised into tabs. Energy Administration covers industry-specific setup like pipelines, locations, and zones. Compliance handles security and audit tools. Data Model Extension adds custom fields. System Administration covers startup and global system settings.
+
+[SLIDE 35]
+Here's a summary of each Admin Manager section. General Administration links to common setup tasks. Compliance contains security groups and the activity audit. Data Model Extension is used to add fields beyond the standard data model. Energy Administration is documented separately and covers energy-specific network setup.
+
+[SLIDE 36]
+General Administration includes Broadcast Channel for system-wide notifications, Date Sequence for custom calendar definitions, Portfolio Groups, Printer Setup, Purge Configuration for data archiving, Static Data for lookup values, System Wide Configuration for global settings, and Unit Conversion tables.
+
+[SLIDE 37]
+The Compliance section is where security is managed. Activity Audit tracks all user actions in the system. The Error Log and Console Viewer help diagnose system issues. Security Groups control what each user can see and do, and System Shutdown provides a controlled way to bring down the application.
+
+[SLIDE 38]
+Data Model Extension allows Endur's data structure to be customised. Adhoc Query lets administrators run direct database queries. Index Info provides metadata on index definitions. The Instrument Builder and Transaction Info tools allow new instrument templates to be created and existing ones to be examined.
+
+[SLIDE 39]
+The Transportation Network section under Energy Administration is where pipelines, delivery locations, zones, and related network structures are configured. This is the foundation for physical commodity deal scheduling and is covered in detail in the Energy Administration documentation.
+
+[SLIDE 40 — no narration]
+
+[SLIDE 41]
+The Reference Manager is built around three core entities — always remember the three Ps: Parties, Portfolios, and Personnel. This is the master data foundation that every trade in the system depends on. The Reference Manager screen provides a simple Find and Listing interface to navigate all reference records.
+
+[SLIDE 86]
+This screenshot from the Trading Explorer shows the Legal Entity listing panel. Each party record has a Type — Internal or External — a Class such as Business Unit or Legal Entity, a Status of Authorised or Pending, and both a Short Name and Long Name. Every counterparty you trade with must be set up here before a deal can be booked.
+
+[SLIDE 42]
+A Portfolio is the trader's book structure. Each portfolio has a Short Name, Long Name, Portfolio Type, and a list of instruments it can hold. Portfolios can be restricted or unrestricted, and they are linked to default cash instruments per currency. Every trade is booked into a portfolio.
+
+[SLIDE 43]
+Personnel in Endur falls into three types. External personnel are contacts at counterparty organisations — for example, broker contacts. Internal personnel are non-system users within your organisation such as managers. Licensed Users are authorised system users — your traders and back-office staff who log in and book deals.
+
+[SLIDE 44]
+Each Licensed User record has extensive configuration. The key tabs are Business Unit and Legal Entity for organisational assignment, Portfolio to set which books the user can access, Security Groups for permissions, User Defaults for pre-filled deal fields, Broadcast Channels for notifications, and Service Defaults for system startup behaviour.
+
+[SLIDE 87]
+Here you can see a personnel record for a trader in the Trading Explorer. The record shows the Personnel ID, Short Reference Name, Status as Authorised, Employee ID, and Type as Licensed User. These fields are what Endur uses to identify the trader on every deal they book.
+
+[SLIDE 88]
+The Business Unit Query builder allows you to search for party records by filtering on criteria like Internal or External, Legal Entity or Business Unit type, and Status. This is the same query mechanism you saw in Common Functionality — consistent across all parts of the system.
+
+[SLIDE 45]
+A corporate structure in Endur is called a Party Group. Each Party Group contains Legal Entities and Business Units arranged in a hierarchy. In the browser, Party Groups appear as grey nodes, Legal Entities as pink nodes with a scales icon, and Business Units as blue nodes with an org chart icon.
+
+[SLIDE 46]
+When you create a new Party Group — for example, NatGas Corp — you give it a Group Name, set the Group Type to Internal or External, and optionally check Create Default BU and LE to automatically generate a default Business Unit and Legal Entity linked to this group.
+
+[SLIDE 47]
+Before a party can be used to book trades, three things must be set up against it. First, an Account — specifying the currency and payment account for settlements. Second, Settlement Instructions — telling the system exactly how to settle each instrument type. Third, a Party Agreement — defining the terms and conditions under which trades will be booked.
+
+[SLIDE 48]
+The Business Unit detail screen has two main areas. On the right, the Functions panel shows which trading functions are enabled — Trading, Office, Configuration, and Trading Back Office. On the left, the Selection panel lets you navigate to linked sub-records: addresses, statements, portfolios, personnel, accounts, and more.
+
+[SLIDE 89]
+The Group Settings window controls how the Reference Manager browser displays each type of record. You can show or hide Party Groups, Business Units, Legal Entities, Personnel, Portfolios, Settlement Instructions, Accounts, and other node types. You can also set default query behaviour and how many levels to expand on load.
+
+[SLIDE 49]
+The Legal Entity record captures the contractual obligations of the party. The key field is Party Agreement Required — when set to Yes, Endur will require a valid party agreement to be in place before any deal can be booked against this legal entity. The record also stores address, tax codes, credit ratings, and delivery codes.
+
+[SLIDE 50]
+Party Agreements and Agreement Conditions are maintained within the Legal Entity record. They define the legal framework — such as ISDA master agreements — under which trades are executed. Agreement Conditions can specify netting rules, collateral terms, and credit support annexe details.
+
+[SLIDE 90]
+Rate Definitions are part of the Energy Administration setup. This screen shows pipeline rate schedules organised by service provider — such as EL PASO, Northwest, or XYZ Pipeline. For each provider you can define Charge Types, Rate Schedules by season, and Zone Rates, which are used when calculating transportation costs on physical commodity deals.

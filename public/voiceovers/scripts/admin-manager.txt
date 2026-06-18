@@ -1,0 +1,26 @@
+MODULE: Admin Manager
+Slides: 32–39
+
+[SLIDE 32]
+This module covers the Admin Manager — the control center for system administration in Endur. Access is typically restricted to system administrators, as changes here affect the entire platform.
+
+[SLIDE 33]
+The Admin Manager handles four categories of work: system configuration to control Endur's behavior, maintenance of static data that underpins all trading activity, management of security privileges to control who can do what, and the Data Model Extension capability for custom fields.
+
+[SLIDE 34]
+The Admin Manager interface is organized into clear functional sections. Each section groups related administrative tasks together, making it straightforward to navigate to the task you need.
+
+[SLIDE 35]
+The Admin Manager is divided into four main areas. General Administration handles core system setup. Compliance covers audit trails and security controls. Data Model Extension allows organizations to create custom fields. And Energy Administration manages energy-specific configuration such as pipelines, locations, and time zones.
+
+[SLIDE 36]
+Under General Administration you'll find the tools for day-to-day system maintenance: Broadcast Channels for system-wide messages, Date Sequences, Portfolio Groups, printer configuration, purge settings, static data maintenance, system-wide configuration, and unit conversion tables.
+
+[SLIDE 37]
+The Compliance section gives administrators visibility into what's happening in the system. Here you can review the full Activity Audit trail, view the Error Log and Console output, manage user passwords, configure Security Groups, and perform a controlled System Shutdown.
+
+[SLIDE 38]
+Data Model Extension is the tool for organizations that need fields beyond what Endur ships with out of the box. This section provides an Adhoc Query tool, Index Info, and the Instrument Builder — letting administrators extend the data model to match specific business requirements.
+
+[SLIDE 39]
+The Admin Manager also handles Transportation Network configuration — a set of tools specific to organizations trading physical commodities that require pipeline routing, delivery locations, and network setup to be defined in the system.

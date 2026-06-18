@@ -1,0 +1,53 @@
+MODULE: Introduction to OpenLink and Endur
+Slides: 1–18
+
+[SLIDE 1 — no narration]
+
+[SLIDE 2]
+Welcome to this introduction to OpenLink Endur. Our aim today is to give you a clear overview of the system's processes, terminology, and key functionality — so that when you sit down with Endur for the first time, nothing feels unfamiliar.
+
+[SLIDE 3 — no narration]
+
+[SLIDE 4]
+Endur is built around three core business areas: the Front Office, the Middle Office, and the Back Office. Transactions sit at the centre where all three overlap. The Front Office handles trading, the Middle Office covers risk management, and the Back Office manages operations and settlements.
+
+[SLIDE 5]
+The Front Office is where deals are created. Traders use Endur to enter new trades, price them against market curves, revalue portfolios in real time, run what-if scenario reports, and view position reports — all from a single system.
+
+[SLIDE 6]
+The Middle Office focuses on risk. It monitors credit and market risk limits, revalues portfolios, runs stress scenarios, and performs position and price analysis. Value at Risk, or VaR, is calculated here, giving risk managers a full picture of exposure.
+
+[SLIDE 7]
+The Back Office handles everything after a trade is agreed. That includes processing price fixings, generating trade confirmations and invoices, managing documentation, producing reports, and creating account postings in the sub-ledger.
+
+[SLIDE 8]
+This matrix shows how capabilities span all three offices. The Front Office provides flexible trade blotters and proprietary hedging tools. The Middle Office handles real-time credit and advanced VaR models. The Back Office covers financial settlement, physical scheduling, and full accounting.
+
+[SLIDE 9]
+Every module in Endur is accessed through a single entry point called OpenLink Central. It gives you one-click access to all the Managers — Trading, Market, Operations, Reference, Admin, Credit, and Risk — all from one toolbar at the top of the screen.
+
+[SLIDE 10]
+The Reference Manager stores counterparty and internal party information. It manages what we call the three Ps: Parties, which are organised as Party Groups, Business Units, and Legal Entities; Portfolios, which are the trader's book structures; and Personnel, covering all system users.
+
+[SLIDE 11]
+The Admin Manager handles system-wide configuration. Administrators use it for static data setup, managing security privileges, and extending the data model when custom fields are needed beyond the standard installation.
+
+[SLIDE 12]
+The Market Manager is where all market data lives. It defines the curve and index structure for financial market curves, valuation curves, commodity prices, interest rates, and volatility and correlation matrices used in pricing and risk.
+
+[SLIDE 13]
+The Trading Manager is the core module for traders. It captures new deals, retrieves and displays existing trades, runs reports, performs on-the-fly simulations, revalues portfolios, and manages position across all books and instruments.
+
+[SLIDE 14]
+Endur has two separate risk modules. The Credit Manager checks external counterparty exposures against credit limits. The Risk Manager monitors internal portfolio exposures against market risk lines. Both run through user-defined calculations and thresholds.
+
+[SLIDE 15]
+The Operations Manager covers back-office trade administration. It handles settlements and confirmations, document management, instrument fixings such as floating rate resets, options exercise processing, and automation workflows that reduce manual processing.
+
+[SLIDE 16]
+The Accounting Manager generates accounting entries directly from trade events. It extracts deal data and inserts postings into the correct accounts at the right time, answering the three key accounting questions: when to post, what to post, and where to post it.
+
+[SLIDE 17]
+This diagram shows the full trade lifecycle in Endur. A deal enters via the Trading Manager, triggers credit and risk checks, gets validated, and flows into the Operations Manager for confirmations, settlements, and fixings. The Accounting Manager picks up postings throughout. Every manager plays a defined role.
+
+[SLIDE 18 — no narration]
