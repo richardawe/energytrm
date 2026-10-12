@@ -53,10 +53,50 @@ class VideoController extends Controller
         ],
     ];
 
+    // Videos live outside the web root so they can only be reached through stream()
+    public static function videoPath(string $id): string
+    {
+        $dir = config('etrm.training_video_dir') ?? resource_path('videos');
+
+        return "{$dir}/{$id}-voiced.mp4";
+    }
+
+    /**
+     * Streams a training video to logged-in users. Served inline (with byte-range support
+     * for seeking) rather than as an attachment; trial users never get a download link.
+     */
+    public function stream(string $id)
+    {
+        abort_unless(collect(self::MODULES)->contains('id', $id), 404);
+
+        $path = self::videoPath($id);
+        abort_unless(file_exists($path), 404);
+
+        return response()->file($path, [
+            'Content-Type'           => 'video/mp4',
+            'Content-Disposition'    => 'inline',
+            'Cache-Control'          => 'private, no-store',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
+
+    /**
+     * Download for registered users only (route is behind deny-trial).
+     */
+    public function download(string $id)
+    {
+        abort_unless(collect(self::MODULES)->contains('id', $id), 404);
+
+        $path = self::videoPath($id);
+        abort_unless(file_exists($path), 404);
+
+        return response()->download($path, "{$id}.mp4", ['Content-Type' => 'video/mp4']);
+    }
+
     private function withAvailability(array $modules): array
     {
         return array_map(function ($m) {
-            $m['available'] = file_exists(public_path("videos/{$m['id']}-voiced.mp4"));
+            $m['available'] = file_exists(self::videoPath($m['id']));
             return $m;
         }, $modules);
     }
@@ -86,7 +126,7 @@ class VideoController extends Controller
         abort_unless($module, 404);
 
         $userId = Auth::id();
-        $module['available'] = file_exists(public_path("videos/{$id}-voiced.mp4"));
+        $module['available'] = file_exists(self::videoPath($id));
 
         $allModules   = $this->withAvailability(self::MODULES);
         $currentIndex = collect($allModules)->search(fn($m) => $m['id'] === $id);

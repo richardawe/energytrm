@@ -40,7 +40,11 @@ class User extends Authenticatable
         'country',
         'password_never_expires',
         'status',
+        'trial_expires_at',
     ];
+
+    public const TRIAL_GROUP = 'Trial Access';
+    public const TRIAL_MINUTES = 60;
 
     protected function casts(): array
     {
@@ -51,6 +55,7 @@ class User extends Authenticatable
             'user_type'              => 'string',
             'license_type'           => 'string',
             'status'                 => 'string',
+            'trial_expires_at'       => 'datetime',
         ];
     }
 
@@ -58,6 +63,40 @@ class User extends Authenticatable
     public function isAdmin(): bool      { return $this->role === 'admin'; }
     public function isTrader(): bool     { return $this->role === 'trader'; }
     public function isBackOffice(): bool { return $this->role === 'back_office'; }
+
+    // Trial accounts: members of the "Trial Access" security group with a time-boxed session
+    public function isTrial(): bool { return $this->trial_expires_at !== null; }
+
+    public function trialExpired(): bool
+    {
+        return $this->isTrial() && $this->trial_expires_at->isPast();
+    }
+
+    public function scopeNonTrial($query)
+    {
+        return $query->whereNull('trial_expires_at');
+    }
+
+    /**
+     * Name shown to other users. Real names are visible only to admins and to the user
+     * themselves; everyone else sees a pseudonym so colleagues stay anonymous.
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        $viewer = auth()->user();
+
+        if ($viewer && ($viewer->isAdmin() || $viewer->id === $this->id)) {
+            return $this->name;
+        }
+
+        return $this->pseudonym();
+    }
+
+    // Derived from the ID only — short_ref_name / personnel_id often encode the real name
+    public function pseudonym(): string
+    {
+        return 'Trader-' . str_pad((string) $this->id, 4, '0', STR_PAD_LEFT);
+    }
 
     // Pivot relationships
     public function businessUnits(): BelongsToMany

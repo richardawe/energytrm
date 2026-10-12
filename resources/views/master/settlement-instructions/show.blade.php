@@ -34,7 +34,7 @@
     <div class="col-12"><div class="text-muted small">Description</div><div>{{ $settlementInstruction->description }}</div></div>
     @endif
     @if($settlementInstruction->author)
-    <div class="col-12"><div class="text-muted small">Created by</div><div class="text-muted small">{{ $settlementInstruction->author->name }} on {{ $settlementInstruction->created_at->format('d M Y') }}</div></div>
+    <div class="col-12"><div class="text-muted small">Created by</div><div class="text-muted small">{{ $settlementInstruction->author->display_name }} on {{ $settlementInstruction->created_at->format('d M Y') }}</div></div>
     @endif
 </div>
 </div></div>

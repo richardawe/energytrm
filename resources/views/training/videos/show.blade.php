@@ -60,8 +60,13 @@
                         style="max-height:540px;display:block;"
                         controls
                         preload="metadata"
+                        @if (auth()->user()->isTrial())
+                        controlsList="nodownload"
+                        disablePictureInPicture
+                        oncontextmenu="return false;"
+                        @endif
                     >
-                        <source src="{{ asset('videos/' . $module['id'] . '-voiced.mp4') }}" type="video/mp4">
+                        <source src="{{ route('training.videos.stream', $module['id']) }}" type="video/mp4">
                         Your browser does not support HTML5 video.
                     </video>
                     @else
@@ -85,9 +90,9 @@
                     <div class="ms-auto d-flex gap-3 text-muted small align-items-center">
                         <span><i class="bi bi-collection-play me-1"></i>{{ $module['slides'] }} slides</span>
                         <span><i class="bi bi-clock me-1"></i>{{ $module['duration'] }}</span>
-                        @if ($module['available'])
-                        <a href="{{ asset('videos/' . $module['id'] . '-voiced.mp4') }}"
-                           download class="btn btn-outline-secondary btn-sm py-0 px-2">
+                        @if ($module['available'] && ! auth()->user()->isTrial())
+                        <a href="{{ route('training.videos.download', $module['id']) }}"
+                           class="btn btn-outline-secondary btn-sm py-0 px-2">
                             <i class="bi bi-download me-1"></i>Download
                         </a>
                         @endif

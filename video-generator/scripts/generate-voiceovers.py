@@ -10,8 +10,8 @@ Steps per module:
   4. Prepend 3-second title-card narration
   5. Concatenate all WAVs → module WAV
   6. Encode WAV → AAC and mux into existing MP4 (PyAV)
-  7. Save final MP4 with audio to public/videos/{id}-voiced.mp4
-  8. Also save standalone public/voiceovers/{id}.mp3
+  7. Save final MP4 with audio to resources/videos/{id}-voiced.mp4
+  8. Also save standalone resources/voiceovers/{id}.mp3
 
 Usage:
     python3 generate-voiceovers.py                 # all modules
@@ -28,8 +28,8 @@ import av
 # ── Paths ────────────────────────────────────────────────────────────────────
 REPO_ROOT    = Path(__file__).resolve().parents[2]
 PPTX_PATH    = REPO_ROOT / "Endur training.pptx"
-VIDEOS_DIR   = REPO_ROOT / "public" / "videos"
-VOICEOVERS_DIR = REPO_ROOT / "public" / "voiceovers"
+VIDEOS_DIR   = REPO_ROOT / "resources" / "videos"
+VOICEOVERS_DIR = REPO_ROOT / "resources" / "voiceovers"
 SLIDES_DIR   = REPO_ROOT / "public" / "slide-images"
 
 FLITE        = "flite"

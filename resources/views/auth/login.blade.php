@@ -40,4 +40,19 @@
             </button>
         </div>
     </form>
+
+    <hr class="my-4">
+
+    <div class="text-center">
+        <div class="text-muted small mb-2">New here? Explore the full portal before signing up.</div>
+        <form method="POST" action="{{ route('trial.start') }}">
+            @csrf
+            <button type="submit" class="btn btn-outline-secondary w-100">
+                Try it free for 1 hour
+            </button>
+        </form>
+        <div class="small mt-2">
+            or <a href="{{ route('register') }}">create an account</a>
+        </div>
+    </div>
 </x-guest-layout>

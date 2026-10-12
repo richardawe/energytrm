@@ -15,6 +15,9 @@
             <div class="card card-etrm">
                 <div class="card-header fw-semibold">Generate Report</div>
                 <div class="card-body">
+                    @if(auth()->user()->isTrial())
+                    <p class="text-muted small mb-0">CSV exports are not available during the trial. Register for full access.</p>
+                    @else
                     <form method="POST" action="{{ route('risk.reports.generate') }}">
                         @csrf
                         <div class="mb-3">
@@ -39,6 +42,7 @@
                             Download CSV
                         </button>
                     </form>
+                    @endif
                 </div>
             </div>
         </div>
@@ -64,7 +68,7 @@
                                 <td class="fw-semibold">{{ \App\Models\Report::typeLabel($r->report_type) }}</td>
                                 <td>{{ $r->reporting_date->format('d-M-Y') }}</td>
                                 <td><span class="badge bg-secondary">{{ strtoupper($r->file_format) }}</span></td>
-                                <td>{{ $r->generatedBy?->name ?? '—' }}</td>
+                                <td>{{ $r->generatedBy?->display_name ?? '—' }}</td>
                                 <td class="text-muted small">{{ $r->created_at->format('d-M-Y H:i') }}</td>
                             </tr>
                             @empty

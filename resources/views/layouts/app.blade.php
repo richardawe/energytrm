@@ -86,10 +86,10 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <span style="color: #fff;">{{ Auth::user()->name }}</span>
+                        <span style="color: #fff;">{{ Auth::user()->isTrial() ? 'Trial User' : Auth::user()->name }}</span>
                         <span class="badge ms-1"
                               style="background: var(--etrm-accent); color:#000; font-size:0.65rem;">
-                            {{ ucfirst(Auth::user()->role ?? 'user') }}
+                            {{ Auth::user()->isTrial() ? 'Trial' : ucfirst(Auth::user()->role ?? 'user') }}
                         </span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
@@ -110,6 +110,36 @@
 
 {{-- Flash messages --}}
 <div class="container-fluid px-3 pt-2">
+    @if (Auth::user()->isTrial())
+        {{-- Display only — EnsureTrialActive enforces the expiry server-side --}}
+        <div class="alert alert-info d-flex flex-wrap justify-content-between align-items-center py-2 mb-2" role="status"
+             id="trial-banner" data-seconds-left="{{ max(0, (int) now()->diffInSeconds(Auth::user()->trial_expires_at, false)) }}">
+            <span>
+                <strong>Trial:</strong> <span id="trial-remaining">{{ max(0, (int) ceil(now()->diffInMinutes(Auth::user()->trial_expires_at, false))) }} min</span> left.
+                Downloads and exports are disabled.
+            </span>
+            <form method="POST" action="{{ route('trial.register') }}" class="m-0">
+                @csrf
+                <button type="submit" class="btn btn-sm btn-primary">Register now</button>
+            </form>
+        </div>
+        <script>
+            (function () {
+                var banner = document.getElementById('trial-banner');
+                var label  = document.getElementById('trial-remaining');
+                // Count down from the server's figure so a skewed client clock can't cause reload loops
+                var expires = Date.now() + parseInt(banner.dataset.secondsLeft, 10) * 1000 + 1000;
+                function tick() {
+                    var ms = expires - Date.now();
+                    if (ms <= 0) { window.location.reload(); return; }
+                    var m = Math.floor(ms / 60000), s = Math.floor((ms % 60000) / 1000);
+                    label.textContent = m + ':' + String(s).padStart(2, '0');
+                    setTimeout(tick, 1000);
+                }
+                tick();
+            })();
+        </script>
+    @endif
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show py-2 mb-2" role="alert">
             {{ session('success') }}

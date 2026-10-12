@@ -147,7 +147,7 @@ Each composition's `durationInFrames` = `(slideCount * SLIDE_DURATION) + TITLE_C
 # video-generator/scripts/render-all.sh
 for module in introduction common-functionality admin-manager reference-manager market-manager trading-manager; do
   npx remotion render src/index.ts $module \
-    --output ../public/videos/${module}.mp4 \
+    --output ../resources/videos/${module}.mp4 \
     --codec h264 \
     --quality 85
 done

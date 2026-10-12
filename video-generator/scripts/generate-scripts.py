@@ -3,7 +3,7 @@
 Extract narration scripts from PPTX slides and write them as
 plain .txt files — one file per module, one section per slide.
 
-Output: public/voiceovers/scripts/{module-id}.txt
+Output: resources/voiceovers/scripts/{module-id}.txt
 """
 
 import re, zipfile, sys
@@ -11,7 +11,7 @@ from pathlib import Path
 
 REPO_ROOT  = Path(__file__).resolve().parents[2]
 PPTX_PATH  = REPO_ROOT / "Endur training.pptx"
-OUT_DIR    = REPO_ROOT / "public" / "voiceovers" / "scripts"
+OUT_DIR    = REPO_ROOT / "resources" / "voiceovers" / "scripts"
 
 MODULES = [
     ("introduction",         "Introduction to OpenLink and Endur",    list(range(1,  19))),

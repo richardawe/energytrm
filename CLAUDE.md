@@ -33,7 +33,7 @@ For cPanel deployment: pull via Git Version Control, set document root to `publi
 ## Scheduled Tasks (cPanel Cron)
 
 ```
-* * * * * php artisan schedule:run   # daily EoB/CoB checklist reset
+* * * * * php artisan schedule:run   # daily EoB/CoB checklist reset, hourly trial purge
 ```
 
 ## Architecture
@@ -83,6 +83,12 @@ Analytics methods are on the model: `swapMtm()`, `futuresUnrealisedPnl()`, `blac
 ### Roles
 
 Three roles on `users.role`: `admin` (full access), `trader` (trade capture + view ops), `back_office` (ops + settlements, no trade capture). Enforced via `role:` middleware and `FinancialTradePolicy`.
+
+**Anonymity:** never print `$user->name` for another user in non-admin views — use `$user->display_name`, which returns the real name only to admins and the user themselves (everyone else sees `Trader-NNNN`). Non-admins always book trades as themselves; `TradeController` ignores any submitted `trader_id` from them.
+
+**Trial access:** "Try it free for 1 hour" on the login page (`TrialController`) creates a `trader` account with `trial_expires_at` set and adds it to the **Trial Access** security group. `EnsureTrialActive` (appended to the `web` group) logs expired trials out and redirects to `/register`. The `deny-trial` middleware blocks downloads/exports (video download, `risk.reports.generate`). `etrm:purge-trials` (hourly) deletes trials 24h after expiry together with the trades, operations records, prices and reports they created. Exclude trial users from user pickers with `User::nonTrial()`.
+
+**Training videos** live in `resources/videos/` (outside the web root) and are served only via `training.videos.stream` (auth) and `training.videos.download` (auth + `deny-trial`).
 
 ### Key Models and Relationships
 

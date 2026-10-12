@@ -67,6 +67,7 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label fw-semibold">Trader</label>
+                                @if(auth()->user()->isAdmin())
                                 <select name="trader_id" class="form-select">
                                     <option value="">— defaults to you —</option>
                                     @foreach($traders as $t)
@@ -74,6 +75,10 @@
                                     @endforeach
                                 </select>
                                 <div class="form-text">Defaults to logged-in user if blank</div>
+                                @else
+                                <input type="text" class="form-control" value="You" readonly>
+                                <div class="form-text">Trades are always booked under your own login</div>
+                                @endif
                             </div>
                             <div class="col-md-5">
                                 <label class="form-label fw-semibold">Counterparty <span class="text-danger">*</span></label>

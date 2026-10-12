@@ -20,7 +20,7 @@
             <span class="fw-semibold">{{ $cl->businessUnit->short_name }}</span>
             @if($cl->signed_off)
                 <span class="badge badge-authorized">
-                    Signed off by {{ $cl->signedOffBy->name }} at {{ $cl->signed_off_at->format('H:i') }}
+                    Signed off by {{ $cl->signedOffBy->display_name }} at {{ $cl->signed_off_at->format('H:i') }}
                 </span>
             @else
                 <span class="badge badge-pending">Pending sign-off</span>
