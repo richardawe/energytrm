@@ -76,7 +76,7 @@
                             <tr>
                                 <td class="fw-semibold">{{ $pt->price_date->format('d-M-Y') }}</td>
                                 <td class="text-end">{{ number_format($pt->price, 4) }}</td>
-                                <td>{{ $pt->enteredBy?->name ?? '—' }}</td>
+                                <td>{{ $pt->enteredBy?->display_name ?? '—' }}</td>
                                 <td class="text-muted small">{{ $pt->updated_at->format('d-M-Y H:i') }}</td>
                                 <td class="text-end">
                                     <form method="POST"

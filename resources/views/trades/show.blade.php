@@ -94,7 +94,7 @@
                         <div class="col-md-3 text-muted">Counterparty</div>
                         <div class="col-md-3">{{ $trade->counterparty->short_name }}</div>
                         <div class="col-md-3 text-muted">Trader</div>
-                        <div class="col-md-3">{{ $trade->trader?->name ?? $trade->createdBy?->name ?? '—' }}</div>
+                        <div class="col-md-3">{{ $trade->trader?->display_name ?? $trade->createdBy?->display_name ?? '—' }}</div>
                     </div>
                 </div>
             </div>
@@ -275,12 +275,12 @@
                 <div class="card-body" style="font-size:.85rem;">
                     <div class="row g-2">
                         <div class="col-5 text-muted">Created by</div>
-                        <div class="col-7">{{ $trade->createdBy?->name ?? '—' }}</div>
+                        <div class="col-7">{{ $trade->createdBy?->display_name ?? '—' }}</div>
                         <div class="col-5 text-muted">Created at</div>
                         <div class="col-7">{{ $trade->created_at->format('d-M-Y H:i') }}</div>
                         @if($trade->validatedBy)
                         <div class="col-5 text-muted">Validated by</div>
-                        <div class="col-7">{{ $trade->validatedBy->name }}</div>
+                        <div class="col-7">{{ $trade->validatedBy->display_name }}</div>
                         <div class="col-5 text-muted">Validated at</div>
                         <div class="col-7">{{ $trade->validated_at?->format('d-M-Y H:i') ?? '—' }}</div>
                         @endif
@@ -314,7 +314,7 @@
                                 {{ ucfirst($log->action) }}
                             </span>
                         </td>
-                        <td>{{ $log->user?->name ?? '—' }}</td>
+                        <td>{{ $log->user?->display_name ?? '—' }}</td>
                         <td class="text-muted">{{ $log->created_at->format('d-M-Y H:i:s') }}</td>
                         <td>
                             @if($log->action === 'updated' && $log->old_values && $log->new_values)

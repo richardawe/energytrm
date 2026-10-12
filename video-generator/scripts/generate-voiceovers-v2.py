@@ -20,8 +20,8 @@ from kokoro_onnx import Kokoro
 REPO_ROOT      = Path(__file__).resolve().parents[2]
 PPTX_PATH      = REPO_ROOT / "Endur training.pptx"
 SLIDES_DIR     = REPO_ROOT / "public" / "slide-images"
-VIDEOS_DIR     = REPO_ROOT / "public" / "videos"
-VOICEOVERS_DIR = REPO_ROOT / "public" / "voiceovers"
+VIDEOS_DIR     = REPO_ROOT / "resources" / "videos"
+VOICEOVERS_DIR = REPO_ROOT / "resources" / "voiceovers"
 KOKORO_MODEL   = Path("/tmp/kokoro/kokoro-v1.0-int8.onnx")
 KOKORO_VOICES  = Path("/tmp/kokoro/voices-v1.0.bin")
 TTS_CACHE_DIR  = REPO_ROOT / "video-generator" / "tts-cache"
@@ -136,7 +136,7 @@ def build_narration(texts: list, mod_short: str) -> str:
 
 # ── Script file loader ─────────────────────────────────────────────────────────
 def load_script(mod_id: str) -> dict:
-    """Load per-slide narration from public/voiceovers/scripts/<mod_id>.txt.
+    """Load per-slide narration from resources/voiceovers/scripts/<mod_id>.txt.
 
     Format expected in each file:
         [SLIDE N]

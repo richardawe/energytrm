@@ -97,7 +97,7 @@
                     <tr>
                         <td>{{ $gp->price_date->format('d M Y') }}</td>
                         <td class="text-end fw-semibold">{{ number_format($gp->price, 4) }}</td>
-                        <td class="text-muted">{{ $gp->enteredBy?->name ?? 'System' }}</td>
+                        <td class="text-muted">{{ $gp->enteredBy?->display_name ?? 'System' }}</td>
                     </tr>
                     @empty
                     <tr><td colspan="3" class="text-center text-muted py-3">No price data yet.</td></tr>

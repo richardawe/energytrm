@@ -73,12 +73,16 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label fw-semibold">Trader</label>
+                                @if(auth()->user()->isAdmin())
                                 <select name="trader_id" class="form-select">
                                     <option value="">— none —</option>
                                     @foreach($traders as $t)
                                         <option value="{{ $t->id }}" {{ old('trader_id', $trade->trader_id) == $t->id ? 'selected' : '' }}>{{ $t->name }}</option>
                                     @endforeach
                                 </select>
+                                @else
+                                <input type="text" class="form-control" value="{{ $trade->trader?->display_name ?? $trade->createdBy?->display_name ?? '—' }}" readonly>
+                                @endif
                             </div>
                             <div class="col-md-5">
                                 <label class="form-label fw-semibold">Counterparty <span class="text-danger">*</span></label>

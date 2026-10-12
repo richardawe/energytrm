@@ -18,5 +18,8 @@ Schedule::command('etrm:fetch-prices')->twiceDaily(7, 18);
 // Live FX rates: refresh every hour during business hours
 Schedule::command('etrm:fetch-fx')->hourlyAt(5)->between('06:00', '22:00');
 
+// Trial accounts: delete expired 1-hour trials (and the data they created) a day after they end
+Schedule::command('etrm:purge-trials')->hourly();
+
 // Future: mark invoices overdue at 08:00 every morning
 // Schedule::command('etrm:mark-overdue-invoices')->dailyAt('08:00');

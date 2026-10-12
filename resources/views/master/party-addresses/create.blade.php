@@ -56,7 +56,7 @@
         <select name="contact_user_id" class="form-select">
             <option value="">— None —</option>
             @foreach($users as $u)
-            <option value="{{ $u->id }}" {{ old('contact_user_id') == $u->id ? 'selected' : '' }}>{{ $u->name }}</option>
+            <option value="{{ $u->id }}" {{ old('contact_user_id') == $u->id ? 'selected' : '' }}>{{ $u->display_name }}</option>
             @endforeach
         </select>
     </div>

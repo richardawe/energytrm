@@ -451,12 +451,12 @@
                 <div class="card-body" style="font-size:.85rem;">
                     <div class="row g-2">
                         <div class="col-5 text-muted">Created by</div>
-                        <div class="col-7">{{ $trade->createdBy?->name ?? '—' }}</div>
+                        <div class="col-7">{{ $trade->createdBy?->display_name ?? '—' }}</div>
                         <div class="col-5 text-muted">Created at</div>
                         <div class="col-7">{{ $trade->created_at->format('d-M-Y H:i') }}</div>
                         @if($trade->validatedBy)
                         <div class="col-5 text-muted">Validated by</div>
-                        <div class="col-7">{{ $trade->validatedBy->name }}</div>
+                        <div class="col-7">{{ $trade->validatedBy->display_name }}</div>
                         <div class="col-5 text-muted">Validated at</div>
                         <div class="col-7">{{ $trade->validated_at?->format('d-M-Y H:i') ?? '—' }}</div>
                         @endif
@@ -486,7 +486,7 @@
                     @foreach($trade->auditLogs as $log)
                     <tr>
                         <td><span class="badge {{ $log->actionBadgeClass() }}">{{ ucfirst($log->action) }}</span></td>
-                        <td>{{ $log->user?->name ?? '—' }}</td>
+                        <td>{{ $log->user?->display_name ?? '—' }}</td>
                         <td class="text-muted">{{ $log->created_at->format('d-M-Y H:i:s') }}</td>
                         <td>
                             @if($log->action === 'updated' && $log->old_values && $log->new_values)

@@ -11,7 +11,7 @@ class PartyAddressController extends Controller
 {
     public function create(Party $party)
     {
-        $users = User::orderBy('name')->get();
+        $users = User::nonTrial()->orderBy('name')->get();
         return view('master.party-addresses.create', compact('party', 'users'));
     }
 
@@ -41,7 +41,7 @@ class PartyAddressController extends Controller
 
     public function edit(Party $party, PartyAddress $address)
     {
-        $users = User::orderBy('name')->get();
+        $users = User::nonTrial()->orderBy('name')->get();
         return view('master.party-addresses.edit', compact('party', 'address', 'users'));
     }
 

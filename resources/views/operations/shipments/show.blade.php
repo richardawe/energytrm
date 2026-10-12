@@ -81,7 +81,7 @@
                 <div class="card-body" style="font-size:.85rem;">
                     <div class="row g-2">
                         <div class="col-5 text-muted">Created by</div>
-                        <div class="col-7">{{ $shipment->createdBy?->name ?? '—' }}</div>
+                        <div class="col-7">{{ $shipment->createdBy?->display_name ?? '—' }}</div>
                         <div class="col-5 text-muted">Created at</div>
                         <div class="col-7">{{ $shipment->created_at->format('d-M-Y H:i') }}</div>
                     </div>

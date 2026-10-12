@@ -21,6 +21,7 @@ use App\Models\Uom;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class TradeController extends Controller
 {
@@ -76,8 +77,10 @@ class TradeController extends Controller
             $data['trade_status']       = 'Pending';
             $data['version']            = 1;
             $data['created_by']         = auth()->id();
-            // Default trader to logged-in user if not explicitly chosen
-            $data['trader_id'] = $data['trader_id'] ?? auth()->id();
+            // Only admins may book on behalf of another trader; everyone else books as themselves
+            $data['trader_id'] = auth()->user()->isAdmin()
+                ? ($data['trader_id'] ?? auth()->id())
+                : auth()->id();
 
             $trade = Trade::create($data);
             AuditLog::record($trade, 'created', [], $trade->getAttributes());
@@ -122,6 +125,11 @@ class TradeController extends Controller
         }
 
         $data = $this->validateTrade($request, $trade);
+
+        // Non-admins cannot reassign a trade to someone else
+        if (! auth()->user()->isAdmin()) {
+            unset($data['trader_id']);
+        }
 
         DB::transaction(function () use ($data, $trade) {
             $old = $trade->getAttributes();
@@ -249,7 +257,10 @@ class TradeController extends Controller
             'incoterms'       => Incoterm::orderBy('code')->get(),
             'brokers'         => Broker::where('status', 'Active')->orderBy('name')->get(),
             'agreements'      => Agreement::where('status', 'Authorized')->orderBy('name')->get(),
-            'traders'         => User::orderBy('name')->get(),
+            // Only admins see the trader picker — non-admins always book as themselves
+            'traders'         => auth()->user()->isAdmin()
+                ? User::nonTrial()->whereIn('role', ['admin', 'trader'])->orderBy('name')->get()
+                : collect(),
             'pipelines'       => $pipelines,
             'pipelineCascade' => $pipelineCascade,
             'productIndexMap' => $productIndexMap,
@@ -269,7 +280,7 @@ class TradeController extends Controller
             'internal_bu_id'                => 'required|exists:parties,id',
             'portfolio_id'                  => 'required|exists:portfolios,id',
             'counterparty_id'               => 'required|exists:parties,id',
-            'trader_id'                     => 'nullable|exists:users,id',
+            'trader_id'                     => ['nullable', Rule::exists('users', 'id')->whereIn('role', ['admin', 'trader'])->whereNull('trial_expires_at')],
             'product_id'                    => 'required|exists:products,id',
             'quantity'                      => 'required|numeric|min:0.0001',
             'volume_type'                   => 'required|in:Fixed,Variable,Optional',

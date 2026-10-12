@@ -213,7 +213,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('counterparty-exposure',[CounterpartyExposureController::class, 'index'])->name('counterparty-exposure');
         Route::get('var',                  [VarController::class,                 'index'])->name('var');
         Route::get('reports',              [ReportsController::class,             'index'])->name('reports');
-        Route::post('reports/generate',    [ReportsController::class,             'generate'])->name('reports.generate');
+        Route::post('reports/generate',    [ReportsController::class,             'generate'])->middleware('deny-trial')->name('reports.generate');
         // VaR Configuration, Stress Scenarios, Credit Warnings — write behind admin, reads for all
         Route::middleware('role:admin')->group(function () {
             Route::resource('var-config',       VarConfigController::class)->except(['index', 'show'])->names('var-config');
@@ -231,6 +231,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('scenarios/{scenario}',[ScenarioController::class, 'show'])->name('scenarios.show');
         Route::get('videos',               [VideoController::class, 'index'])->name('videos.index');
         Route::get('videos/{module}',     [VideoController::class, 'show'])->name('videos.show');
+        Route::get('videos/{module}/stream',   [VideoController::class, 'stream'])->name('videos.stream');
+        Route::get('videos/{module}/download', [VideoController::class, 'download'])->middleware('deny-trial')->name('videos.download');
         Route::post('videos/{module}/quiz', [VideoController::class, 'submitQuiz'])->name('videos.quiz.submit');
     });
 

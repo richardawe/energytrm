@@ -31,7 +31,7 @@
                 <tbody>
                     @forelse($users as $user)
                     <tr>
-                        <td><strong>{{ $user->name }}</strong></td>
+                        <td><strong>{{ $user->name }}</strong>@if($user->isTrial()) <span class="badge bg-info text-dark ms-1" title="Expires {{ $user->trial_expires_at->format('d M Y H:i') }}">Trial</span>@endif</td>
                         <td>{{ $user->email }}</td>
                         <td>
                             @php

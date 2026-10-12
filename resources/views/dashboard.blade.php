@@ -241,7 +241,7 @@
                                 <td class="ps-3" style="width:90px;">
                                     <span class="badge {{ $log->actionBadgeClass() }}">{{ ucfirst($log->action) }}</span>
                                 </td>
-                                <td class="text-muted">{{ $log->user?->name ?? '—' }}</td>
+                                <td class="text-muted">{{ $log->user?->display_name ?? '—' }}</td>
                                 <td>
                                     @php
                                         $modelName = class_basename($log->auditable_type ?? '');

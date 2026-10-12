@@ -20,7 +20,7 @@ import numpy as np
 # ------------------------------------------------------------------
 REPO_ROOT  = Path(__file__).resolve().parents[2]
 SLIDES_DIR = REPO_ROOT / "public" / "slide-images"
-OUT_DIR    = REPO_ROOT / "public" / "videos"
+OUT_DIR    = REPO_ROOT / "resources" / "videos"
 
 FPS              = 30
 SLIDE_SECONDS    = 8

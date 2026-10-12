@@ -67,7 +67,7 @@
             <dd class="col-sm-8">v{{ $account->version }}</dd>
 
             <dt class="col-sm-4 text-muted">Created By</dt>
-            <dd class="col-sm-8">{{ $account->author?->name ?? '—' }}</dd>
+            <dd class="col-sm-8">{{ $account->author?->display_name ?? '—' }}</dd>
 
             <dt class="col-sm-4 text-muted">Created At</dt>
             <dd class="col-sm-8 text-muted small">{{ $account->created_at->format('d M Y H:i') }}</dd>
